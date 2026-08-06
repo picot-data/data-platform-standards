@@ -1,41 +1,81 @@
-/* Interaction layer for hand-drawn SVG "hero" diagrams (docs/assets/diagrams/*.svg).
+/* Presentation layer for the SVG "hero" diagrams (docs/assets/diagrams/*.svg).
    Diagrams mark each interactive element with class="dp-node" and, optionally,
-   a data-href pointing at the doc section it explains. */
+   a data-href pointing at the doc section it explains. Behaviour lives in
+   docs/assets/diagrams.js. */
+
+.dp-diagram-wrap {
+  position: relative;
+  margin: 1.4rem 0;
+  padding: 0.4rem;
+  background: #ffffff;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+}
+
+/* Reclaim the content column's own padding: these diagrams need every pixel
+   they can get before the reader has to reach for the enlarged view. */
+@media screen and (min-width: 60em) {
+  .dp-diagram-wrap {
+    margin-left: -1.2rem;
+    margin-right: -1.2rem;
+  }
+}
 
 .dp-diagram {
-  max-width: 100%;
+  display: block;
+  width: 100%;
   height: auto;
 }
 
+/* Small screens: keep the diagram legible and let the reader pan, rather than
+   shrinking 900 units of drawing into 320 pixels. */
+@media screen and (max-width: 44.9375em) {
+  .dp-diagram-wrap {
+    overflow-x: auto;
+  }
+
+  .dp-diagram {
+    width: 640px;
+    max-width: none;
+  }
+}
+
+/* ------------------------------------------------------------------ nodes */
+
 .dp-node {
-  cursor: pointer;
+  cursor: default;
 }
 
 .dp-node[data-href] {
   cursor: pointer;
 }
 
-.dp-node:not([data-href]) {
-  cursor: default;
+/* A drop-shadow on the group, rather than a brightness filter on the rect:
+   most boxes here are pale or white, where brightening changes nothing. */
+.dp-node[data-href] {
+  transition: filter 120ms ease;
 }
 
-.dp-node rect {
-  transition: filter 120ms ease, stroke-width 120ms ease;
+.dp-node[data-href]:hover,
+.dp-node[data-href]:focus-visible {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  outline: none;
 }
 
-.dp-node:hover rect,
-.dp-node.dp-hover rect {
-  filter: brightness(1.12) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+.dp-node[data-href]:focus-visible > rect:first-of-type {
+  stroke: #ee4631;
+  stroke-width: 3;
 }
 
-/* Custom tooltip rendered by diagrams.js, replacing the native <title> delay */
+/* ---------------------------------------------------------------- tooltip */
+
 .dp-tooltip {
   position: fixed;
-  z-index: 1000;
-  max-width: 320px;
+  z-index: 2100;
+  max-width: 22rem;
   padding: 0.5rem 0.75rem;
-  font-size: 0.8rem;
-  line-height: 1.3;
+  font-size: 0.75rem;
+  line-height: 1.4;
   color: #fff;
   background: #1f2937;
   border-radius: 6px;
@@ -47,4 +87,83 @@
 
 .dp-tooltip.dp-tooltip-visible {
   opacity: 1;
+}
+
+/* ------------------------------------------------------- enlarged view */
+
+.dp-enlarge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  font-family: inherit;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--light);
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 4px;
+  opacity: 0.55;
+  transition: opacity 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.dp-diagram-wrap:hover .dp-enlarge,
+.dp-enlarge:focus-visible {
+  opacity: 1;
+}
+
+.dp-enlarge:hover {
+  color: #ee4631;
+  border-color: #ee4631;
+}
+
+.dp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(17, 24, 39, 0.85);
+}
+
+.dp-overlay.dp-overlay-visible {
+  display: flex;
+}
+
+body.dp-overlay-open {
+  overflow: hidden;
+}
+
+.dp-overlay .dp-stage {
+  width: 96vw;
+  height: 90vh;
+  padding: 0.6rem;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+/* The SVG keeps its viewBox aspect ratio and letterboxes inside the stage, so
+   the same rule fits both the wide and the tall diagrams. */
+.dp-diagram-full {
+  width: 100%;
+  height: 100%;
+}
+
+.dp-overlay-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1.1rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #ffffff;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
 }
