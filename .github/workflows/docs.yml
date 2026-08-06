@@ -10,9 +10,12 @@ permissions:
   pages: write
   id-token: write
 
+# Allow only one concurrent deployment, but never cancel one that is already
+# running: a cancelled Pages deployment leaves the environment busy and makes
+# the next run fail with "Deployment cancelled".
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -20,8 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
-        with:
-          enable-cache: true
       - run: uv sync
       - run: uv run mkdocs build
       - uses: actions/upload-pages-artifact@v3
