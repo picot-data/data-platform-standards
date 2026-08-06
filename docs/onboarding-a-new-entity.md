@@ -46,12 +46,15 @@ mandatory tags, and budgets from the same code path used for `dti`.
 ## 3. Storage — new ADLS prefix, same storage account
 
 The new entity does **not** get its own storage account — it uses the
-existing group-wide `stpicotdata`, with a new folder prefix:
+existing group-wide `stpicotdata`, with a new folder prefix keyed by the
+entity's **data** code, not the infra `scope` code from step 1 above (they can
+differ — e.g. data code `b`, infra scope `bg` — see
+[Naming conventions — Cloud storage naming](naming-conventions.md#cloud-storage-naming-adls)):
 
 ```
-bronze/company_<code>/...
-silver/company_<code>/...
-gold/company_<code>/...
+bronze/company_<entity>/...
+silver/company_<entity>/...
+gold/company_<entity>/...
 ```
 
 Grant the new VM's managed identity `Storage Blob Data Contributor` on the

@@ -71,12 +71,13 @@ semantic layer) is **not** duplicated here — it lives in
 | Type | Pattern | Example |
 |---|---|---|
 | Main branch | `main` | — |
+| Integration branch | `develop` | — |
 | Feature | `feature/<domain>/<short-desc>` | `feature/ingestion/sap-sales-connector` |
 | Bugfix | `fix/<short-desc>` | `fix/stg-order-duplicates` |
 
-Short-lived feature branches merged into `main` are enough for a
-single-contributor platform — there is no long-lived `develop` branch to
-maintain as a separate integration point.
+`feature/` and `fix/` branches merge into `develop`; `develop` merges into
+`main` once its content is ready to deploy. No separate `release/<version>`
+branch — `main` always reflects what is (or is about to be) live.
 
 ## Commits
 

@@ -234,13 +234,15 @@ flowchart TD
     SUBD["Budget: sub-picot-dti-dev<br/>near-zero, tripwire only"]
     SUBS["Budget: sub-picot-dti-staging<br/>near-zero, tripwire only"]
     SUBSH["Budget: sub-picot-shared-prod<br/>= shared storage spend"]
-    RG["Budget / cost alert per RG<br/>rg-picot-dti-data-weu<br/>rg-picot-shared-data-weu"]
+    RGDTI["Budget / cost alert<br/>rg-picot-dti-data-weu"]
+    RGSH["Budget / cost alert<br/>rg-picot-shared-data-weu"]
 
     MG --> SUBP
     MG --> SUBD
     MG --> SUBS
     MG --> SUBSH
-    SUBP --> RG
+    SUBP --> RGDTI
+    SUBSH --> RGSH
 ```
 
 | Scope | Failure mode it catches |

@@ -146,8 +146,14 @@ them by default.
 ### Path structure
 
 ```
-<container>/<entity>/<source>/<object>/YYYY/MM/DD/<object>.parquet
+<container>/company_<entity>/<source>/<object>/YYYY/MM/DD/<object>.parquet
 ```
+
+`<entity>` is the lowercase **data** entity code (`d`, `b`, ...) — the same
+value stored in the `entity` column (see [Technical / metadata
+columns](#technical-metadata-columns)), not the Azure infra `scope` code
+(`dti`, `bg`) used in resource names. See the correspondence table in
+[Azure landing zones](azure-landing-zones.md#resource-naming-pattern).
 
 ```
 bronze/company_d/sap/order/2027/01/15/order.parquet
@@ -167,29 +173,10 @@ gold/group/fct_order_group/
 
 ## Git naming
 
-### Branches
-
-| Type | Pattern | Example |
-|---|---|---|
-| Main branch | `main` | — |
-| Development | `develop` | — |
-| Feature | `feature/<domain>/<short-desc>` | `feature/ingestion/sap-sales-connector` |
-| Bugfix | `fix/<short-desc>` | `fix/stg-order-duplicates` |
-| Release | `release/<version>` | `release/1.0.0` |
-
-### Commits
-
-Pattern: `<type>(<scope>): <description>`, following
-[Conventional Commits](https://www.conventionalcommits.org/).
-
-Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`.
-
-Examples:
-
-- `feat(ingestion): add SAP purchasing extraction`
-- `fix(dbt): correct stg_order duplicate join`
-- `docs(glossary): add revenue definition`
-- `refactor(dbt): extract enrichment logic into int_order_enriched`
+Branch and commit conventions are documented once, in
+[Repositories and delivery](repositories-and-delivery.md#branching) — not
+repeated here, so the two pages can't drift apart the way a copy-pasted rule
+always eventually does.
 
 ## Allowed abbreviations
 

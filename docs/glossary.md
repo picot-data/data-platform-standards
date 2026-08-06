@@ -24,6 +24,22 @@ DataHub business glossary once governance is wired up.
 
 ## Technical terms
 
+**Level 1 / Level 2**
+: The platform's maturity ladder. Level 1 is the current scope of every page
+  on this site: one VM per entity, plain Parquet, no dev/staging resources
+  beyond empty governance scaffolding — everything needed to prove the
+  pipeline end to end at POC scale. Level 2 is the not-yet-designed next
+  step (splitting the single VM into per-component compute, a managed
+  catalog, etc.) referenced as a placeholder in tags and naming patterns —
+  see [Platform overview](platform-overview.md) and
+  [Azure landing zones — Resource naming pattern](azure-landing-zones.md#resource-naming-pattern).
+
+**CAF (Cloud Adoption Framework)**
+: Microsoft's Enterprise-Scale Landing Zone pattern, adopted for the
+  management group and subscription hierarchy — see
+  [Azure landing zones](azure-landing-zones.md) and
+  [ADR 0002](https://github.com/picot-data/data-platform-standards/blob/main/adr/0002-caf-landing-zone-structure.md).
+
 **Medallion architecture**
 : The bronze/silver/gold refinement model for data storage — describes *how
   refined and how durable* data is. Orthogonal to the dbt model layers below.
