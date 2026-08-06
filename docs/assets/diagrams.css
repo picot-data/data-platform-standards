@@ -1,0 +1,50 @@
+/* Interaction layer for hand-drawn SVG "hero" diagrams (docs/assets/diagrams/*.svg).
+   Diagrams mark each interactive element with class="dp-node" and, optionally,
+   a data-href pointing at the doc section it explains. */
+
+.dp-diagram {
+  max-width: 100%;
+  height: auto;
+}
+
+.dp-node {
+  cursor: pointer;
+}
+
+.dp-node[data-href] {
+  cursor: pointer;
+}
+
+.dp-node:not([data-href]) {
+  cursor: default;
+}
+
+.dp-node rect {
+  transition: filter 120ms ease, stroke-width 120ms ease;
+}
+
+.dp-node:hover rect,
+.dp-node.dp-hover rect {
+  filter: brightness(1.12) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+}
+
+/* Custom tooltip rendered by diagrams.js, replacing the native <title> delay */
+.dp-tooltip {
+  position: fixed;
+  z-index: 1000;
+  max-width: 320px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: #fff;
+  background: #1f2937;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 100ms ease;
+}
+
+.dp-tooltip.dp-tooltip-visible {
+  opacity: 1;
+}

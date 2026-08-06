@@ -1,0 +1,61 @@
+site_name: Picot Data Platform Standards
+site_description: Group-wide data platform standards, conventions and architecture decisions
+repo_url: https://github.com/picot-data/data-platform-standards
+repo_name: picot-data/data-platform-standards
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.png
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - toc.follow
+    - content.code.copy
+    - content.action.edit
+
+nav:
+  - Home: index.md
+  - Platform overview: platform-overview.md
+  - Data layers: data-layers.md
+  - Semantic layer: semantic-layer.md
+  - Naming conventions: naming-conventions.md
+  - Azure landing zones: azure-landing-zones.md
+  - Repositories and delivery: repositories-and-delivery.md
+  - Onboarding a new entity: onboarding-a-new-entity.md
+  - Onboarding an engineer: onboarding-an-engineer.md
+  - Glossary: glossary.md
+  - Architecture Decision Records: adr-index.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search
+
+extra_css:
+  - assets/theme-picot.css
+  - assets/diagrams.css
+
+extra_javascript:
+  - assets/diagrams.js
