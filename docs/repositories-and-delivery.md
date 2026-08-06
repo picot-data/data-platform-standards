@@ -2,17 +2,9 @@
 
 ## Repository topology
 
-```mermaid
-flowchart TD
-    STD["data-platform-standards<br/>(this repo)<br/>naming, tagging, ADRs, glossary"]
-    POC["poc-data-platform-dti<br/>disposable POC repo"]
-    PRODDTI["data-platform-dti<br/>(future) production repo, Dirickx"]
-    PRODBG["data-platform-bg<br/>(future) production repo, entity B"]
-
-    POC -.links to, never copies.-> STD
-    PRODDTI -.links to, never copies.-> STD
-    PRODBG -.links to, never copies.-> STD
-```
+<div class="dp-diagram-wrap" markdown="0">
+--8<-- "docs/assets/diagrams/repositories-and-delivery.svg"
+</div>
 
 `data-platform-standards` holds group-wide rules and decisions only — no
 entity-specific code or data. Every entity repository implements these rules

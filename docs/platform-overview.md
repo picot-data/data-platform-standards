@@ -5,24 +5,12 @@ pipeline end to end, on a single VM per entity, at POC scale.
 
 ## The end-to-end flow
 
-```mermaid
-flowchart LR
-    SAP["SAP ERP<br/>(on-premise)"] -->|extraction| SCRIPTS["Python scripts<br/>ingestion"]
-    SCRIPTS -->|writes| BRONZE["Bronze<br/>ADLS, immutable"]
-    BRONZE -->|reads| DBT["dbt Core"]
-    DBT -->|writes| SILVER["Silver<br/>ADLS, cleansed"]
-    SILVER -->|reads| DBT
-    DBT -->|writes| GOLD["Gold<br/>ADLS, star schema"]
-    GOLD --> METRICFLOW["MetricFlow<br/>semantic layer"]
-    GOLD --> BI["Metabase"]
-    METRICFLOW --> BI
-    DAGSTER["Dagster OSS"] -.orchestrates.-> SCRIPTS
-    DAGSTER -.orchestrates.-> DBT
-    DBT --> DATAHUB["DataHub<br/>catalog & lineage"]
-```
+<div class="dp-diagram-wrap" markdown="0">
+--8<-- "docs/assets/diagrams/platform-overview.svg"
+</div>
 
-Every arrow above is a decision, not an assumption — see the linked ADR for
-the reasoning behind each tool choice.
+Every box above is a decision, not an assumption — hover it for detail, click
+to jump to the reasoning behind that tool choice.
 
 ## Compute — one VM per entity
 

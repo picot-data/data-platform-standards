@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 640" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram">
+
+  <rect width="1500" height="640" fill="#ffffff"/>
+
+  <text x="750" y="32" font-size="22" font-weight="bold" text-anchor="middle" fill="#003f5c">Platform Overview — Level 1 End-to-End Flow</text>
+  <text x="750" y="53" font-size="12.5" text-anchor="middle" fill="#666">Hover a box for detail, click to jump to the section that explains it.</text>
+
+  <defs>
+    <marker id="arrow-overview" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
+    </marker>
+    <marker id="arrow-overview-dagster" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7c3aed"/>
+    </marker>
+  </defs>
+
+  <!-- Dagster orchestration band -->
+  <g class="dp-node" data-href="platform-overview.md#orchestration-dagster-oss">
+    <title>Dagster OSS orchestrates ingestion and dbt. The only Level 1 component that runs as a continuous service. See "Orchestration — Dagster OSS".</title>
+    <rect x="220" y="80" width="850" height="46" rx="6" fill="#7c3aed"/>
+    <text x="645" y="108" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Dagster OSS — orchestration</text>
+  </g>
+  <line x1="295" y1="126" x2="295" y2="168" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-overview-dagster)"/>
+  <line x1="645" y1="126" x2="645" y2="168" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-overview-dagster)"/>
+  <line x1="985" y1="126" x2="985" y2="168" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-overview-dagster)"/>
+
+  <!-- Main flow row -->
+  <g class="dp-node" data-href="platform-overview.md#extraction-sap-to-cloud">
+    <title>SAP ERP, on-premise. Two extraction patterns are in scope: ADF + relay VM, or a flat-file export. See "Extraction — SAP to cloud".</title>
+    <rect x="40" y="170" width="150" height="70" rx="6" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5"/>
+    <text x="115" y="200" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#78350f">SAP ERP</text>
+    <text x="115" y="218" font-size="10.5" text-anchor="middle" fill="#92400e">on-premise</text>
+  </g>
+
+  <line x1="190" y1="205" x2="220" y2="205" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+
+  <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0007-python-scripts-not-airbyte.md">
+    <title>In-house Python scripts, not Airbyte OSS — lighter, fully controlled. See ADR 0007.</title>
+    <rect x="220" y="170" width="150" height="70" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+    <text x="295" y="200" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#0d47a1">Python scripts</text>
+    <text x="295" y="218" font-size="10.5" text-anchor="middle" fill="#1565c0">ingestion</text>
+  </g>
+
+  <line x1="370" y1="205" x2="400" y2="205" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+
+  <g class="dp-node" data-href="naming-conventions.md#persistence-per-layer">
+    <title>Raw, immutable, date-partitioned. Never written to by dbt. See "Persistence per layer".</title>
+    <rect x="400" y="170" width="140" height="70" rx="6" fill="#fde68a" stroke="#b45309" stroke-width="1.5"/>
+    <text x="470" y="200" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#78350f">Bronze</text>
+    <text x="470" y="218" font-size="10.5" text-anchor="middle" fill="#92400e">ADLS, immutable</text>
+  </g>
+
+  <line x1="540" y1="205" x2="570" y2="205" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+
+  <g class="dp-node" data-href="data-layers.md#the-dbt-layers-in-transformation-order">
+    <title>Staging models: one-to-one with a source object, no joins. See "The dbt layers, in transformation order".</title>
+    <rect x="570" y="170" width="150" height="70" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+    <text x="645" y="200" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#0d47a1">dbt Core</text>
+    <text x="645" y="218" font-size="10.5" text-anchor="middle" fill="#1565c0">staging (stg_)</text>
+  </g>
+
+  <line x1="720" y1="205" x2="750" y2="205" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+
+  <g class="dp-node" data-href="naming-conventions.md#persistence-per-layer">
+    <title>Cleansed data, persisted to ADLS so downstream rebuilds don't depend on SAP availability. See ADR 0001.</title>
+    <rect x="750" y="170" width="140" height="70" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <text x="820" y="200" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#1e3a8a">Silver</text>
+    <text x="820" y="218" font-size="10.5" text-anchor="middle" fill="#1d4ed8">ADLS, cleansed</text>
+  </g>
+
+  <line x1="890" y1="205" x2="920" y2="205" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+
+  <g class="dp-node" data-href="data-layers.md#the-two-axes">
+    <title>Dimensions, facts, and marts — the star schema. See "The two axes".</title>
+    <rect x="920" y="170" width="150" height="70" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+    <text x="995" y="200" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#0d47a1">dbt Core</text>
+    <text x="995" y="218" font-size="10.5" text-anchor="middle" fill="#1565c0">dim_ / fct_ / mart_</text>
+  </g>
+
+  <line x1="1070" y1="205" x2="1100" y2="205" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+
+  <g class="dp-node" data-href="data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging">
+    <title>Modeled, consumed. The source of truth for dimensions and facts. See "Why a star schema".</title>
+    <rect x="1100" y="170" width="140" height="70" rx="6" fill="#c7d2fe" stroke="#4338ca" stroke-width="1.5"/>
+    <text x="1170" y="200" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#312e81">Gold</text>
+    <text x="1170" y="218" font-size="10.5" text-anchor="middle" fill="#3730a3">ADLS, star schema</text>
+  </g>
+
+  <line x1="1170" y1="240" x2="1170" y2="280" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+  <line x1="820" y1="240" x2="820" y2="280" stroke="#666" stroke-width="2"/>
+  <line x1="645" y1="240" x2="645" y2="290" stroke="#666" stroke-width="2"/>
+
+  <!-- Second row: MetricFlow, Metabase, DataHub -->
+  <g class="dp-node" data-href="semantic-layer.md">
+    <title>Each metric (e.g. revenue) defined once, centrally. See "Semantic layer".</title>
+    <rect x="960" y="280" width="170" height="70" rx="6" fill="#fee2e2" stroke="#ee4631" stroke-width="1.5"/>
+    <text x="1045" y="310" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#991b1b">MetricFlow</text>
+    <text x="1045" y="328" font-size="10.5" text-anchor="middle" fill="#b91c1c">semantic layer</text>
+  </g>
+
+  <line x1="1045" y1="350" x2="1045" y2="390" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+  <line x1="1170" y1="280" x2="1170" y2="390" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+
+  <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0008-metabase-not-power-bi.md">
+    <title>Open-source, self-hosted, queries the Gold layer through DuckDB. See ADR 0008.</title>
+    <rect x="1030" y="390" width="170" height="70" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+    <text x="1115" y="420" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#14532d">Metabase</text>
+    <text x="1115" y="438" font-size="10.5" text-anchor="middle" fill="#166534">consumption</text>
+  </g>
+
+  <line x1="995" y1="240" x2="720" y2="280" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+
+  <g class="dp-node" data-href="platform-overview.md#governance-datahub">
+    <title>Catalog, lineage, and glossary — ingests dbt's manifest.json/catalog.json. The heaviest component in the stack. See "Governance — DataHub".</title>
+    <rect x="590" y="280" width="170" height="70" rx="6" fill="#f3e8ff" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="675" y="310" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#4c1d95">DataHub</text>
+    <text x="675" y="328" font-size="10.5" text-anchor="middle" fill="#5b21b6">catalog &amp; lineage</text>
+  </g>
+
+  <!-- Legend -->
+  <rect x="40" y="500" width="1420" height="110" rx="6" fill="#fafafa" stroke="#ddd"/>
+  <rect x="60" y="520" width="18" height="18" fill="#fde68a" stroke="#b45309"/>
+  <text x="85" y="534" font-size="12" fill="#333">Bronze — raw, immutable, never written to by dbt</text>
+  <rect x="60" y="547" width="18" height="18" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="85" y="561" font-size="12" fill="#333">Silver — cleansed, persisted to ADLS (decouples rebuilds from SAP availability)</text>
+  <rect x="60" y="574" width="18" height="18" fill="#c7d2fe" stroke="#4338ca"/>
+  <text x="85" y="588" font-size="12" fill="#333">Gold — the star schema, the consumed product</text>
+  <line x1="700" y1="529" x2="740" y2="529" stroke="#666" stroke-width="2" marker-end="url(#arrow-overview)"/>
+  <text x="750" y="534" font-size="12" fill="#333">data flow</text>
+  <line x1="700" y1="556" x2="740" y2="556" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-overview-dagster)"/>
+  <text x="750" y="561" font-size="12" fill="#333">orchestrated by Dagster</text>
+  <text x="700" y="588" font-size="12" fill="#333">Intermediate (int_) models are omitted here — they stay inside DuckDB, never persisted to ADLS (see ADR 0001)</text>
+</svg>

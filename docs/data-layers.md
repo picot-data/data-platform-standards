@@ -8,30 +8,9 @@ A model has exactly one position on each axis.
 
 ## The two axes
 
-```mermaid
-flowchart TD
-    subgraph MEDALLION["Medallion — refinement & durability"]
-        BRONZE["Bronze<br/>raw, immutable"]
-        SILVER["Silver<br/>cleansed"]
-        GOLD["Gold<br/>modeled, consumed"]
-    end
-
-    subgraph DBT["dbt layers — kind of transformation"]
-        STG["staging (stg_)"]
-        INT["intermediate (int_)"]
-        DIM["dimensions (dim_)"]
-        FCT["facts (fct_)"]
-        MART["marts (mart_)"]
-    end
-
-    BRONZE -.maps to.-> nothing1[" "]
-    SILVER -.maps to.-> STG
-    GOLD -.maps to.-> DIM
-    GOLD -.maps to.-> FCT
-    GOLD -.maps to.-> MART
-
-    style nothing1 fill:none,stroke:none
-```
+<div class="dp-diagram-wrap" markdown="0">
+--8<-- "docs/assets/diagrams/data-layers.svg"
+</div>
 
 Bronze is not a dbt model at all — it's the ingestion pipeline's raw output,
 read-only for dbt. Silver corresponds to `stg_` models. Intermediate (`int_`)
