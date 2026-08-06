@@ -1,232 +1,243 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1700 1060" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 990" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Azure CAF hierarchy: a root management group, three child management groups, and one landing zone per entity plus one shared, each holding three subscriptions of which only prod carries resources at Level 1.">
 
-  <rect width="1700" height="1060" fill="#ffffff"/>
+  <rect width="1000" height="990" fill="#ffffff"/>
 
-  <text x="850" y="34" font-size="24" font-weight="bold" text-anchor="middle" fill="#003f5c">Azure Structure — Target CAF Landing Zone (Level 1)</text>
-  <text x="850" y="56" font-size="13" text-anchor="middle" fill="#666">Picot Data Platform — full hierarchy. Hover a box for detail, click to jump to the relevant doc section.</text>
+  <defs>
+    <marker id="az-rbac" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L9,5.5 L0,10 z" fill="#d97706"/>
+    </marker>
+  </defs>
 
-  <!-- ===================== ROOT MANAGEMENT GROUP ===================== -->
+  <text x="500" y="32" font-size="19" font-weight="bold" text-anchor="middle" fill="#003f5c">Azure Structure — Target CAF Landing Zone (Level 1)</text>
+  <text x="500" y="54" font-size="11.5" text-anchor="middle" fill="#666">One landing zone per entity, plus one shared. Hover a box for detail, click to jump to the section that explains it.</text>
+
+  <!-- Root management group -->
   <g class="dp-node" data-href="azure-landing-zones.md#subscription-structure">
-    <title>Root Management Group. Every subscription in the tenant descends from this node. See "Subscription structure".</title>
-    <rect x="680" y="76" width="340" height="48" rx="8" fill="#003f5c"/>
-    <text x="850" y="105" font-size="17" font-weight="bold" text-anchor="middle" fill="white">Root Management Group: mg-picot</text>
+    <title>Root management group. Every subscription in the tenant descends from this node. See "Subscription structure".</title>
+    <rect x="350" y="76" width="300" height="46" rx="8" fill="#003f5c"/>
+    <text x="500" y="105" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Root MG — mg-picot</text>
   </g>
 
-  <line x1="850" y1="124" x2="260" y2="150" stroke="#999" stroke-width="2"/>
-  <line x1="850" y1="124" x2="850" y2="150" stroke="#999" stroke-width="2"/>
-  <line x1="850" y1="124" x2="1440" y2="150" stroke="#999" stroke-width="2"/>
+  <path d="M500,122 V142 H165 V160" fill="none" stroke="#b0b6bd" stroke-width="1.5"/>
+  <path d="M500,122 V160" fill="none" stroke="#b0b6bd" stroke-width="1.5"/>
+  <path d="M500,142 H835 V160" fill="none" stroke="#b0b6bd" stroke-width="1.5"/>
 
-  <!-- Level 2: platform / landingzones / decommissioned -->
+  <!-- Level 2 management groups -->
   <g class="dp-node" data-href="azure-landing-zones.md#the-platform-management-group">
-    <title>Out of data scope — owned by group IT (connectivity, identity). See "The Platform management group".</title>
-    <rect x="80" y="150" width="360" height="58" rx="6" fill="#f5f5f5" stroke="#999" stroke-width="1.5" stroke-dasharray="6,4"/>
-    <text x="260" y="173" font-size="14" font-weight="bold" text-anchor="middle" fill="#555">mg-picot-platform</text>
-    <text x="260" y="192" font-size="10.5" text-anchor="middle" fill="#888">Out of data scope — IT (VPN/identity)</text>
+    <title>Out of data scope — owned by group IT: connectivity (VPN/ExpressRoute), identity, central management. Created as an empty placeholder. See "The Platform management group".</title>
+    <rect x="30" y="160" width="270" height="54" rx="6" fill="#f5f5f5" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="165" y="182" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#555">mg-picot-platform</text>
+    <text x="165" y="200" font-size="9.5" text-anchor="middle" fill="#888">out of data scope — IT (VPN / identity)</text>
   </g>
 
   <g class="dp-node" data-href="azure-landing-zones.md#subscription-structure">
-    <title>Data workloads live here — one landing zone per entity, plus one shared. This is the focus of this diagram.</title>
-    <rect x="620" y="150" width="460" height="58" rx="6" fill="#0066cc"/>
-    <text x="850" y="173" font-size="14" font-weight="bold" text-anchor="middle" fill="white">mg-picot-landingzones</text>
-    <text x="850" y="192" font-size="10.5" text-anchor="middle" fill="#e0ecff">Data workloads — focus of this diagram</text>
+    <title>Data workloads live here: one landing zone per entity, plus one shared. This is the focus of the diagram, and the scope where tag and budget policies are assigned.</title>
+    <rect x="350" y="160" width="300" height="54" rx="6" fill="#0066cc"/>
+    <text x="500" y="182" font-size="12.5" font-weight="bold" text-anchor="middle" fill="white">mg-picot-landingzones</text>
+    <text x="500" y="200" font-size="9.5" text-anchor="middle" fill="#dbeafe">data workloads — policy and budget scope</text>
   </g>
 
   <g class="dp-node" data-href="azure-landing-zones.md#subscription-structure">
     <title>Parking lot for subscriptions being retired. Empty until a subscription is decommissioned.</title>
-    <rect x="1260" y="150" width="360" height="58" rx="6" fill="#f5f5f5" stroke="#999" stroke-width="1.5" stroke-dasharray="6,4"/>
-    <text x="1440" y="173" font-size="14" font-weight="bold" text-anchor="middle" fill="#555">mg-picot-decommissioned</text>
-    <text x="1440" y="192" font-size="10.5" text-anchor="middle" fill="#888">Empty until a subscription is retired</text>
+    <rect x="700" y="160" width="270" height="54" rx="6" fill="#f5f5f5" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="835" y="182" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#555">mg-picot-decommissioned</text>
+    <text x="835" y="200" font-size="9.5" text-anchor="middle" fill="#888">empty until a subscription is retired</text>
   </g>
 
-  <!-- Level 3: per-entity landing zones under mg-picot-landingzones -->
-  <line x1="850" y1="208" x2="280" y2="234" stroke="#999" stroke-width="2"/>
-  <line x1="850" y1="208" x2="850" y2="234" stroke="#999" stroke-width="2"/>
-  <line x1="850" y1="208" x2="1420" y2="234" stroke="#999" stroke-width="2"/>
+  <path d="M500,214 V236 H175 V256" fill="none" stroke="#b0b6bd" stroke-width="1.5"/>
+  <path d="M500,214 V256" fill="none" stroke="#b0b6bd" stroke-width="1.5"/>
+  <path d="M500,236 H825 V256" fill="none" stroke="#b0b6bd" stroke-width="1.5"/>
 
+  <!-- Level 3: landing zones -->
   <g class="dp-node" data-href="azure-landing-zones.md#subscription-structure">
-    <title>Landing zone holding the group-wide shared resources (the ADLS storage account).</title>
-    <rect x="100" y="234" width="360" height="50" rx="6" fill="#1976d2"/>
-    <text x="280" y="264" font-size="13" font-weight="bold" text-anchor="middle" fill="white">mg-picot-lz-shared</text>
+    <title>Landing zone holding the group-wide shared resources — in practice, the single ADLS storage account.</title>
+    <rect x="30" y="256" width="290" height="50" rx="6" fill="#1976d2"/>
+    <text x="175" y="278" font-size="12" font-weight="bold" text-anchor="middle" fill="white">mg-picot-lz-shared</text>
+    <text x="175" y="296" font-size="9.5" text-anchor="middle" fill="#dbeafe">group-wide resources</text>
   </g>
 
   <g class="dp-node" data-href="azure-landing-zones.md#subscription-structure">
-    <title>Landing zone for the Dirickx entity (D).</title>
-    <rect x="670" y="234" width="360" height="50" rx="6" fill="#1976d2"/>
-    <text x="850" y="264" font-size="13" font-weight="bold" text-anchor="middle" fill="white">mg-picot-lz-dti</text>
+    <title>Landing zone for the Dirickx entity. Infra scope code dti, which is the data entity 'D'.</title>
+    <rect x="355" y="256" width="290" height="50" rx="6" fill="#1976d2"/>
+    <text x="500" y="278" font-size="12" font-weight="bold" text-anchor="middle" fill="white">mg-picot-lz-dti</text>
+    <text x="500" y="296" font-size="9.5" text-anchor="middle" fill="#dbeafe">Dirickx — data entity 'D'</text>
   </g>
 
   <g class="dp-node" data-href="onboarding-a-new-entity.md">
-    <title>Template for any future entity. Same structure, new entity code. See "Onboarding a new entity".</title>
-    <rect x="1240" y="234" width="360" height="50" rx="6" fill="#f5f5f5" stroke="#1976d2" stroke-width="1.5" stroke-dasharray="6,4"/>
-    <text x="1420" y="264" font-size="13" font-weight="bold" text-anchor="middle" fill="#1976d2">mg-picot-lz-&lt;future entity&gt; (e.g. bg)</text>
+    <title>Template for any future entity: same structure, new entity code. See "Onboarding a new entity".</title>
+    <rect x="680" y="256" width="290" height="50" rx="6" fill="#f5f5f5" stroke="#1976d2" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="825" y="278" font-size="12" font-weight="bold" text-anchor="middle" fill="#1976d2">mg-picot-lz-&lt;code&gt;</text>
+    <text x="825" y="296" font-size="9.5" text-anchor="middle" fill="#1976d2">(future) e.g. bg</text>
   </g>
 
-  <line x1="280" y1="284" x2="280" y2="310" stroke="#999" stroke-width="2"/>
-  <line x1="850" y1="284" x2="850" y2="310" stroke="#999" stroke-width="2"/>
-  <line x1="1420" y1="284" x2="1420" y2="310" stroke="#999" stroke-width="2"/>
+  <path d="M175,306 V326" fill="none" stroke="#b0b6bd" stroke-width="1.5"/>
+  <path d="M500,306 V326" fill="none" stroke="#b0b6bd" stroke-width="1.5"/>
+  <path d="M825,306 V326" fill="none" stroke="#b0b6bd" stroke-width="1.5"/>
 
-  <!-- ===================== SHARED LANDING ZONE ===================== -->
-  <rect x="60" y="310" width="440" height="595" rx="8" fill="#f0f6ff" stroke="#0066cc" stroke-width="1.5"/>
+  <!-- ============================= SHARED LANDING ZONE ============================= -->
+  <rect x="30" y="326" width="290" height="474" rx="8" fill="#f0f6ff" stroke="#0066cc" stroke-width="1.5"/>
 
   <g class="dp-node" data-href="azure-landing-zones.md#environments">
-    <title>Empty subscription. Exists only as governance scaffolding and a budget tripwire (see Environments).</title>
-    <rect x="85" y="335" width="390" height="45" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
-    <text x="280" y="356" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#666">sub-picot-shared-dev</text>
-    <text x="280" y="372" font-size="10" text-anchor="middle" fill="#888">empty — budget tripwire only</text>
+    <title>Created but empty. Exists only as governance scaffolding: RBAC, Terraform workspace and a budget tripwire. See "Environments".</title>
+    <rect x="44" y="346" width="262" height="44" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="175" y="366" font-size="11" font-weight="bold" text-anchor="middle" fill="#666">sub-picot-shared-dev</text>
+    <text x="175" y="381" font-size="9" text-anchor="middle" fill="#888">empty — budget tripwire only</text>
   </g>
 
   <g class="dp-node" data-href="azure-landing-zones.md#environments">
-    <title>Empty subscription. Exists only as governance scaffolding and a budget tripwire (see Environments).</title>
-    <rect x="85" y="395" width="390" height="45" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
-    <text x="280" y="416" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#666">sub-picot-shared-staging</text>
-    <text x="280" y="432" font-size="10" text-anchor="middle" fill="#888">empty — budget tripwire only</text>
+    <title>Created but empty. Exists only as governance scaffolding: RBAC, Terraform workspace and a budget tripwire. See "Environments".</title>
+    <rect x="44" y="400" width="262" height="44" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="175" y="420" font-size="11" font-weight="bold" text-anchor="middle" fill="#666">sub-picot-shared-staging</text>
+    <text x="175" y="435" font-size="9" text-anchor="middle" fill="#888">empty — budget tripwire only</text>
   </g>
 
   <g class="dp-node" data-href="azure-landing-zones.md#environments">
     <title>The only shared-landing-zone subscription with active resources at Level 1.</title>
-    <rect x="85" y="455" width="390" height="425" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
-    <text x="280" y="478" font-size="13" font-weight="bold" text-anchor="middle" fill="#7b1fa2">PRODUCTION — sub-picot-shared-prod</text>
-    <text x="280" y="495" font-size="10.5" text-anchor="middle" fill="#666">only subscription with active resources</text>
-    <text x="280" y="515" font-size="10.5" text-anchor="middle" fill="#555">rg-picot-shared-data-weu</text>
+    <rect x="44" y="454" width="262" height="332" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+    <text x="175" y="476" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#7b1fa2">PROD — sub-picot-shared-prod</text>
+    <text x="175" y="492" font-size="9" text-anchor="middle" fill="#777">the only one with active resources</text>
+    <text x="175" y="512" font-size="10" text-anchor="middle" fill="#555">rg-picot-shared-data-weu</text>
   </g>
 
   <g class="dp-node" data-href="naming-conventions.md#cloud-storage-naming-adls">
-    <title>ADLS Gen2 storage account, unique across the whole group. See "Cloud storage naming".</title>
-    <rect x="105" y="530" width="350" height="215" rx="4" fill="white" stroke="#7b1fa2"/>
-    <text x="280" y="553" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#333">Storage Account: stpicotdata</text>
-    <text x="280" y="571" font-size="10.5" text-anchor="middle" fill="#777">ADLS Gen2</text>
-    <text x="280" y="592" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#555">Containers:</text>
-    <text x="280" y="609" font-size="10" text-anchor="middle" fill="#666">bronze/ (per entity, partitioned YYYY/MM/DD)</text>
-    <text x="280" y="625" font-size="10" text-anchor="middle" fill="#666">silver/ (per entity)</text>
-    <text x="280" y="641" font-size="10" text-anchor="middle" fill="#666">gold/ (per entity + consolidated group/)</text>
-    <text x="280" y="657" font-size="10" text-anchor="middle" fill="#666">metadata/ (dagster, dbt, logs)</text>
-    <text x="280" y="682" font-size="10" font-style="italic" text-anchor="middle" fill="#7b1fa2">Single account for the whole group</text>
-    <text x="280" y="698" font-size="10" font-style="italic" text-anchor="middle" fill="#7b1fa2">(not one account per entity or per environment)</text>
-    <text x="280" y="718" font-size="10" text-anchor="middle" fill="#777">RBAC: Storage Blob Data Contributor</text>
-    <text x="280" y="734" font-size="10" text-anchor="middle" fill="#777">granted per container/folder to entity VMs</text>
+    <title>The single ADLS Gen2 storage account for the whole group. Entity isolation is a folder prefix, not a separate account. See "Cloud storage naming (ADLS)".</title>
+    <rect x="56" y="524" width="238" height="246" rx="4" fill="#ffffff" stroke="#7b1fa2"/>
+    <text x="175" y="546" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">Storage Account</text>
+    <text x="175" y="563" font-size="10" text-anchor="middle" fill="#777">stpicotdata — ADLS Gen2</text>
+    <text x="175" y="588" font-size="10" font-weight="bold" text-anchor="middle" fill="#555">Containers</text>
+    <text x="175" y="606" font-size="9.5" text-anchor="middle" fill="#666">bronze/ — per entity, YYYY/MM/DD</text>
+    <text x="175" y="622" font-size="9.5" text-anchor="middle" fill="#666">silver/ — per entity</text>
+    <text x="175" y="638" font-size="9.5" text-anchor="middle" fill="#666">gold/ — per entity + group/</text>
+    <text x="175" y="654" font-size="9.5" text-anchor="middle" fill="#666">metadata/ — dagster, dbt, logs</text>
+    <text x="175" y="680" font-size="9.5" font-style="italic" text-anchor="middle" fill="#7b1fa2">One account for the whole group,</text>
+    <text x="175" y="695" font-size="9.5" font-style="italic" text-anchor="middle" fill="#7b1fa2">not one per entity or environment</text>
+    <text x="175" y="722" font-size="9.5" text-anchor="middle" fill="#777">RBAC: Storage Blob Data Contributor</text>
+    <text x="175" y="737" font-size="9.5" text-anchor="middle" fill="#777">granted per container to entity VMs</text>
   </g>
 
-  <!-- ===================== DTI LANDING ZONE ===================== -->
-  <rect x="630" y="310" width="440" height="595" rx="8" fill="#f0f6ff" stroke="#0066cc" stroke-width="1.5"/>
+  <!-- ============================= DTI LANDING ZONE ============================= -->
+  <rect x="355" y="326" width="290" height="474" rx="8" fill="#f0f6ff" stroke="#0066cc" stroke-width="1.5"/>
 
   <g class="dp-node" data-href="azure-landing-zones.md#environments">
-    <title>Empty subscription. Real development stays local (developer's laptop), not in the cloud, at Level 1.</title>
-    <rect x="655" y="335" width="390" height="45" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
-    <text x="850" y="356" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#666">sub-picot-dti-dev</text>
-    <text x="850" y="372" font-size="10" text-anchor="middle" fill="#888">empty — real development stays local</text>
+    <title>Created but empty: real development stays local, on the engineer's laptop, at Level 1. See "Environments".</title>
+    <rect x="369" y="346" width="262" height="44" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="500" y="366" font-size="11" font-weight="bold" text-anchor="middle" fill="#666">sub-picot-dti-dev</text>
+    <text x="500" y="381" font-size="9" text-anchor="middle" fill="#888">empty — development stays local</text>
   </g>
 
   <g class="dp-node" data-href="azure-landing-zones.md#environments">
-    <title>Empty subscription. Exists only as governance scaffolding and a budget tripwire.</title>
-    <rect x="655" y="395" width="390" height="45" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
-    <text x="850" y="416" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#666">sub-picot-dti-staging</text>
-    <text x="850" y="432" font-size="10" text-anchor="middle" fill="#888">empty — budget tripwire only</text>
+    <title>Created but empty. Exists only as governance scaffolding: RBAC, Terraform workspace and a budget tripwire. See "Environments".</title>
+    <rect x="369" y="400" width="262" height="44" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="500" y="420" font-size="11" font-weight="bold" text-anchor="middle" fill="#666">sub-picot-dti-staging</text>
+    <text x="500" y="435" font-size="9" text-anchor="middle" fill="#888">empty — budget tripwire only</text>
   </g>
 
   <g class="dp-node" data-href="azure-landing-zones.md#environments">
     <title>The only Dirickx subscription with active resources at Level 1.</title>
-    <rect x="655" y="455" width="390" height="425" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
-    <text x="850" y="478" font-size="13" font-weight="bold" text-anchor="middle" fill="#7b1fa2">PRODUCTION — sub-picot-dti-prod</text>
-    <text x="850" y="495" font-size="10.5" text-anchor="middle" fill="#666">only subscription with active resources</text>
-    <text x="850" y="515" font-size="10.5" text-anchor="middle" fill="#555">rg-picot-dti-data-weu</text>
+    <rect x="369" y="454" width="262" height="332" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+    <text x="500" y="476" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#7b1fa2">PROD — sub-picot-dti-prod</text>
+    <text x="500" y="492" font-size="9" text-anchor="middle" fill="#777">the only one with active resources</text>
+    <text x="500" y="512" font-size="10" text-anchor="middle" fill="#555">rg-picot-dti-data-weu</text>
   </g>
 
-  <g class="dp-node" data-href="platform-overview.md">
-    <title>The single VM hosting every Level 1 tool — ingestion, orchestration, transformation. See "Platform overview".</title>
-    <rect x="675" y="528" width="350" height="215" rx="4" fill="white" stroke="#7b1fa2"/>
-    <text x="850" y="550" font-size="12" font-weight="bold" text-anchor="middle" fill="#333">VM — vm-picot-dti-data-weu-01 (D4s_v3)</text>
+  <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0006-single-vm-for-level-1.md">
+    <title>One VM per entity hosts every Level 1 tool — not one VM per tool, not one VM shared across entities. See ADR 0006.</title>
+    <rect x="381" y="524" width="238" height="160" rx="4" fill="#ffffff" stroke="#7b1fa2"/>
+    <text x="500" y="545" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#333">VM — vm-picot-dti-data-weu-01</text>
+    <text x="500" y="561" font-size="9.5" text-anchor="middle" fill="#777">D4s_v3 — every Level 1 tool, one machine</text>
   </g>
 
-  <g class="dp-node" data-href="platform-overview.md">
-    <title>In-house Python extraction scripts, not Airbyte OSS. See "Platform overview".</title>
-    <rect x="690" y="562" width="150" height="50" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
-    <text x="765" y="581" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">Python scripts</text>
-    <text x="765" y="596" font-size="9" text-anchor="middle" fill="#777">ingestion (SAP, MES)</text>
+  <g class="dp-node" data-href="platform-overview.md#extraction-sap-to-cloud">
+    <title>In-house Python extraction scripts, run on demand by Dagster. See "Extraction — SAP to cloud".</title>
+    <rect x="395" y="574" width="98" height="42" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
+    <text x="444" y="592" font-size="9.5" font-weight="bold" text-anchor="middle" fill="#333">Python scripts</text>
+    <text x="444" y="606" font-size="8.5" text-anchor="middle" fill="#777">ingestion</text>
   </g>
 
-  <g class="dp-node" data-href="platform-overview.md">
-    <title>Orchestration layer — the only component that runs as a continuous service.</title>
-    <rect x="855" y="562" width="150" height="50" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
-    <text x="930" y="581" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">Dagster OSS</text>
-    <text x="930" y="596" font-size="9" text-anchor="middle" fill="#777">orchestration</text>
+  <g class="dp-node" data-href="platform-overview.md#orchestration-dagster-oss">
+    <title>The only Level 1 component that runs as a continuous service. See "Orchestration — Dagster OSS".</title>
+    <rect x="507" y="574" width="98" height="42" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
+    <text x="556" y="592" font-size="9.5" font-weight="bold" text-anchor="middle" fill="#333">Dagster OSS</text>
+    <text x="556" y="606" font-size="8.5" text-anchor="middle" fill="#777">orchestration</text>
   </g>
 
   <g class="dp-node" data-href="data-layers.md">
     <title>Transformation CLI, invoked by Dagster. See "Data layers".</title>
-    <rect x="690" y="622" width="150" height="50" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
-    <text x="765" y="641" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">dbt Core</text>
-    <text x="765" y="656" font-size="9" text-anchor="middle" fill="#777">transformation</text>
+    <rect x="395" y="626" width="98" height="42" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
+    <text x="444" y="644" font-size="9.5" font-weight="bold" text-anchor="middle" fill="#333">dbt Core</text>
+    <text x="444" y="658" font-size="8.5" text-anchor="middle" fill="#777">transformation</text>
   </g>
 
-  <g class="dp-node" data-href="platform-overview.md">
-    <title>Embedded query engine — a file, not a server. Activated on demand by dbt or a script.</title>
-    <rect x="855" y="622" width="150" height="50" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
-    <text x="930" y="641" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">DuckDB</text>
-    <text x="930" y="656" font-size="9" text-anchor="middle" fill="#777">prod.duckdb</text>
-  </g>
-
-  <text x="850" y="695" font-size="9.5" text-anchor="middle" fill="#7b1fa2">RBAC: Storage Blob Data Contributor → stpicotdata</text>
-
-  <g class="dp-node" data-href="azure-landing-zones.md#resource-naming-pattern">
-    <title>Network Security Group — the firewall in front of the VM.</title>
-    <rect x="675" y="705" width="170" height="42" rx="4" fill="white" stroke="#7b1fa2"/>
-    <text x="760" y="722" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#333">NSG</text>
-    <text x="760" y="738" font-size="9" text-anchor="middle" fill="#777">nsg-picot-dti-data-weu-01</text>
+  <g class="dp-node" data-href="platform-overview.md#compute-one-vm-per-entity">
+    <title>Embedded query engine — a file, not a server. Activated on demand by dbt or a script. See "Compute — one VM per entity".</title>
+    <rect x="507" y="626" width="98" height="42" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
+    <text x="556" y="644" font-size="9.5" font-weight="bold" text-anchor="middle" fill="#333">DuckDB</text>
+    <text x="556" y="658" font-size="8.5" text-anchor="middle" fill="#777">prod.duckdb</text>
   </g>
 
   <g class="dp-node" data-href="azure-landing-zones.md#resource-naming-pattern">
-    <title>Holds the SAP credentials, retrieved at runtime by the ingestion scripts.</title>
-    <rect x="855" y="705" width="170" height="42" rx="4" fill="white" stroke="#7b1fa2"/>
-    <text x="940" y="722" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#333">Key Vault</text>
-    <text x="940" y="738" font-size="9" text-anchor="middle" fill="#777">kv-picot-dti-weu-01 (SAP secrets)</text>
+    <title>Network Security Group — attached to the VM's network interface, not to the VM resource itself.</title>
+    <rect x="381" y="698" width="238" height="36" rx="4" fill="#ffffff" stroke="#7b1fa2"/>
+    <text x="500" y="715" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">NSG — nsg-picot-dti-data-weu-01</text>
+    <text x="500" y="728" font-size="8.5" text-anchor="middle" fill="#777">the firewall in front of the VM</text>
   </g>
 
-  <!-- ===================== FUTURE ENTITY LANDING ZONE ===================== -->
-  <g class="dp-node" data-href="onboarding-a-new-entity.md">
-    <title>Same template, to be duplicated for any future entity. See "Onboarding a new entity".</title>
-    <rect x="1200" y="310" width="440" height="595" rx="8" fill="#f5f5f5" stroke="#999" stroke-width="1.5" stroke-dasharray="6,4"/>
-    <text x="1420" y="340" font-size="13" font-weight="bold" text-anchor="middle" fill="#666">Same template, to duplicate</text>
-    <text x="1420" y="358" font-size="11" text-anchor="middle" fill="#777">for any future entity (e.g. bg)</text>
+  <g class="dp-node" data-href="azure-landing-zones.md#resource-naming-pattern">
+    <title>Holds the SAP credentials, retrieved at runtime by the ingestion scripts — never committed to the repository.</title>
+    <rect x="381" y="742" width="238" height="36" rx="4" fill="#ffffff" stroke="#7b1fa2"/>
+    <text x="500" y="759" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">Key Vault — kv-picot-dti-weu-01</text>
+    <text x="500" y="772" font-size="8.5" text-anchor="middle" fill="#777">SAP credentials, read at runtime</text>
   </g>
 
-  <rect x="1225" y="380" width="390" height="70" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-dasharray="4,3"/>
-  <text x="1420" y="410" font-size="11" text-anchor="middle" fill="#888">sub-picot-&lt;code&gt;-dev — empty</text>
-
-  <rect x="1225" y="460" width="390" height="70" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-dasharray="4,3"/>
-  <text x="1420" y="490" font-size="11" text-anchor="middle" fill="#888">sub-picot-&lt;code&gt;-staging — empty</text>
-
-  <rect x="1225" y="540" width="390" height="120" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-dasharray="4,3"/>
-  <text x="1420" y="575" font-size="12" text-anchor="middle" fill="#7b1fa2">sub-picot-&lt;code&gt;-prod</text>
-  <text x="1420" y="595" font-size="11" text-anchor="middle" fill="#777">rg-picot-&lt;code&gt;-data-weu</text>
-  <text x="1420" y="615" font-size="10.5" text-anchor="middle" fill="#777">VM + NSG + Key Vault</text>
-  <text x="1420" y="635" font-size="10.5" text-anchor="middle" fill="#777">RBAC → stpicotdata (shared)</text>
+  <!-- ============================= FUTURE ENTITY LANDING ZONE ============================= -->
+  <rect x="680" y="326" width="290" height="474" rx="8" fill="#fafafa" stroke="#b0b6bd" stroke-width="1.5" stroke-dasharray="6,4"/>
 
   <g class="dp-node" data-href="onboarding-a-new-entity.md">
-    <title>The four-step procedure to onboard a new entity. See "Onboarding a new entity".</title>
-    <text x="1420" y="700" font-size="11" text-anchor="middle" fill="#888">1. Create mg-picot-lz-&lt;code&gt; + 3 subscriptions</text>
-    <text x="1420" y="722" font-size="11" text-anchor="middle" fill="#888">2. New .tfvars file, same Terraform module</text>
-    <text x="1420" y="744" font-size="11" text-anchor="middle" fill="#888">3. New ADLS prefix (bronze/company_&lt;x&gt;/...)</text>
-    <text x="1420" y="766" font-size="11" text-anchor="middle" fill="#888">4. Budgets + Entity=&lt;code&gt; tags inherited from modules</text>
+    <title>The same template, duplicated for any future entity. Nothing here is invented per entity — only a new .tfvars file. See "Onboarding a new entity".</title>
+    <rect x="694" y="336" width="262" height="42" rx="5" fill="#f0f0f0"/>
+    <text x="825" y="354" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#666">Same template, to duplicate</text>
+    <text x="825" y="370" font-size="9.5" text-anchor="middle" fill="#888">for any future entity (e.g. bg)</text>
   </g>
 
-  <!-- RBAC arrow dti prod -> shared prod -->
-  <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#d97706"/>
-    </marker>
-  </defs>
-  <line x1="630" y1="600" x2="480" y2="600" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow)"/>
-  <text x="555" y="588" font-size="9.5" text-anchor="middle" fill="#d97706">read/write (RBAC)</text>
+  <rect x="694" y="392" width="262" height="38" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-dasharray="4,3"/>
+  <text x="825" y="416" font-size="10" text-anchor="middle" fill="#888">sub-picot-&lt;code&gt;-dev — empty</text>
+
+  <rect x="694" y="438" width="262" height="38" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-dasharray="4,3"/>
+  <text x="825" y="462" font-size="10" text-anchor="middle" fill="#888">sub-picot-&lt;code&gt;-staging — empty</text>
+
+  <rect x="694" y="484" width="262" height="116" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-dasharray="4,3"/>
+  <text x="825" y="508" font-size="11" font-weight="bold" text-anchor="middle" fill="#7b1fa2">sub-picot-&lt;code&gt;-prod</text>
+  <text x="825" y="529" font-size="10" text-anchor="middle" fill="#777">rg-picot-&lt;code&gt;-data-weu</text>
+  <text x="825" y="549" font-size="10" text-anchor="middle" fill="#777">VM + NSG + Key Vault</text>
+  <text x="825" y="569" font-size="10" text-anchor="middle" fill="#777">RBAC → stpicotdata (shared)</text>
+  <text x="825" y="589" font-size="9.5" font-style="italic" text-anchor="middle" fill="#999">no storage account of its own</text>
+
+  <g class="dp-node" data-href="onboarding-a-new-entity.md">
+    <title>The onboarding procedure, step by step. See "Onboarding a new entity".</title>
+    <rect x="694" y="616" width="262" height="164" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+    <text x="825" y="640" font-size="11" font-weight="bold" text-anchor="middle" fill="#555">Onboarding checklist</text>
+    <text x="706" y="666" font-size="9.5" fill="#777">1. mg-picot-lz-&lt;code&gt; + 3 subscriptions</text>
+    <text x="706" y="692" font-size="9.5" fill="#777">2. New .tfvars, same Terraform module</text>
+    <text x="706" y="718" font-size="9.5" fill="#777">3. New ADLS prefix (bronze/company_&lt;entity&gt;/…)</text>
+    <text x="706" y="744" font-size="9.5" fill="#777">4. Budgets + tags inherited from the modules</text>
+    <text x="825" y="768" font-size="9" font-style="italic" text-anchor="middle" fill="#999">no new policy assignment, no new storage account</text>
+  </g>
+
+  <!-- Cross-subscription RBAC -->
+  <path d="M500,800 V828 H175 V802" fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#az-rbac)"/>
+  <text x="337" y="846" font-size="10" text-anchor="middle" fill="#d97706">the Dirickx VM reads and writes stpicotdata across subscriptions (RBAC)</text>
 
   <!-- Legend -->
-  <rect x="60" y="925" width="1580" height="110" rx="6" fill="#fafafa" stroke="#ddd"/>
-  <rect x="80" y="945" width="18" height="18" fill="#f3f4f6" stroke="#9ca3af"/>
-  <text x="105" y="959" font-size="12" fill="#333">dev/staging subscription — created but empty at Level 1 (budget tripwire, RBAC/Terraform ready)</text>
-  <rect x="80" y="972" width="18" height="18" fill="#f3e5f5" stroke="#7b1fa2"/>
-  <text x="105" y="986" font-size="12" fill="#333">prod subscription — the only one hosting active resources at Level 1</text>
-  <line x1="80" y1="1004" x2="120" y2="1004" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow)"/>
-  <text x="130" y="1009" font-size="12" fill="#333">Cross-subscription RBAC access (Storage Blob Data Contributor)</text>
-  <text x="750" y="959" font-size="12" fill="#333">mg-picot-platform / mg-picot-decommissioned: out of data scope, managed by group IT</text>
-  <text x="750" y="986" font-size="12" fill="#333">A single storage account (stpicotdata) for the whole group — lives only in sub-picot-shared-prod</text>
-  <text x="750" y="1013" font-size="12" fill="#333">Correspondence: data entity 'D' = infra scope 'dti' (see naming conventions)</text>
+  <rect x="30" y="870" width="940" height="96" rx="6" fill="#fafafa" stroke="#e5e7eb"/>
+
+  <rect x="48" y="884" width="15" height="15" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="72" y="896" font-size="10.5" fill="#333">dev / staging subscription — created but empty at Level 1 (budget tripwire, RBAC and Terraform ready)</text>
+  <rect x="48" y="910" width="15" height="15" fill="#f3e5f5" stroke="#7b1fa2"/>
+  <text x="72" y="922" font-size="10.5" fill="#333">prod subscription — the only one hosting active resources at Level 1</text>
+  <line x1="48" y1="946" x2="82" y2="946" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#az-rbac)"/>
+  <text x="92" y="950" font-size="10.5" fill="#333">cross-subscription RBAC (Storage Blob Data Contributor)</text>
+
+  <text x="600" y="896" font-size="10.5" fill="#333">mg-picot-platform and -decommissioned: out of data scope, group IT</text>
+  <text x="600" y="922" font-size="10.5" fill="#333">One storage account (stpicotdata) for the whole group</text>
+  <text x="600" y="950" font-size="10.5" fill="#333">Data entity 'D' = Azure infra scope 'dti' — see naming conventions</text>
 </svg>
