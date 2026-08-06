@@ -41,3 +41,9 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # The default timeout is 10 minutes, and publishing this site has been
+          # taking slightly longer than that. The action then gives up while the
+          # deployment is still in progress and reports a failure with no error
+          # message, even though the site does go live moments later.
+          timeout: 1800000
