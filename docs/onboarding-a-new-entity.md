@@ -37,22 +37,41 @@ The Terraform code is not written per entity — it lives once in
 `terraform-azure-data-platform`, versioned by Git tags
 (see [ADR 0011](https://github.com/picot-data/data-platform-standards/blob/main/adr/0011-shared-terraform-module-and-entity-template.md)),
 as two modules: `modules/entity` (resource group, VM, NSG, Key Vault) and
-`modules/governance` (mandatory tags, budgets, action groups — see
+`modules/governance` (budgets, action groups — see
 [Azure landing zones — Everything in Terraform](azure-landing-zones.md#everything-in-terraform)).
+Mandatory tags are **not** part of either module — they stay a
+`local.common_tags` block declared once in the entity's own root module and
+merged into every resource, exactly as
+[Azure landing zones](azure-landing-zones.md#tagging-strategy) specifies;
+folding them into `modules/governance` would make it depend on the resource
+group `modules/entity` creates while `modules/entity` depends on its tags —
+a dependency cycle.
 The new entity's `infra/terraform/` (from the template repo, step 5) is a
 thin root module that calls both, pinned to the same `ref`:
 
 ```hcl
+locals {
+  common_tags = {
+    Entity      = var.entity
+    Environment = var.environment
+    # ... Workload, Level, CostCenter, Owner, ManagedBy — see naming-conventions.md
+  }
+}
+
 module "platform" {
-  source = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v1.2.0"
+  source  = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v1.2.0"
   entity  = "<code>"
   region  = "westeurope"
   vm_size = "Standard_D4s_v5"
+  tags    = local.common_tags
 }
 
 module "governance" {
-  source = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v1.2.0"
-  entity = "<code>"
+  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v1.2.0"
+  entity              = "<code>"
+  resource_group_id   = module.platform.resource_group_id
+  budget_amount       = var.budget_amount # from finance, never invented
+  tags                = local.common_tags
 }
 ```
 
@@ -122,11 +141,13 @@ tables as every other entity, distinguished by its `entity` column value
 
 ## 7. Budgets and tags — inherited, not recreated
 
-Because `modules/governance` is shared Terraform code in
-`terraform-azure-data-platform`, the new entity's budgets and mandatory tags
+The new entity's budgets and action groups come from `modules/governance`,
+shared Terraform code in `terraform-azure-data-platform`; its mandatory tags
 (`Entity=<code>`, `Environment`, `Workload`, `Level`, `CostCenter`, `Owner`,
-`ManagedBy`) are created by the same `terraform apply` in step 2 — not
-configured by hand afterward.
+`ManagedBy`) come from the `local.common_tags` block in its own root
+module — the same pattern used for `dti`, not a new one invented per entity.
+Both are created by the same `terraform apply` in step 2, not configured by
+hand afterward.
 
 ## What is not part of this procedure
 

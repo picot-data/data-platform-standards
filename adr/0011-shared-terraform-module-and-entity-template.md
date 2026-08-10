@@ -49,7 +49,13 @@ three share the same review/PR/branch-protection surface):
 
 - **`terraform-azure-data-platform`** — the actual infrastructure code, as
   two modules: `modules/entity` (resource group, VM, NSG, Key Vault) and
-  `modules/governance` (mandatory tags, budgets, action groups). Each
+  `modules/governance` (budgets, action groups, scoped to the resource group
+  `modules/entity` creates). Mandatory tags stay a `local.common_tags` block
+  in the entity's own root module, as
+  [Azure landing zones](../docs/azure-landing-zones.md#tagging-strategy)
+  already specifies — folding tags into `modules/governance` too would make
+  it depend on `modules/entity`'s resource group while `modules/entity`
+  depends on `modules/governance`'s tags, a dependency cycle. Each
   entity's `infra/terraform/` calls both by a pinned tag, plus its own
   `<code>.tfvars` and Terraform backend/state configuration. Bumping the
   `ref` is an explicit, per-entity commit followed by `terraform plan` before

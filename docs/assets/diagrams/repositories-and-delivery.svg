@@ -56,7 +56,7 @@
   <text x="305" y="383" font-size="10.5" font-style="italic" text-anchor="middle" fill="#888">each entity repo references, never copies:</text>
 
   <g class="dp-node" data-href="repositories-and-delivery.md#three-shared-repos-deduplicated-once-not-per-entity">
-    <title>Two Terraform modules — entity (resource group, VM, NSG, Key Vault) and governance (tags, budgets) — consumed by infra/terraform/ as a root module pinned to a tagged ref. See ADR 0011.</title>
+    <title>Two Terraform modules — entity (resource group, VM, NSG, Key Vault) and governance (budgets, action groups) — consumed by infra/terraform/ as a root module pinned to a tagged ref. Mandatory tags stay a local.common_tags block in the entity's own root module. See ADR 0011.</title>
     <rect x="45" y="393" width="160" height="52" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
     <text x="125" y="415" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">terraform-azure-</text>
     <text x="125" y="428" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">data-platform</text>

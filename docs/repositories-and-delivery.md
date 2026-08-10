@@ -41,7 +41,7 @@ carry what would otherwise be duplicated into every entity mono-repo (see
 
 | Repo | Carries | Consumed by an entity repo as |
 |---|---|---|
-| `terraform-azure-data-platform` | The actual Terraform code, as two modules: `modules/entity` (resource group, VM, NSG, Key Vault) and `modules/governance` (tags, budgets) | `infra/terraform/` — a thin root module calling both, pinned to a tagged `ref` |
+| `terraform-azure-data-platform` | The actual Terraform code, as two modules: `modules/entity` (resource group, VM, NSG, Key Vault) and `modules/governance` (budgets, action groups) — mandatory tags stay a `local.common_tags` block in the entity's own root module | `infra/terraform/` — a thin root module calling both, pinned to a tagged `ref` |
 | `data-platform-entity-template` | The mono-repo skeleton below, as a GitHub template repository | "Use this template", once, when the entity repo is created |
 | `data-platform-workflows` | The reusable CI workflow | `ci.yml` — a few lines calling it with `uses:` |
 
