@@ -6,8 +6,21 @@ delivery conventions (git, CI/CD). This is the single source of truth shared
 across all entity repositories (`poc-data-platform-dti`, and future
 per-entity production repos).
 
+**Published site: <https://picot-data.github.io/data-platform-standards/>**
+
 Architecture decisions and their reasoning live separately in [`adr/`](adr/),
 kept apart from the reference docs so the rules stay short and unambiguous.
+
+## Read it in your language
+
+English is the single source of truth. French and Dutch are machine
+translations, regenerated from it on every deploy — never hand-written or
+committed — so they cannot drift out of sync (see
+`scripts/translate_docs.py`). Diagrams stay in English on all three.
+
+- 🇬🇧 [English](https://picot-data.github.io/data-platform-standards/)
+- 🇫🇷 [Français](https://picot-data.github.io/data-platform-standards/fr/)
+- 🇳🇱 [Nederlands](https://picot-data.github.io/data-platform-standards/nl/)
 
 ## Reading the docs
 

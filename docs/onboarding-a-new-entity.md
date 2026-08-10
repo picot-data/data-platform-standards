@@ -33,17 +33,41 @@ policy assignment is needed per entity.
 
 ## 2. Infrastructure — new `.tfvars`, same Terraform module
 
-Add a new variables file (e.g. `<code>.tfvars`) with the entity's `scope`,
-`region`, and `vm_size`, and run the existing Terraform module against the
-new `prod` subscription:
+The Terraform code is not written per entity — it lives once in
+`terraform-azure-data-platform`, versioned by Git tags
+(see [ADR 0011](https://github.com/picot-data/data-platform-standards/blob/main/adr/0011-shared-terraform-module-and-entity-template.md)),
+as two modules: `modules/entity` (resource group, VM, NSG, Key Vault) and
+`modules/governance` (mandatory tags, budgets, action groups — see
+[Azure landing zones — Everything in Terraform](azure-landing-zones.md#everything-in-terraform)).
+The new entity's `infra/terraform/` (from the template repo, step 5) is a
+thin root module that calls both, pinned to the same `ref`:
+
+```hcl
+module "platform" {
+  source = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v1.2.0"
+  entity  = "<code>"
+  region  = "westeurope"
+  vm_size = "Standard_D4s_v5"
+}
+
+module "governance" {
+  source = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v1.2.0"
+  entity = "<code>"
+}
+```
+
+Add a new `<code>.tfvars` with the entity's values, then run:
 
 ```
+terraform init
 terraform apply -var-file=<code>.tfvars
 ```
 
 No new Terraform code is written for a new entity — only a new `.tfvars`
-file. The module already provisions the resource group, VM, NSG, Key Vault,
-mandatory tags, and budgets from the same code path used for `dti`.
+file and a `ref` pin. That `ref` is pinned deliberately, not tracking
+`main`: a fix landing in the shared module does not change an already-live
+entity's infrastructure until that entity's root module is bumped to the
+new tag and `terraform plan` has been reviewed.
 
 ## 3. Storage — new ADLS prefix, same storage account
 
@@ -73,10 +97,21 @@ installation step verifies before moving to the next.
 
 ## 5. Data platform code — new entity mono-repo
 
-Create a new entity repository (`data-platform-<code>`) following the
+Create the new entity repository (`data-platform-<code>`) from the
+`data-platform-entity-template` GitHub template repository ("Use this
+template"), rather than creating one freehand — this is what makes the
 structure in
-[Repositories and delivery](repositories-and-delivery.md#entity-mono-repo-structure).
-It links to this standards site rather than copying any of its content.
+[Repositories and delivery](repositories-and-delivery.md#entity-mono-repo-structure)
+actually identical across entities instead of merely documented as such.
+The template's `<entity>` placeholders (folder names, `pyproject.toml`,
+`ci.yml`'s call into `data-platform-workflows`) are filled in with `<code>`;
+`infra/terraform/` is completed with the `ref` and `.tfvars` from step 2. It
+links to this standards site rather than copying any of its content.
+
+Because the template is copied once and not kept in sync afterward, a
+structural change made to `data-platform-entity-template` later has to be
+back-ported by hand to entities already onboarded — accepted at today's
+scale (see ADR 0011).
 
 ## 6. Data model — `entity` value, not a new table
 
@@ -87,10 +122,11 @@ tables as every other entity, distinguished by its `entity` column value
 
 ## 7. Budgets and tags — inherited, not recreated
 
-Because the governance module is shared Terraform code, the new entity's
-budgets and mandatory tags (`Entity=<code>`, `Environment`, `Workload`,
-`Level`, `CostCenter`, `Owner`, `ManagedBy`) are created by the same
-`terraform apply` in step 2 — not configured by hand afterward.
+Because `modules/governance` is shared Terraform code in
+`terraform-azure-data-platform`, the new entity's budgets and mandatory tags
+(`Entity=<code>`, `Environment`, `Workload`, `Level`, `CostCenter`, `Owner`,
+`ManagedBy`) are created by the same `terraform apply` in step 2 — not
+configured by hand afterward.
 
 ## What is not part of this procedure
 
@@ -100,3 +136,6 @@ budgets and mandatory tags (`Entity=<code>`, `Environment`, `Workload`,
   `mg-picot-landingzones` scope, and applies automatically.
 - **A copy of this standards repository.** Link to it; never fork or copy
   its content into the entity repository.
+- **A copy of the Terraform module or the CI workflow.** Reference
+  `terraform-azure-data-platform` and `data-platform-workflows` by a pinned
+  `ref`; never paste their contents into the entity repository.

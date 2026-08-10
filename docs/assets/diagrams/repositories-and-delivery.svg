@@ -1,6 +1,6 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Left: one standards repository that every entity mono-repo links to. Right: the minimal CI pipeline every entity repository runs on each push and pull request.">
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 630" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Left: one standards repository that every entity mono-repo links to, plus three shared repos (Terraform module, CI workflow, entity template) referenced by each entity repo. Right: the minimal CI pipeline every entity repository runs on each push and pull request.">
 
-  <rect width="960" height="560" fill="#ffffff"/>
+  <rect width="960" height="630" fill="#ffffff"/>
 
   <defs>
     <marker id="rp-arrow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="userSpaceOnUse">
@@ -15,7 +15,7 @@
   <text x="480" y="54" font-size="11.5" text-anchor="middle" fill="#666">Left: repository topology. Right: the minimal CI pipeline every entity repository runs.</text>
 
   <!-- LEFT PANEL: repository topology -->
-  <rect x="30" y="100" width="570" height="430" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+  <rect x="30" y="100" width="570" height="500" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
   <text x="315" y="124" font-size="13" font-weight="bold" text-anchor="middle" fill="#555">Repository topology</text>
 
   <g class="dp-node" data-href="index.md">
@@ -53,17 +53,43 @@
     <text x="485" y="346" font-size="9.5" text-anchor="middle" fill="#777">(future) entity bg — B&amp;G, etc.</text>
   </g>
 
+  <text x="305" y="383" font-size="10.5" font-style="italic" text-anchor="middle" fill="#888">each entity repo references, never copies:</text>
+
+  <g class="dp-node" data-href="repositories-and-delivery.md#three-shared-repos-deduplicated-once-not-per-entity">
+    <title>Two Terraform modules — entity (resource group, VM, NSG, Key Vault) and governance (tags, budgets) — consumed by infra/terraform/ as a root module pinned to a tagged ref. See ADR 0011.</title>
+    <rect x="45" y="393" width="160" height="52" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="125" y="415" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">terraform-azure-</text>
+    <text x="125" y="428" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">data-platform</text>
+    <text x="125" y="440" font-size="9" text-anchor="middle" fill="#6d28d9">module, pinned by ref</text>
+  </g>
+
+  <g class="dp-node" data-href="repositories-and-delivery.md#three-shared-repos-deduplicated-once-not-per-entity">
+    <title>The reusable CI workflow (lint, dbt parse, dbt build --target dev), called by each entity's ci.yml via workflow_call. See ADR 0011.</title>
+    <rect x="225" y="393" width="160" height="52" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="305" y="415" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">data-platform-</text>
+    <text x="305" y="428" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">workflows</text>
+    <text x="305" y="440" font-size="9" text-anchor="middle" fill="#6d28d9">reusable CI, called via uses:</text>
+  </g>
+
+  <g class="dp-node" data-href="repositories-and-delivery.md#three-shared-repos-deduplicated-once-not-per-entity">
+    <title>The mono-repo skeleton as a GitHub template repository — used once via "Use this template", not kept in sync afterward. See ADR 0011.</title>
+    <rect x="405" y="393" width="160" height="52" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="485" y="415" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">data-platform-</text>
+    <text x="485" y="428" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">entity-template</text>
+    <text x="485" y="440" font-size="9" text-anchor="middle" fill="#6d28d9">GitHub template, copied once</text>
+  </g>
+
   <g class="dp-node" data-href="repositories-and-delivery.md#why-one-repo-per-entity-not-one-mega-mono-repo-for-the-whole-group">
     <title>Ingestion, dbt, orchestration and Terraform live together, per entity. Splitting by component only pays off with independent per-component release cadences. See "Why one repo per entity".</title>
-    <rect x="45" y="400" width="520" height="115" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="1.5" stroke-dasharray="4,3"/>
-    <text x="305" y="424" font-size="12" font-weight="bold" text-anchor="middle" fill="#0d47a1">Inside each entity repo: one mono-repo</text>
-    <text x="305" y="447" font-size="10.5" text-anchor="middle" fill="#555">ingestion/ · transformation/ (dbt) · orchestration/ (Dagster) · infra/ (Terraform)</text>
-    <text x="305" y="467" font-size="10.5" text-anchor="middle" fill="#555">A schema change in ingestion and its dbt impact are one commit, not synchronized PRs</text>
-    <text x="305" y="494" font-size="9.5" font-style="italic" text-anchor="middle" fill="#888">Split by entity (own subscription, own access), not split by component</text>
+    <rect x="45" y="463" width="520" height="115" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="305" y="487" font-size="12" font-weight="bold" text-anchor="middle" fill="#0d47a1">Inside each entity repo: one mono-repo</text>
+    <text x="305" y="510" font-size="10.5" text-anchor="middle" fill="#555">ingestion/ · transformation/ (dbt) · orchestration/ (Dagster) · infra/ (Terraform)</text>
+    <text x="305" y="530" font-size="10.5" text-anchor="middle" fill="#555">A schema change in ingestion and its dbt impact are one commit, not synchronized PRs</text>
+    <text x="305" y="557" font-size="9.5" font-style="italic" text-anchor="middle" fill="#888">Split by entity (own subscription, own access), not split by component</text>
   </g>
 
   <!-- RIGHT PANEL: CI pipeline -->
-  <rect x="620" y="100" width="310" height="430" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+  <rect x="620" y="100" width="310" height="500" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
   <text x="775" y="124" font-size="13" font-weight="bold" text-anchor="middle" fill="#555">Minimal CI (ci.yml)</text>
 
   <g class="dp-node" data-href="repositories-and-delivery.md#branching">

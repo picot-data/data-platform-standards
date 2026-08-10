@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 720" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Entity mono-repo folder structure: ingestion, transformation (dbt), orchestration (Dagster), infra (Terraform), docs, and root config files.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 740" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Entity mono-repo folder structure: ingestion, transformation (dbt), orchestration (Dagster), infra (Terraform), docs, and root config files.">
 
-  <rect width="760" height="720" fill="#ffffff"/>
+  <rect width="760" height="740" fill="#ffffff"/>
 
   <text x="380" y="28" font-size="19" font-weight="bold" text-anchor="middle" fill="#003f5c">Entity Mono-Repo Structure</text>
   <text x="380" y="48" font-size="11.5" text-anchor="middle" fill="#666">One dbt project, one Dagster project, one Terraform module — per entity. Hover a top-level folder for detail, click to jump to the section that explains it.</text>
@@ -41,10 +41,14 @@
     <text x="24" y="442">│   └── dagster_project/</text>
 
     <g class="dp-node" data-href="azure-landing-zones.md#everything-in-terraform">
-      <title>The Terraform module and the VM bootstrap script. See "Everything in Terraform".</title>
+      <title>A thin root module and the VM bootstrap script — the module code itself lives in terraform-azure-data-platform. See "Everything in Terraform".</title>
       <text x="24" y="464">├── infra/</text>
     </g>
-    <text x="24" y="486">│   ├── terraform/</text>
+    <g class="dp-node" data-href="repositories-and-delivery.md#three-shared-repos-deduplicated-once-not-per-entity">
+      <title>Root module only — backend config, provider alias, a pinned call into terraform-azure-data-platform's entity and governance modules, and this entity's .tfvars. See ADR 0011.</title>
+      <text x="24" y="486">│   ├── terraform/</text>
+    </g>
+    <text x="320" y="486" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-style="italic" fill="#888">← root module → terraform-azure-data-platform (ref)</text>
     <text x="24" y="508">│   └── scripts/</text>
     <text x="24" y="530">│       └── bootstrap_vm.sh</text>
 
@@ -63,8 +67,9 @@
   </g>
 
   <!-- Legend -->
-  <rect x="10" y="632" width="740" height="72" rx="6" fill="#fafafa" stroke="#e5e7eb"/>
+  <rect x="10" y="632" width="740" height="90" rx="6" fill="#fafafa" stroke="#e5e7eb"/>
   <text x="26" y="652" font-size="12" font-weight="bold" fill="#333">Reading this diagram</text>
   <text x="26" y="674" font-size="11" fill="#333">Ingestion, dbt, Dagster and Terraform live together per entity — a schema change and its dbt impact are one commit, not synchronized PRs.</text>
   <text x="26" y="694" font-size="11" fill="#333">Governance content (naming, tagging, landing zones) is never copied here — it's linked from this repo's README.md instead.</text>
+  <text x="26" y="714" font-size="11" fill="#333">This whole tree itself comes from the data-platform-entity-template GitHub template, not written by hand per entity — see ADR 0011.</text>
 </svg>

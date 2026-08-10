@@ -17,6 +17,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0008](https://github.com/picot-data/data-platform-standards/blob/main/adr/0008-metabase-not-power-bi.md) | Metabase, not Power BI, as the BI tool | Accepted |
 | [0009](https://github.com/picot-data/data-platform-standards/blob/main/adr/0009-plain-parquet-not-iceberg.md) | Plain Parquet at Level 1, not Iceberg or Delta | Accepted |
 | [0010](https://github.com/picot-data/data-platform-standards/blob/main/adr/0010-adf-not-python-scripts-for-sap.md) | Azure Data Factory for SAP ingestion, not Python scripts | Accepted |
+| [0011](https://github.com/picot-data/data-platform-standards/blob/main/adr/0011-shared-terraform-module-and-entity-template.md) | A shared Terraform module and a template repo, not a copied entity repo | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues

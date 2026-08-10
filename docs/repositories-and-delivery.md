@@ -32,6 +32,26 @@ each entity has its own Azure subscription, its own access boundary, and
 potentially its own contributors — a shared repository would force shared
 write access across entities that don't need it.
 
+## Three shared repos, deduplicated once, not per entity
+
+"Same module, same skeleton, same CI" across entities only holds if that
+sameness is backed by something other than copy-paste. Three small repos
+carry what would otherwise be duplicated into every entity mono-repo (see
+[ADR 0011](https://github.com/picot-data/data-platform-standards/blob/main/adr/0011-shared-terraform-module-and-entity-template.md)):
+
+| Repo | Carries | Consumed by an entity repo as |
+|---|---|---|
+| `terraform-azure-data-platform` | The actual Terraform code, as two modules: `modules/entity` (resource group, VM, NSG, Key Vault) and `modules/governance` (tags, budgets) | `infra/terraform/` — a thin root module calling both, pinned to a tagged `ref` |
+| `data-platform-entity-template` | The mono-repo skeleton below, as a GitHub template repository | "Use this template", once, when the entity repo is created |
+| `data-platform-workflows` | The reusable CI workflow | `ci.yml` — a few lines calling it with `uses:` |
+
+The distinction that matters: the Terraform module and the CI workflow stay
+**live references** — bumping a `ref` pulls in a fix without touching the
+entity repo's own code. The template is **copied once** — a structural
+change made to it later has to be back-ported by hand to entities already
+onboarded, which is an accepted trade-off at two to three entities (see
+ADR 0011's consequences for when to revisit it).
+
 ## Entity mono-repo structure
 
 <div class="dp-diagram-wrap" markdown="0">
@@ -41,6 +61,10 @@ write access across entities that don't need it.
 Governance documentation (naming, tagging, landing zones, data layers,
 semantic layer) is **not** duplicated here — it lives in
 [data-platform-standards](index.md) and is linked from this repo's `README.md`.
+Within `infra/terraform/`, only a root module (backend config, provider
+alias, a call into `terraform-azure-data-platform` pinned to a `ref`, and
+the entity's `<code>.tfvars`) lives in the entity repo — the module code
+itself does not, per the table above.
 
 ## Branching
 
@@ -76,7 +100,10 @@ Pattern: `<type>(<scope>): <description>`, following
 ## Minimal CI/CD
 
 Every entity repository runs, at minimum, a `ci.yml` workflow on every push
-and pull request:
+and pull request. The steps below are implemented once, in
+`data-platform-workflows`, as a reusable `workflow_call` workflow — an
+entity's own `ci.yml` is a few lines calling it with `uses:`, not a
+copy of the steps:
 
 1. **Lint** the code (Python, SQL/dbt style).
 2. **`dbt parse`** — catches syntax and reference errors without touching any
