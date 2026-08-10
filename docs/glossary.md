@@ -14,12 +14,12 @@ DataHub business glossary once governance is wired up.
   for why the unit/precision is always explicit in a column name.
 
 **Entity**
-: A group company (Dirickx, and future entities). Represented in data by the
-  `entity` column (`'D'`, `'B'`, ...) on every fact and dimension table — see
+: A group company (Dirickx, B&G, and future entities). Represented in data
+  by the `entity` column (`'dti'` = Dirickx, `'bg'` = B&G, ...) on every fact
+  and dimension table — see
   [Data layers — multi-entity tables](data-layers.md#multi-entity-tables).
-  Not to be confused with the Azure infrastructure `scope` code (`dti`,
-  `bg`), which is a different value for the same concept — see the
-  correspondence table in
+  The same code is also used for the Azure infrastructure `scope` segment in
+  resource names — one code, not two — see
   [Azure landing zones](azure-landing-zones.md#resource-naming-pattern).
 
 ## Technical terms

@@ -22,43 +22,9 @@ stored, is decided in
 
 ## The dbt layers, in transformation order
 
-```mermaid
-flowchart TD
-    subgraph SILVER["SILVER — cleansed data"]
-        STG_ORDER["stg_sap__order"]
-        STG_CUST["stg_sap__customer"]
-        STG_PROD["stg_sap__product"]
-    end
-
-    subgraph INTERMEDIATE["INTERMEDIATE — joins, enrichments"]
-        INT_ORDER["int_order_enriched<br/>(order + customer + product)"]
-    end
-
-    subgraph GOLD_DIM["GOLD — DIMENSIONS"]
-        DIM_CUST["dim_customer"]
-        DIM_PROD["dim_product"]
-        DIM_DATE["dim_date"]
-    end
-
-    subgraph GOLD_FACT["GOLD — FACTS"]
-        FCT_ORDER["fct_order"]
-    end
-
-    subgraph MARTS["GOLD — ANALYTICAL MARTS"]
-        MART_REV["mart_finance__monthly_revenue"]
-    end
-
-    STG_ORDER --> INT_ORDER
-    STG_CUST --> INT_ORDER
-    STG_PROD --> INT_ORDER
-    INT_ORDER --> FCT_ORDER
-    STG_CUST --> DIM_CUST
-    STG_PROD --> DIM_PROD
-    DIM_CUST --> FCT_ORDER
-    DIM_PROD --> FCT_ORDER
-    DIM_DATE --> FCT_ORDER
-    FCT_ORDER --> MART_REV
-```
+<div class="dp-diagram-wrap" markdown="0">
+--8<-- "docs/assets/diagrams/dbt-transformation-order.svg"
+</div>
 
 | Layer | What it does | What it must never do |
 |---|---|---|
@@ -90,14 +56,15 @@ marts are commodities** built on top of them, never the other way around.
 
 ## Multi-entity tables
 
-Every fact and dimension table carries an `entity` column (`'D'`, `'B'`,
-etc.) rather than one table per entity. When a new entity's data lands in
-`fct_order`, it arrives as additional rows with a new `entity` value in the
-same table — a group-level dashboard filters on
-`entity IN ('D', 'B')`, an entity-level dashboard filters on `entity = 'D'`.
+Every fact and dimension table carries an `entity` column (`'dti'` = Dirickx,
+`'bg'` = B&G, etc.) rather than one table per entity. When a new entity's
+data lands in `fct_order`, it arrives as additional rows with a new `entity`
+value in the same table — a group-level dashboard filters on
+`entity IN ('dti', 'bg')` (Dirickx and B&G), an entity-level dashboard
+filters on `entity = 'dti'` (Dirickx).
 Same table, same structure, no duplication. See
 [Naming conventions](naming-conventions.md#technical-metadata-columns) for the
 column definition, and
 [Azure landing zones](azure-landing-zones.md#resource-naming-pattern) for how
-this `entity` code maps to the separate infrastructure `scope` code used in
-Azure resource names.
+this same code is used for the Azure infra `scope` segment in resource
+names.

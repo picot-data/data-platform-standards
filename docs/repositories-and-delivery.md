@@ -34,33 +34,9 @@ write access across entities that don't need it.
 
 ## Entity mono-repo structure
 
-```text
-data-platform-<entity>/
-├── ingestion/
-│   ├── sap/
-│   └── common/
-├── transformation/          ← the dbt project
-│   ├── models/
-│   │   ├── staging/
-│   │   ├── intermediate/
-│   │   ├── dimensions/
-│   │   ├── facts/
-│   │   └── marts/
-│   ├── seeds/
-│   ├── macros/
-│   ├── tests/
-│   └── metrics/             ← MetricFlow definitions
-├── orchestration/
-│   └── dagster_project/
-├── infra/
-│   ├── terraform/
-│   └── scripts/
-│       └── bootstrap_vm.sh
-├── docs/
-│   └── runbook.md           ← operational procedures specific to this entity
-├── pyproject.toml
-└── uv.lock
-```
+<div class="dp-diagram-wrap" markdown="0">
+--8<-- "docs/assets/diagrams/entity-mono-repo-structure.svg"
+</div>
 
 Governance documentation (naming, tagging, landing zones, data layers,
 semantic layer) is **not** duplicated here — it lives in
@@ -82,8 +58,20 @@ branch — `main` always reflects what is (or is about to be) live.
 ## Commits
 
 Pattern: `<type>(<scope>): <description>`, following
-[Conventional Commits](https://www.conventionalcommits.org/). Types: `feat`,
-`fix`, `docs`, `refactor`, `test`, `chore`, `ci`.
+[Conventional Commits](https://www.conventionalcommits.org/).
+
+- **Type**: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`,
+  `test`, `build`, `ci`
+- **Subject**: imperative present tense, no trailing period, lowercase
+  after the colon, 72 characters max
+- **Scope**: optional — the module or folder touched (e.g. `ingestion`,
+  `dbt`, `ci`)
+- **Body**: for a diff bigger than ~20 lines or more than one concern —
+  explains *why*, not *what*
+- **Footer**: `BREAKING CHANGE:` when relevant, `Refs #123` when an issue
+  is mentioned
+- **Language**: match whatever the repository's existing commits use —
+  English by default
 
 ## Minimal CI/CD
 

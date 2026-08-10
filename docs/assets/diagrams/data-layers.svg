@@ -11,16 +11,16 @@
   <!-- Medallion row -->
   <g class="dp-node" data-href="platform-overview.md#extraction-sap-to-cloud">
     <title>Bronze: raw and immutable. Not a dbt model at all — written by the ingestion pipeline, read-only for dbt.</title>
-    <rect x="102" y="110" width="128" height="70" rx="6" fill="#fde68a" stroke="#b45309" stroke-width="1.5"/>
-    <text x="166" y="142" font-size="14" font-weight="bold" text-anchor="middle" fill="#78350f">Bronze</text>
-    <text x="166" y="162" font-size="10.5" text-anchor="middle" fill="#92400e">raw, immutable</text>
+    <rect x="102" y="110" width="128" height="70" rx="6" fill="#f2ddc4" stroke="#a5691f" stroke-width="1.5"/>
+    <text x="166" y="142" font-size="14" font-weight="bold" text-anchor="middle" fill="#5c3813">Bronze</text>
+    <text x="166" y="162" font-size="10.5" text-anchor="middle" fill="#8a5722">raw, immutable</text>
   </g>
 
   <g class="dp-node" data-href="naming-conventions.md#persistence-per-layer">
     <title>Silver: cleansed data. Corresponds to stg_ models, persisted to ADLS as Parquet — see ADR 0001.</title>
-    <rect x="242" y="110" width="128" height="70" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
-    <text x="306" y="142" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e3a8a">Silver</text>
-    <text x="306" y="162" font-size="10.5" text-anchor="middle" fill="#1d4ed8">cleansed</text>
+    <rect x="242" y="110" width="128" height="70" rx="6" fill="#e6e9ed" stroke="#8a94a3" stroke-width="1.5"/>
+    <text x="306" y="142" font-size="14" font-weight="bold" text-anchor="middle" fill="#374151">Silver</text>
+    <text x="306" y="162" font-size="10.5" text-anchor="middle" fill="#55606f">cleansed</text>
   </g>
 
   <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0001-medallion-dbt-layer-persistence.md">
@@ -32,9 +32,9 @@
 
   <g class="dp-node" data-href="naming-conventions.md#persistence-per-layer">
     <title>Gold: the modeled, consumed product. Corresponds to dim_, fct_ and mart_ models, all persisted to ADLS.</title>
-    <rect x="522" y="110" width="408" height="70" rx="6" fill="#c7d2fe" stroke="#4338ca" stroke-width="1.5"/>
-    <text x="726" y="142" font-size="14" font-weight="bold" text-anchor="middle" fill="#312e81">Gold</text>
-    <text x="726" y="162" font-size="10.5" text-anchor="middle" fill="#3730a3">modeled, consumed — one medallion layer, three dbt layers</text>
+    <rect x="522" y="110" width="408" height="70" rx="6" fill="#fdf6d8" stroke="#d4af00" stroke-width="1.5"/>
+    <text x="726" y="142" font-size="14" font-weight="bold" text-anchor="middle" fill="#6b5300">Gold</text>
+    <text x="726" y="162" font-size="10.5" text-anchor="middle" fill="#8a6e00">modeled, consumed — one medallion layer, three dbt layers</text>
   </g>
 
   <!-- Column connectors -->

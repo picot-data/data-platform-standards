@@ -1,51 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 790" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Level 1 end-to-end flow: SAP is extracted by Python scripts into Bronze, refined by dbt into Silver and then into the Gold star schema, exposed through MetricFlow and Metabase, and catalogued by DataHub.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 816" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Level 1 end-to-end flow: SAP is extracted by Azure Data Factory (or, as a fallback, an existing ABAP script) into Bronze, refined by dbt into Silver and then into the Gold star schema, exposed through MetricFlow and Metabase, and catalogued by DataHub.">
 
-  <rect width="940" height="790" fill="#ffffff"/>
+  <rect width="940" height="816" fill="#ffffff"/>
 
   <defs>
     <marker id="po-arrow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="userSpaceOnUse">
       <path d="M0,1 L9,5.5 L0,10 z" fill="#5b6570"/>
     </marker>
     <marker id="po-arrow-meta" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="userSpaceOnUse">
-      <path d="M0,1 L9,5.5 L0,10 z" fill="#7c3aed"/>
+      <path d="M0,1 L9,5.5 L0,10 z" fill="#0d9488"/>
     </marker>
   </defs>
 
   <text x="470" y="34" font-size="19" font-weight="bold" text-anchor="middle" fill="#003f5c">Platform Overview — Level 1 End-to-End Flow</text>
-  <text x="470" y="56" font-size="11.5" text-anchor="middle" fill="#666">Middle column: the tools, all on one VM. Right column: what lands in ADLS. Hover a box for detail, click to jump to the section that explains it.</text>
+  <text x="470" y="56" font-size="11.5" text-anchor="middle" fill="#666">Middle column: the tools. Right column: what lands in ADLS. Hover a box for detail, click to jump to the section that explains it.</text>
 
-  <!-- Orchestration boundary: everything Dagster schedules -->
-  <rect x="235" y="148" width="230" height="384" rx="10" fill="#faf5ff" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="7,5"/>
+  <!-- Orchestration boundary: everything Dagster schedules, on the VM.
+       Deliberately starts below the extraction row: Azure Data Factory is a
+       managed service that schedules itself and is not on the VM. -->
+  <rect x="235" y="286" width="230" height="256" rx="10" fill="#faf5ff" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="7,5"/>
   <g class="dp-node" data-href="platform-overview.md#orchestration-dagster-oss">
-    <title>Dagster OSS schedules and monitors everything inside this boundary. The only Level 1 component that runs as a continuous service. See "Orchestration — Dagster OSS".</title>
-    <rect x="247" y="152" width="206" height="26" rx="5" fill="#7c3aed"/>
-    <text x="350" y="170" font-size="11.5" font-weight="bold" text-anchor="middle" fill="white">Dagster OSS — orchestration</text>
+    <title>Dagster OSS schedules and monitors everything inside this boundary, on the VM. The only VM tool that runs as a continuous service. SAP extraction is scheduled by Azure Data Factory itself, outside this boundary. See "Orchestration — Dagster OSS".</title>
+    <rect x="247" y="512" width="206" height="22" rx="4" fill="#7c3aed"/>
+    <text x="350" y="527" font-size="11" font-weight="bold" text-anchor="middle" fill="white">Dagster OSS — orchestration</text>
   </g>
 
   <!-- Row 1: extraction -->
   <g class="dp-node" data-href="platform-overview.md#extraction-sap-to-cloud">
-    <title>SAP ERP, on-premise. Two extraction patterns are in scope: an ADF self-hosted integration runtime bridge, or a flat-file export. See "Extraction — SAP to cloud".</title>
-    <rect x="40" y="196" width="180" height="70" rx="6" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5"/>
-    <text x="130" y="226" font-size="14" font-weight="bold" text-anchor="middle" fill="#78350f">SAP ERP</text>
-    <text x="130" y="246" font-size="11" text-anchor="middle" fill="#92400e">on-premise source</text>
+    <title>SAP ERP, on-premise. Extracted via Azure Data Factory (primary) or, as a fallback, the existing ABAP extraction script. See "Extraction — SAP to cloud".</title>
+    <rect x="40" y="196" width="180" height="70" rx="6" fill="#dbeeff" stroke="#0069af" stroke-width="1.5"/>
+    <text x="130" y="226" font-size="14" font-weight="bold" text-anchor="middle" fill="#00395c">SAP ERP</text>
+    <text x="130" y="246" font-size="11" text-anchor="middle" fill="#0069af">on-premise source</text>
   </g>
 
   <line x1="220" y1="231" x2="250" y2="231" stroke="#5b6570" stroke-width="2" marker-end="url(#po-arrow)"/>
 
-  <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0007-python-scripts-not-airbyte.md">
-    <title>In-house Python scripts, not Airbyte OSS — lighter and fully controlled. Invoked on demand by Dagster. See ADR 0007.</title>
+  <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0010-adf-not-python-scripts-for-sap.md">
+    <title>Azure Data Factory + self-hosted integration runtime — a managed Azure service, not on the Level 1 VM, with its own scheduling and monitoring. Fallback: reuse the existing ABAP extraction script already in production elsewhere in the group. See ADR 0010.</title>
     <rect x="250" y="196" width="200" height="70" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
-    <text x="350" y="226" font-size="14" font-weight="bold" text-anchor="middle" fill="#0d47a1">Python scripts</text>
-    <text x="350" y="246" font-size="11" text-anchor="middle" fill="#1565c0">ingestion</text>
+    <text x="350" y="222" font-size="14" font-weight="bold" text-anchor="middle" fill="#0d47a1">Azure Data Factory</text>
+    <text x="350" y="240" font-size="10.5" text-anchor="middle" fill="#1565c0">SAP ingestion — managed</text>
+    <text x="350" y="257" font-size="8.5" font-style="italic" text-anchor="middle" fill="#5b6570">alt: existing ABAP script</text>
   </g>
 
   <line x1="450" y1="231" x2="500" y2="231" stroke="#5b6570" stroke-width="2" marker-end="url(#po-arrow)"/>
 
   <g class="dp-node" data-href="naming-conventions.md#persistence-per-layer">
     <title>Bronze: raw, immutable, date-partitioned. Written by the ingestion pipeline and never by dbt. See "Persistence per layer".</title>
-    <rect x="500" y="196" width="180" height="70" rx="6" fill="#fde68a" stroke="#b45309" stroke-width="1.5"/>
-    <text x="590" y="226" font-size="14" font-weight="bold" text-anchor="middle" fill="#78350f">Bronze</text>
-    <text x="590" y="246" font-size="11" text-anchor="middle" fill="#92400e">ADLS — raw, immutable</text>
+    <rect x="500" y="196" width="180" height="70" rx="6" fill="#f2ddc4" stroke="#a5691f" stroke-width="1.5"/>
+    <text x="590" y="226" font-size="14" font-weight="bold" text-anchor="middle" fill="#5c3813">Bronze</text>
+    <text x="590" y="246" font-size="11" text-anchor="middle" fill="#8a5722">ADLS — raw, immutable</text>
   </g>
 
   <path d="M590,266 V291 H350 V316" fill="none" stroke="#5b6570" stroke-width="2" marker-end="url(#po-arrow)"/>
@@ -62,9 +65,9 @@
 
   <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0001-medallion-dbt-layer-persistence.md">
     <title>Silver: cleansed data, persisted to ADLS as Parquet so downstream rebuilds don't depend on SAP being available. See ADR 0001.</title>
-    <rect x="500" y="316" width="180" height="70" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
-    <text x="590" y="346" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e3a8a">Silver</text>
-    <text x="590" y="366" font-size="11" text-anchor="middle" fill="#1d4ed8">ADLS — cleansed</text>
+    <rect x="500" y="316" width="180" height="70" rx="6" fill="#e6e9ed" stroke="#8a94a3" stroke-width="1.5"/>
+    <text x="590" y="346" font-size="14" font-weight="bold" text-anchor="middle" fill="#374151">Silver</text>
+    <text x="590" y="366" font-size="11" text-anchor="middle" fill="#55606f">ADLS — cleansed</text>
   </g>
 
   <path d="M590,386 V411 H350 V436" fill="none" stroke="#5b6570" stroke-width="2" marker-end="url(#po-arrow)"/>
@@ -81,9 +84,9 @@
 
   <g class="dp-node" data-href="data-layers.md#the-two-axes">
     <title>Gold: the modeled, consumed product — the source of truth for dimensions and facts. See "The two axes".</title>
-    <rect x="500" y="436" width="180" height="70" rx="6" fill="#c7d2fe" stroke="#4338ca" stroke-width="1.5"/>
-    <text x="590" y="466" font-size="14" font-weight="bold" text-anchor="middle" fill="#312e81">Gold</text>
-    <text x="590" y="486" font-size="11" text-anchor="middle" fill="#3730a3">ADLS — star schema</text>
+    <rect x="500" y="436" width="180" height="70" rx="6" fill="#fdf6d8" stroke="#d4af00" stroke-width="1.5"/>
+    <text x="590" y="466" font-size="14" font-weight="bold" text-anchor="middle" fill="#6b5300">Gold</text>
+    <text x="590" y="486" font-size="11" text-anchor="middle" fill="#8a6e00">ADLS — star schema</text>
   </g>
 
   <line x1="680" y1="471" x2="730" y2="471" stroke="#5b6570" stroke-width="2" marker-end="url(#po-arrow)"/>
@@ -106,29 +109,30 @@
   </g>
 
   <!-- Metadata feed from dbt to DataHub -->
-  <path d="M250,351 H140 V556" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#po-arrow-meta)"/>
-  <path d="M250,471 H140" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <path d="M250,351 H140 V556" fill="none" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#po-arrow-meta)"/>
+  <path d="M250,471 H140" fill="none" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="5,4"/>
 
   <g class="dp-node" data-href="platform-overview.md#governance-datahub">
     <title>DataHub builds the catalog, the Bronze-to-Gold lineage graph and the business glossary from dbt's manifest.json and catalog.json. The heaviest Level 1 component — several Docker containers — installed last. See "Governance — DataHub".</title>
-    <rect x="40" y="556" width="640" height="70" rx="6" fill="#f3e8ff" stroke="#7c3aed" stroke-width="1.5"/>
-    <text x="360" y="586" font-size="14" font-weight="bold" text-anchor="middle" fill="#4c1d95">DataHub — catalog, lineage, glossary</text>
-    <text x="360" y="606" font-size="11" text-anchor="middle" fill="#5b21b6">reads dbt metadata, not the data itself · installed last, once Dagster and dbt are stable</text>
+    <rect x="40" y="556" width="640" height="70" rx="6" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+    <text x="360" y="586" font-size="14" font-weight="bold" text-anchor="middle" fill="#134e4a">DataHub — catalog, lineage, glossary</text>
+    <text x="360" y="606" font-size="11" text-anchor="middle" fill="#0f766e">reads dbt metadata, not the data itself · installed last, once Dagster and dbt are stable</text>
   </g>
 
   <!-- Legend -->
-  <rect x="40" y="656" width="870" height="114" rx="6" fill="#fafafa" stroke="#e5e7eb"/>
+  <rect x="40" y="656" width="870" height="140" rx="6" fill="#fafafa" stroke="#e5e7eb"/>
 
-  <rect x="58" y="670" width="16" height="16" fill="#fde68a" stroke="#b45309"/>
+  <rect x="58" y="670" width="16" height="16" fill="#f2ddc4" stroke="#a5691f"/>
   <text x="82" y="683" font-size="11" fill="#333">Bronze — raw, immutable</text>
-  <rect x="290" y="670" width="16" height="16" fill="#dbeafe" stroke="#2563eb"/>
+  <rect x="290" y="670" width="16" height="16" fill="#e6e9ed" stroke="#8a94a3"/>
   <text x="314" y="683" font-size="11" fill="#333">Silver — cleansed (stg_)</text>
-  <rect x="540" y="670" width="16" height="16" fill="#c7d2fe" stroke="#4338ca"/>
+  <rect x="540" y="670" width="16" height="16" fill="#fdf6d8" stroke="#d4af00"/>
   <text x="564" y="683" font-size="11" fill="#333">Gold — star schema (dim_ / fct_ / mart_)</text>
 
-  <line x1="58" y1="708" x2="94" y2="708" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#po-arrow-meta)"/>
+  <line x1="58" y1="708" x2="94" y2="708" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#po-arrow-meta)"/>
   <text x="104" y="712" font-size="11" fill="#333">metadata feed — dbt manifest.json / catalog.json, not the data itself</text>
 
-  <text x="58" y="736" font-size="11" fill="#333">The dashed purple boundary is what Dagster orchestrates: ingestion and dbt, all on the same VM.</text>
+  <text x="58" y="736" font-size="11" fill="#333">The dashed purple boundary is what Dagster orchestrates on the VM: dbt, and the non-SAP ingestion scripts.</text>
   <text x="58" y="758" font-size="11" fill="#333">int_ models have no box of their own here — they never leave the DuckDB file on the VM (see ADR 0001).</text>
+  <text x="58" y="780" font-size="11" fill="#333">SAP ingestion sits outside that boundary: Azure Data Factory is managed and self-scheduled, not on the VM. Fallback: the existing ABAP script (ADR 0010).</text>
 </svg>

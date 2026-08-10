@@ -37,6 +37,13 @@ Azure tags are the one deliberate, documented exception to `snake_case` — see
 | Mart (Gold) | `mart_` | `mart_<domain>__<analysis>` | `mart_finance__monthly_revenue` |
 | Metric (MetricFlow) | — | `<metric_name>` | `revenue` |
 
+A **business entity** is a real-world object the business describes, not an
+event it measures — `customer`, `product`, `date`, `supplier`, `plant`. A
+**business process** is a measurable event involving one or more of those
+entities — `order`, `delivery`, `production_run`. That distinction is what
+separates `dim_` from `fct_` (see [Why a star
+schema](data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging)).
+
 The double underscore `__` is a semantic separator: it separates the object's
 origin (source) or the analysis domain. **Source names** reflect the
 originating system, not the content — `stg_sap__order`, not `stg_sales__order`,
@@ -136,7 +143,7 @@ Every Silver and Gold table carries technical columns for traceability:
 | `_source_system` | VARCHAR | Source system (`'sap'`, `'mes'`, `'plm'`) |
 | `_loaded_at` | TIMESTAMP | Timestamp of loading into the layer |
 | `_updated_at` | TIMESTAMP | Timestamp of last update |
-| `entity` | VARCHAR | Group entity code (`'D'`, `'B'`, etc.) |
+| `entity` | VARCHAR | Group entity code — same code as the Azure infra `scope` (`'dti'` = Dirickx, `'bg'` = B&G, etc.) |
 
 The `_` prefix signals a technical column (not business). BI tools can hide
 them by default.
@@ -149,18 +156,18 @@ them by default.
 <container>/company_<entity>/<source>/<object>/YYYY/MM/DD/<object>.parquet
 ```
 
-`<entity>` is the lowercase **data** entity code (`d`, `b`, ...) — the same
-value stored in the `entity` column (see [Technical / metadata
-columns](#technical-metadata-columns)), not the Azure infra `scope` code
-(`dti`, `bg`) used in resource names. See the correspondence table in
-[Azure landing zones](azure-landing-zones.md#resource-naming-pattern).
+`<entity>` is the entity code — the same value stored in the `entity` column
+(see [Technical / metadata columns](#technical-metadata-columns)) and the
+same code used for the Azure infra `scope` segment in resource names (see
+[Azure landing zones](azure-landing-zones.md#resource-naming-pattern)). One
+code, no separate data/infra mapping to maintain.
 
 ```
-bronze/company_d/sap/order/2027/01/15/order.parquet
-bronze/company_d/mes/production/2027/01/15/production.parquet
-silver/company_d/stg_sap__order/
-gold/company_d/dim_customer/
-gold/company_d/fct_order/
+bronze/company_dti/sap/order/2027/01/15/order.parquet
+bronze/company_dti/mes/production/2027/01/15/production.parquet
+silver/company_dti/stg_sap__order/
+gold/company_dti/dim_customer/
+gold/company_dti/fct_order/
 gold/group/fct_order_group/
 ```
 

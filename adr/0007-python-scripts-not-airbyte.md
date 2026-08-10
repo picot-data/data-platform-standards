@@ -1,6 +1,7 @@
 # ADR 0007: In-house Python ingestion scripts, not Airbyte OSS
 
-**Status**: Accepted
+**Status**: Partially superseded by [ADR 0010](0010-adf-not-python-scripts-for-sap.md)
+for SAP ingestion specifically — still governs ingestion of non-SAP sources
 
 **Date**: 2026-07-30
 

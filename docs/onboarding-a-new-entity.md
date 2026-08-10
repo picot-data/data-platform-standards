@@ -1,9 +1,11 @@
 # Onboarding a new entity
 
 This is the repeatable procedure for bringing a new group entity (for example
-`bg`) onto the data platform, once its diagnosis phase is complete and its
-Azure infra `scope` code is decided (see the correspondence table in
-[Azure landing zones](azure-landing-zones.md#resource-naming-pattern)).
+`bg`, i.e. B&G) onto the data platform, once its diagnosis phase is complete
+and its entity code is decided (see
+[Azure landing zones](azure-landing-zones.md#resource-naming-pattern)) — the
+same code is used everywhere: Azure resource names, the `entity` column, and
+ADLS folder prefixes.
 Following this template rather than improvising is what makes the platform's
 multi-entity claim credible — see
 [ADR 0002](https://github.com/picot-data/data-platform-standards/blob/main/adr/0002-caf-landing-zone-structure.md).
@@ -47,8 +49,7 @@ mandatory tags, and budgets from the same code path used for `dti`.
 
 The new entity does **not** get its own storage account — it uses the
 existing group-wide `stpicotdata`, with a new folder prefix keyed by the
-entity's **data** code, not the infra `scope` code from step 1 above (they can
-differ — e.g. data code `b`, infra scope `bg` — see
+entity code from step 1 above — the same code, no separate data code (see
 [Naming conventions — Cloud storage naming](naming-conventions.md#cloud-storage-naming-adls)):
 
 ```
@@ -65,9 +66,10 @@ entire shared subscription.
 
 Run the same `bootstrap_vm.sh` script used for `dti`, in the same order
 (system updates, Python + uv, DuckDB, dbt Core + adapter, dbt MetricFlow,
-Dagster OSS, DataHub last). The script is idempotent by design, so re-running
-it is always safe — see the [Onboarding an engineer](onboarding-an-engineer.md)
-page for what each installation step verifies before moving to the next.
+Dagster OSS, Metabase, DataHub last). The script is idempotent by design, so
+re-running it is always safe — see the
+[Onboarding an engineer](onboarding-an-engineer.md) page for what each
+installation step verifies before moving to the next.
 
 ## 5. Data platform code — new entity mono-repo
 
@@ -80,7 +82,7 @@ It links to this standards site rather than copying any of its content.
 
 The new entity's data lands in the **same** `dim_customer`, `fct_order`, etc.
 tables as every other entity, distinguished by its `entity` column value
-(e.g. `'B'`) — not by a new set of entity-specific tables. See
+(e.g. `'bg'` for B&G) — not by a new set of entity-specific tables. See
 [Data layers — multi-entity tables](data-layers.md#multi-entity-tables).
 
 ## 7. Budgets and tags — inherited, not recreated

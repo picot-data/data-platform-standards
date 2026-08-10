@@ -31,6 +31,15 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: astral-sh/setup-uv@v3
       - run: uv sync
+      # Regenerates docs/*.fr.md and docs/*.nl.md from the current English
+      # docs/*.md on every deploy — never hand-edited, so the translations
+      # cannot desync from the English source. See scripts/translate_docs.py.
+      - run: uv run python scripts/translate_docs.py
+        env:
+          SWIFTASK_API_KEY: ${{ secrets.SWIFTASK_API_KEY }}
+          # Repo variable, not a secret — the model name isn't sensitive.
+          # Falls back to claude-haiku-4-5 if the variable isn't set.
+          SWIFTASK_MODEL: ${{ vars.SWIFTASK_MODEL || 'claude-haiku-4-5' }}
       - run: uv run mkdocs build
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -14,20 +14,35 @@ to jump to the reasoning behind that tool choice.
 
 ## Compute — one VM per entity
 
-Every Level 1 tool runs on a single Azure VM per entity: ingestion scripts,
-Dagster, dbt Core, and DuckDB. Not one VM per tool, not one VM shared across
-entities — see
+Every Level 1 tool that needs a machine runs on a single Azure VM per entity:
+Dagster, dbt Core, DuckDB, and the non-SAP ingestion scripts. Not one VM per
+tool, not one VM shared across entities — see
 [ADR 0006](https://github.com/picot-data/data-platform-standards/blob/main/adr/0006-single-vm-for-level-1.md).
+Metabase and DataHub are Level 1 tools too, and also run on that same VM —
+see [Governance — DataHub](#governance-datahub) and
+[Consumption — Metabase](#consumption-metabase) below — but they sit outside
+the table because they're consumption/governance layers on top of the core
+ingestion-to-transformation pipeline, not part of it.
+
+The one component in the table that is **not** on the VM is Azure Data
+Factory: a managed Azure service with its own scheduling and monitoring,
+whose self-hosted integration runtime runs on a machine with network access
+to the on-premise SAP system — see
+[Extraction — SAP to cloud](#extraction-sap-to-cloud).
 
 | Component | Role | Runs as |
 |---|---|---|
-| Python scripts | Extraction from SAP and other sources | On-demand, invoked by Dagster |
-| Dagster OSS (webserver + daemon) | Orchestration | The only continuous service among these four |
-| dbt Core | Transformation | CLI, invoked by Dagster |
-| DuckDB | Query engine | Embedded — a file, not a server; activated on demand by dbt or a script |
+| Azure Data Factory + self-hosted IR | Extraction from SAP (primary) | Managed Azure service — not on the VM; schedules itself |
+| Python scripts | Extraction from non-SAP sources | On the VM — on demand, invoked by Dagster |
+| Dagster OSS (webserver + daemon) | Orchestration | On the VM — the only VM tool here that runs continuously rather than on demand |
+| dbt Core | Transformation | On the VM — CLI, invoked by Dagster |
+| DuckDB | Query engine | On the VM — embedded; a file, not a server, activated on demand by dbt or a script |
 
-Ingestion is done with in-house Python scripts rather than Airbyte OSS — see
-[ADR 0007](https://github.com/picot-data/data-platform-standards/blob/main/adr/0007-python-scripts-not-airbyte.md).
+SAP ingestion runs through Azure Data Factory rather than a hand-written
+script — see
+[ADR 0010](https://github.com/picot-data/data-platform-standards/blob/main/adr/0010-adf-not-python-scripts-for-sap.md).
+Non-SAP sources still use in-house Python scripts rather than Airbyte OSS —
+see [ADR 0007](https://github.com/picot-data/data-platform-standards/blob/main/adr/0007-python-scripts-not-airbyte.md).
 
 ## Storage — medallion on ADLS
 
@@ -55,9 +70,11 @@ see [Semantic layer](semantic-layer.md).
 
 ## Orchestration — Dagster OSS
 
-Dagster schedules and monitors the ingestion and dbt assets. It is the only
-component among the four in the compute table above that runs as a
-continuous service rather than on demand.
+Dagster schedules and monitors the dbt assets and the non-SAP ingestion
+scripts. SAP extraction is scheduled by Azure Data Factory itself, not by
+Dagster — see [Extraction — SAP to cloud](#extraction-sap-to-cloud). Among
+the VM tools in the compute table above, Dagster is the only one that runs
+as a continuous service rather than on demand.
 
 ## Governance — DataHub
 
@@ -78,9 +95,12 @@ for why Power BI is not the BI tool here.
 
 ## Extraction — SAP to cloud
 
-Two patterns are in scope for connecting the on-premise SAP system to Azure:
-an Azure Data Factory + self-hosted integration runtime bridge (tried first),
-or a flat-file export already in production use elsewhere in the group
-(the fallback if the ADF bridge proves disproportionate for a POC). Falling
-back to the file-export pattern is a documented architecture decision, not a
-failure to reach the first option.
+Azure Data Factory with a self-hosted integration runtime is the primary
+mechanism for connecting the on-premise SAP system to Azure — automated,
+scheduled and monitored, rather than hand-written and hand-scheduled. The
+fallback is reusing the ABAP extraction script already in production use
+elsewhere in the group, which exports SAP data as flat files — used if the
+ADF bridge proves disproportionate for a POC. Falling back to the
+ABAP-script pattern is a documented architecture decision, not a failure to
+reach the first option — see
+[ADR 0010](https://github.com/picot-data/data-platform-standards/blob/main/adr/0010-adf-not-python-scripts-for-sap.md).

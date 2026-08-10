@@ -2,3 +2,8 @@
 site/
 __pycache__/
 .mkdocs_cache/
+
+# Generated at deploy time by scripts/translate_docs.py — never hand-edited,
+# never committed, so French/Dutch can't drift from the English source.
+docs/*.fr.md
+docs/*.nl.md

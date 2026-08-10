@@ -12,37 +12,6 @@ prod) underneath each.
 
 ## Subscription structure
 
-```
-Management Group: mg-picot (root)
-│
-├── Management Group: mg-picot-platform
-│   └── Out of data scope — owned by group IT (connectivity/VPN, identity,
-│        central management subscriptions, if/when IT sets them up).
-│
-├── Management Group: mg-picot-decommissioned
-│   └── Empty until a subscription needs to be retired.
-│
-└── Management Group: mg-picot-landingzones
-    │
-    ├── Management Group: mg-picot-lz-shared      (group-wide data resources)
-    │   ├── Subscription: sub-picot-shared-dev
-    │   ├── Subscription: sub-picot-shared-staging
-    │   └── Subscription: sub-picot-shared-prod
-    │       └── rg-picot-shared-data-weu
-    │           └── Storage Account (ADLS Gen2) — unique for the whole group
-    │
-    ├── Management Group: mg-picot-lz-dti          (Dirickx / Entity D)
-    │   ├── Subscription: sub-picot-dti-dev
-    │   ├── Subscription: sub-picot-dti-staging
-    │   └── Subscription: sub-picot-dti-prod
-    │       └── rg-picot-dti-data-weu
-    │           ├── VM (Level 1 compute)
-    │           ├── NSG
-    │           └── Key Vault (Dirickx SAP secrets)
-    │
-    └── Management Group: mg-picot-lz-<future-entity>   (same template)
-```
-
 At Level 1, only each landing zone's `prod` subscription is populated with
 resources. `dev` and `staging` exist as governance scaffolding (RBAC, budget
 tripwires, Terraform workspace) but stay empty — see
@@ -64,8 +33,8 @@ holding only two subscriptions at first.
 <type>-picot-<scope>-<workload>-<region>-<instance>
 ```
 
-- `scope` = entity code (`dti` for Dirickx, other codes as new entities
-  arrive) or `shared` for group-wide resources
+- `scope` = entity code (`dti` for Dirickx, `bg` for B&G, other codes as new
+  entities arrive) or `shared` for group-wide resources
 - `region` = `weu` (West Europe)
 - `workload` = `data` at Level 1 (everything on a single VM); splits into
   `compute`, `orch`, etc. at Level 2
@@ -93,14 +62,10 @@ holding only two subscriptions at first.
 | Network Interface (Dirickx) | `nic-picot-dti-data-weu-01` | The NSG attaches here, not on the VM resource itself |
 | ADLS Containers | `bronze`, `silver`, `gold`, `metadata` | No leading underscore: Azure container names accept only lowercase letters, digits and hyphens, and must start with a letter or digit |
 
-**Data-layer / infra-layer correspondence.** The `entity` column in dbt tables
-(see [Naming conventions](naming-conventions.md#technical-metadata-columns))
-uses a different code than the Azure `scope` segment above:
-
-| Data (`entity` column) | Infra (Azure `scope`) |
-|---|---|
-| `D` | `dti` |
-| `B` | `bg` |
+The `entity` column in dbt tables (see
+[Naming conventions](naming-conventions.md#technical-metadata-columns)) uses
+this same `scope` code — one code for both data and infrastructure, not a
+separate mapping to maintain.
 
 ## Environments
 
@@ -143,7 +108,7 @@ Applied to every subscription, every resource group, and every resource.
 
 | Tag | Allowed values | Purpose |
 |---|---|---|
-| `Entity` | `dti` / `shared` / future infra scope code | Cost and ownership attribution per group entity |
+| `Entity` | `dti` / `shared` / future entity code | Cost and ownership attribution per group entity |
 | `Environment` | `dev` / `staging` / `prod` | Filtering and cost split; guard rail against pointing a dev job at prod data |
 | `Workload` | `data` (Level 1) / later `compute`, `orch`, `network` | Which functional block of the platform |
 | `Level` | `1` / `2` | Maturity level of the platform the resource belongs to |
@@ -155,7 +120,7 @@ Applied to every subscription, every resource group, and every resource.
 
 | Tag | Applied when | Allowed values | Purpose |
 |---|---|---|---|
-| `DataClassification` | Any resource holding or transiting data | `public` / `internal` / `confidential` | SAP business data is `confidential`; open-data sources are `public` |
+| `DataClassification` | Any resource holding or transiting data | `public` / `internal` / `confidential` | SAP business data is `confidential`; an internal finance dashboard is `internal`; open-data sources are `public` |
 | `ExpiresOn` | Any temporary resource (POC, test, spike) | ISO date `YYYY-MM-DD` | Anti-zombie-resource. Missing this tag = the resource is permanent by declaration |
 | `Project` | Everywhere it makes sense | `data-platform` / `ia-deployment` | Distinguishes data-foundation spend from IA/LLM tooling spend |
 | `Criticality` | On prod resources | `low` / `medium` / `high` | Drives backup/DR expectations and on-call urgency |
@@ -169,7 +134,8 @@ Applied to every subscription, every resource group, and every resource.
 | Remediate existing resources | `modify` + remediation task | Retro-applies tags to resources created before the policy | Per subscription, one-off |
 
 Sequencing matters: assign the `modify`/inherit policies before the `deny`
-policies (see ADR 0004).
+policies (see
+[ADR 0004](https://github.com/picot-data/data-platform-standards/blob/main/adr/0004-tagging-enforced-via-policy.md)).
 
 Terraform declares the mandatory tags once in a `local` block and merges them
 into every resource (`tags = merge(local.common_tags, { ... })`). Never
@@ -227,23 +193,9 @@ implemented only where it's worth the cost — see
 Budgets are set at three nested scopes, each catching a different failure
 mode:
 
-```mermaid
-flowchart TD
-    MG["Budget at MG scope<br/>mg-picot-landingzones<br/>= total data platform envelope"]
-    SUBP["Budget: sub-picot-dti-prod<br/>= entity prod spend"]
-    SUBD["Budget: sub-picot-dti-dev<br/>near-zero, tripwire only"]
-    SUBS["Budget: sub-picot-dti-staging<br/>near-zero, tripwire only"]
-    SUBSH["Budget: sub-picot-shared-prod<br/>= shared storage spend"]
-    RGDTI["Budget / cost alert<br/>rg-picot-dti-data-weu"]
-    RGSH["Budget / cost alert<br/>rg-picot-shared-data-weu"]
-
-    MG --> SUBP
-    MG --> SUBD
-    MG --> SUBS
-    MG --> SUBSH
-    SUBP --> RGDTI
-    SUBSH --> RGSH
-```
+<div class="dp-diagram-wrap" markdown="0">
+--8<-- "docs/assets/diagrams/budget-structure.svg"
+</div>
 
 | Scope | Failure mode it catches |
 |---|---|

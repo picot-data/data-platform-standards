@@ -50,7 +50,7 @@
     <title>Future production repository for any new entity — same template, no reorganization needed. See "Onboarding a new entity".</title>
     <rect x="405" y="300" width="160" height="65" rx="6" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="6,4"/>
     <text x="485" y="327" font-size="11" font-weight="bold" text-anchor="middle" fill="#555">data-platform-&lt;code&gt;</text>
-    <text x="485" y="346" font-size="9.5" text-anchor="middle" fill="#777">(future) entity B, etc.</text>
+    <text x="485" y="346" font-size="9.5" text-anchor="middle" fill="#777">(future) entity bg — B&amp;G, etc.</text>
   </g>
 
   <g class="dp-node" data-href="repositories-and-delivery.md#why-one-repo-per-entity-not-one-mega-mono-repo-for-the-whole-group">

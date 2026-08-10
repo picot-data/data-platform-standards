@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 460" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Budget structure: one budget at management group scope, one per subscription, and one per resource group, each catching a different cost-drift failure mode.">
+
+  <rect width="980" height="460" fill="#ffffff"/>
+
+  <defs>
+    <marker id="bs-arrow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L9,5.5 L0,10 z" fill="#b0b6bd"/>
+    </marker>
+  </defs>
+
+  <text x="490" y="30" font-size="19" font-weight="bold" text-anchor="middle" fill="#003f5c">Budget Structure — Three Nested Scopes</text>
+  <text x="490" y="52" font-size="11.5" text-anchor="middle" fill="#666">Each scope catches a different failure mode. Hover a box for detail, click to jump to the section that explains it.</text>
+
+  <!-- MG scope -->
+  <g class="dp-node" data-href="azure-landing-zones.md#budget-structure">
+    <title>Total drift across all entities — the number defended in CODIR. See "Budget structure".</title>
+    <rect x="340" y="76" width="300" height="60" rx="8" fill="#003f5c"/>
+    <text x="490" y="100" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Budget at MG scope — mg-picot-landingzones</text>
+    <text x="490" y="118" font-size="10.5" text-anchor="middle" fill="#dbeafe">= total data platform envelope</text>
+  </g>
+
+  <!-- Connectors MG -> subscriptions -->
+  <path d="M490,136 V150 H132 V166" fill="none" stroke="#b0b6bd" stroke-width="1.5" marker-end="url(#bs-arrow)"/>
+  <path d="M490,136 V150 H372 V166" fill="none" stroke="#b0b6bd" stroke-width="1.5" marker-end="url(#bs-arrow)"/>
+  <path d="M490,136 V150 H612 V166" fill="none" stroke="#b0b6bd" stroke-width="1.5" marker-end="url(#bs-arrow)"/>
+  <path d="M490,136 V150 H852 V166" fill="none" stroke="#b0b6bd" stroke-width="1.5" marker-end="url(#bs-arrow)"/>
+
+  <!-- Subscription scope -->
+  <g class="dp-node" data-href="azure-landing-zones.md#alert-thresholds">
+    <title>One entity's platform becoming disproportionately expensive. See "Alert thresholds".</title>
+    <rect x="25" y="166" width="215" height="60" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+    <text x="132" y="190" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#7b1fa2">Budget: sub-picot-dti-prod</text>
+    <text x="132" y="207" font-size="9.5" text-anchor="middle" fill="#777">= entity prod spend</text>
+  </g>
+
+  <g class="dp-node" data-href="azure-landing-zones.md#environments">
+    <title>Someone spins up a resource "just to test" and forgets it. See "Environments".</title>
+    <rect x="265" y="166" width="215" height="60" rx="6" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="372" y="190" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#666">Budget: sub-picot-dti-dev</text>
+    <text x="372" y="207" font-size="9.5" text-anchor="middle" fill="#888">near-zero, tripwire only</text>
+  </g>
+
+  <g class="dp-node" data-href="azure-landing-zones.md#environments">
+    <title>Someone spins up a resource "just to test" and forgets it. See "Environments".</title>
+    <rect x="505" y="166" width="215" height="60" rx="6" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="612" y="190" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#666">Budget: sub-picot-dti-staging</text>
+    <text x="612" y="207" font-size="9.5" text-anchor="middle" fill="#888">near-zero, tripwire only</text>
+  </g>
+
+  <g class="dp-node" data-href="azure-landing-zones.md#alert-thresholds">
+    <title>The shared landing zone's storage spend becoming disproportionately expensive. See "Alert thresholds".</title>
+    <rect x="745" y="166" width="215" height="60" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+    <text x="852" y="190" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#7b1fa2">Budget: sub-picot-shared-prod</text>
+    <text x="852" y="207" font-size="9.5" text-anchor="middle" fill="#777">= shared storage spend</text>
+  </g>
+
+  <!-- Connectors subscription -> resource group -->
+  <path d="M132,226 V286" fill="none" stroke="#b0b6bd" stroke-width="1.5" marker-end="url(#bs-arrow)"/>
+  <path d="M852,226 V286" fill="none" stroke="#b0b6bd" stroke-width="1.5" marker-end="url(#bs-arrow)"/>
+
+  <!-- Resource group scope -->
+  <g class="dp-node" data-href="azure-landing-zones.md#hard-limits">
+    <title>A specific workload misbehaving inside an otherwise healthy subscription. See "Hard limits".</title>
+    <rect x="25" y="286" width="215" height="60" rx="6" fill="#ffffff" stroke="#7b1fa2" stroke-width="1.5"/>
+    <text x="132" y="310" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#333">Budget / cost alert</text>
+    <text x="132" y="327" font-size="9.5" text-anchor="middle" fill="#777">rg-picot-dti-data-weu</text>
+  </g>
+
+  <g class="dp-node" data-href="azure-landing-zones.md#hard-limits">
+    <title>A specific workload misbehaving inside an otherwise healthy subscription. See "Hard limits".</title>
+    <rect x="745" y="286" width="215" height="60" rx="6" fill="#ffffff" stroke="#7b1fa2" stroke-width="1.5"/>
+    <text x="852" y="310" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#333">Budget / cost alert</text>
+    <text x="852" y="327" font-size="9.5" text-anchor="middle" fill="#777">rg-picot-shared-data-weu</text>
+  </g>
+
+  <!-- Legend / reading notes -->
+  <rect x="20" y="376" width="940" height="70" rx="6" fill="#fafafa" stroke="#e5e7eb"/>
+  <text x="38" y="396" font-size="12" font-weight="bold" fill="#333">Reading this diagram</text>
+  <text x="38" y="418" font-size="11" fill="#333">Purple = prod, the only subscriptions with active resources — see the same color used in "Azure landing zones".</text>
+  <text x="38" y="436" font-size="11" fill="#333">dev/staging subscriptions get a near-zero tripwire budget only; they carry no active resources at Level 1.</text>
+</svg>

@@ -13,7 +13,9 @@ theme:
       primary: custom
       accent: custom
   features:
-    - navigation.instant
+    # navigation.instant is incompatible with mkdocs-static-i18n's language
+    # switcher (see the plugin's own build warning) — dropped when i18n was
+    # added rather than kept and fighting the warning in strict mode.
     - navigation.tracking
     - navigation.top
     - toc.follow
@@ -44,14 +46,48 @@ markdown_extensions:
   - pymdownx.snippets:
       base_path: ["."]
       check_paths: true
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.superfences
 
 plugins:
   - search
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: fr
+          name: Français
+          build: true
+          nav_translations:
+            Home: Accueil
+            Platform overview: Vue d'ensemble de la plateforme
+            Data layers: Couches de données
+            Semantic layer: Couche sémantique
+            Naming conventions: Conventions de nommage
+            Azure landing zones: Landing zones Azure
+            Repositories and delivery: Dépôts et livraison
+            Onboarding a new entity: Intégrer une nouvelle entité
+            Onboarding an engineer: Intégrer un ingénieur
+            Glossary: Glossaire
+            Architecture Decision Records: Décisions d'architecture (ADR)
+        - locale: nl
+          name: Nederlands
+          build: true
+          nav_translations:
+            Home: Home
+            Platform overview: Platformoverzicht
+            Data layers: Datalagen
+            Semantic layer: Semantische laag
+            Naming conventions: Naamgevingsconventies
+            Azure landing zones: Azure landing zones
+            Repositories and delivery: Repository's en levering
+            Onboarding a new entity: Een nieuwe entiteit onboarden
+            Onboarding an engineer: Een engineer onboarden
+            Glossary: Woordenlijst
+            Architecture Decision Records: Architectuurbeslissingen (ADR)
 
 extra_css:
   - assets/theme-picot.css
