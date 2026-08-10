@@ -9,6 +9,10 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  # deploy-pages@v4 reads the build job's artifact through the Actions API.
+  # This block is restrictive, so without an explicit grant the token gets
+  # "actions: none" and the lookup comes back empty ("Found 0 artifact(s)").
+  actions: read
 
 # Allow only one concurrent deployment, but never cancel one that is already
 # running: a cancelled Pages deployment leaves the environment busy and makes
@@ -39,11 +43,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # If this job ever fails, re-run the *whole* workflow rather than using
+      # "Re-run failed jobs": artifacts are scoped to a single run attempt, so
+      # replaying the deploy job alone cannot see the artifact that the build
+      # job uploaded on the previous attempt.
       - id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          # The default timeout is 10 minutes, and publishing this site has been
-          # taking slightly longer than that. The action then gives up while the
-          # deployment is still in progress and reports a failure with no error
-          # message, even though the site does go live moments later.
-          timeout: 1800000
