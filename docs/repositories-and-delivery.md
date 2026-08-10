@@ -52,6 +52,22 @@ change made to it later has to be back-ported by hand to entities already
 onboarded, which is an accepted trade-off at two to three entities (see
 ADR 0011's consequences for when to revisit it).
 
+## Making a change — which repo, then what
+
+<div class="dp-diagram-wrap" markdown="0">
+--8<-- "docs/assets/diagrams/repo-relationships-and-change-playbook.svg"
+</div>
+
+The table above the fold restates the relationships as a lookup rather than
+a topology — useful the moment the actual question is "I need to change
+X, where do I do that and what else do I need to run?" rather than "how is
+this organized?". The two amber rows are the one thing this setup does not
+deduplicate automatically: a structural change to the template, and a new
+mandatory tag, both have to be applied by hand to every entity repo that
+already exists. That's an accepted trade-off at today's scale (two to three
+entities) — see [ADR 0011](https://github.com/picot-data/data-platform-standards/blob/main/adr/0011-shared-terraform-module-and-entity-template.md)'s
+consequences for when to revisit it.
+
 ## Entity mono-repo structure
 
 <div class="dp-diagram-wrap" markdown="0">
