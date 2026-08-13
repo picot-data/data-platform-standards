@@ -154,9 +154,11 @@ Four rules define the pipeline:
    and never a branch name. Without this, *"what is running on the VM?"* has no
    answer and a rollback has no target.
 2. **No secret is stored anywhere in the path.** GitHub authenticates to Azure
-   with an OIDC federated credential, and the VM pulls from the shared registry
-   `crpicotdata` with its own managed identity (`AcrPull`). Every credential
-   involved is minted per run and expires.
+   with an OIDC federated credential, and the VM pulls from **its entity's own**
+   container registry with its own managed identity (`AcrPull`). Every credential
+   involved is minted per run and expires. The registry is per entity, not
+   shared: ACR grants `AcrPull`/`AcrPush` over a whole registry, so a shared one
+   would let any entity's CI overwrite another entity's images.
 3. **Nothing reaches the VM inbound.** The NSG allows SSH from a single admin
    CIDR and nothing else. The deployment travels over the Azure control plane
    via Run Command, so no port is opened and no agent of GitHub's runs on the

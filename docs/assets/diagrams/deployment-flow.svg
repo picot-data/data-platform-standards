@@ -22,15 +22,15 @@
 
   <!-- ============================ SHARED REGISTRY (right column) ============================ -->
   <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md">
-    <title>crpicotdata — one Azure Container Registry for the whole group. Chosen over GHCR because a VM can pull from it with its own managed identity, which is what removes the stored pull token (ADR 0012).</title>
+    <title>One registry per entity, in that entity's own resource group. Chosen over GHCR because a VM can pull from it with its own managed identity, which removes the stored pull token. Not shared, because ACR's AAD roles apply to the whole registry — a shared one would let any entity's CI overwrite another's images (ADR 0012).</title>
     <rect x="800" y="110" width="175" height="190" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
     <text x="887" y="140" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#4c1d95">Azure Container</text>
     <text x="887" y="156" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#4c1d95">Registry</text>
-    <text x="887" y="180" font-size="10.5" text-anchor="middle" fill="#6d28d9">crpicotdata</text>
+    <text x="887" y="180" font-size="9.5" text-anchor="middle" fill="#6d28d9">crpicot&lt;entity&gt;dataweu01</text>
     <line x1="820" y1="196" x2="955" y2="196" stroke="#c4b5fd"/>
-    <text x="887" y="216" font-size="9" text-anchor="middle" fill="#6d28d9">shared by every entity</text>
-    <text x="887" y="232" font-size="9" text-anchor="middle" fill="#6d28d9">— one image, one</text>
-    <text x="887" y="246" font-size="9" text-anchor="middle" fill="#6d28d9">registry, many VMs</text>
+    <text x="887" y="216" font-size="9" text-anchor="middle" fill="#6d28d9">one registry per entity,</text>
+    <text x="887" y="232" font-size="9" text-anchor="middle" fill="#6d28d9">not one shared — AAD roles</text>
+    <text x="887" y="246" font-size="9" text-anchor="middle" fill="#6d28d9">apply to a whole registry</text>
     <text x="887" y="272" font-size="9" text-anchor="middle" fill="#888">tags are immutable</text>
     <text x="887" y="286" font-size="9" text-anchor="middle" fill="#888">sha-&lt;commit&gt;, never :latest</text>
   </g>
@@ -64,9 +64,9 @@
   <text x="145" y="105" font-size="9" text-anchor="middle" fill="#888">① merge to main</text>
 
   <path d="M145,178 V256 H795" fill="none" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#dep-arrow)"/>
-  <text x="410" y="249" font-size="9.5" text-anchor="middle" fill="#6d28d9">④ docker push crpicotdata/platform:sha-&lt;commit&gt;</text>
+  <text x="410" y="249" font-size="9.5" text-anchor="middle" fill="#6d28d9">④ docker push &lt;registry&gt;/&lt;entity-repo&gt;:sha-&lt;commit&gt;</text>
 
-  <text x="40" y="285" font-size="9.5" font-style="italic" fill="#888">One image for the whole group — the same code runs for every entity; only the configuration differs.</text>
+  <text x="40" y="285" font-size="9.5" font-style="italic" fill="#888">The image bakes in this entity's dbt project and Dagster definitions — the registry is shared, the images are not.</text>
 
   <!-- ============================ BAND 2 — GATE ============================ -->
   <path d="M400,296 V332" fill="none" stroke="#ee4631" stroke-width="1.5" marker-end="url(#dep-arrow-gate)"/>

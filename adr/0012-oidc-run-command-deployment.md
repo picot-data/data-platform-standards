@@ -41,9 +41,9 @@ Vault and its data.
    opened, no Azure credential given to GitHub, registry free of charge. Costs a
    permanent agent with root-equivalent access on the VM, a long-lived token to
    store and rotate per entity, and a machine to register per entity.
-2. **GitHub-hosted runner + OIDC federated credential + a shared Azure
-   Container Registry + `az vm run-command invoke`.** No agent on the VM, no
-   stored secret anywhere, and both the Azure role assignment and the federated
+2. **GitHub-hosted runner + OIDC federated credential + an Azure Container
+   Registry per entity + `az vm run-command invoke`.** No agent on the VM, no
+   stored secret anywhere, and both the Azure role assignments and the federated
    credential are Terraform resources, so they come with the entity rather than
    being wired by hand.
 3. **SSH from a GitHub-hosted runner.** Requires either widening the NSG to
@@ -59,12 +59,20 @@ Vault and its data.
 
 Option 2, in four parts:
 
-- **A shared Azure Container Registry**, `crpicotdata`, one for the whole group
-  — the platform image is the same code for every entity. Chosen over GHCR
-  specifically because a VM can pull from ACR with its own **managed identity**
-  (`AcrPull`), which is what removes the stored pull token; the registry is
-  named without separators for the same reason as the shared storage account
-  (see [Naming conventions](../docs/naming-conventions.md)).
+- **An Azure Container Registry per entity**, `cr<entity naming prefix without
+  separators>`, in that entity's own resource group. ACR was chosen over GHCR
+  because a VM can pull from it with its own **managed identity** (`AcrPull`),
+  which is what removes the stored pull token. It is *per entity* rather than
+  shared for two reasons that compound: the image is not shareable anyway — it
+  bakes in that entity's dbt project and Dagster definitions — and ACR's AAD
+  role assignments apply to the **whole registry**, never to a single image
+  repository. Repository-scoped permissions do exist, but only as non-AAD tokens
+  on the Premium tier, which a managed identity cannot present. A shared
+  registry would therefore let any entity's CI overwrite any other entity's
+  images, contradicting the one-landing-zone-per-entity boundary of
+  [ADR 0002](0002-caf-landing-zone-structure.md). The name drops separators
+  because ACR forbids them, the same way the shared storage account does (see
+  [Naming conventions](../docs/naming-conventions.md)).
 - **OIDC workload identity federation** for GitHub → Azure. GitHub presents a
   signed token describing the workflow; Entra ID returns a short-lived Azure
   token. No secret exists in GitHub.
@@ -102,10 +110,12 @@ deploying requires that.
 - GitHub gains a role on the Azure control plane, which it did not have before.
   This is the real cost of the decision, and the reason the role is custom and
   single-action rather than a built-in one.
-- ACR is billed, unlike GHCR. At Basic tier this is a small fixed monthly cost;
-  because the image's dependency layers are shared across tags, the included
-  storage covers a working set of builds, but a retention policy becomes
-  necessary rather than optional as tags accumulate.
+- ACR is billed, unlike GHCR, and being per entity the cost recurs per entity.
+  At Basic tier it is a small fixed monthly amount each. Because the image's
+  dependency layers are shared across tags, the included storage covers a
+  working set of builds — but Basic has no retention policy (that is a Premium
+  feature), so pruning old tags becomes a manual chore rather than a setting as
+  they accumulate.
 - Deployment logs are returned in the `run-command` response rather than streamed
   live. Debugging a failed deployment is less comfortable than reading a runner's
   console, which is why the deployment script keeps polling the webserver's
