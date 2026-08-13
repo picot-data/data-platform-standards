@@ -121,6 +121,15 @@ deploying requires that.
   console, which is why the deployment script keeps polling the webserver's
   `/server_info` before reporting success — a green deployment must mean the
   platform answered, not merely that containers were created.
+- **The approval gate depends on the organisation's GitHub plan.** Environment
+  protection rules — required reviewers, wait timers — are not available on a
+  private repository under GitHub Free. An entity on that plan can declare the
+  environment (and should: the OIDC subject claim is emitted whenever a job
+  targets one, protected or not, so binding the credential to it still blocks
+  any workflow that does not declare it) but cannot enforce a human step. Such
+  an entity is running a documented deviation from this ADR, not an
+  implementation of it, and must record it as one. Enabling the gate afterwards
+  is a checkbox, with no change to any workflow.
 - Creating the app registration and the federated credential requires rights on
   the group's Entra ID tenant. Where those rights sit with central IT rather
   than with the platform owner, this becomes a request to make rather than a
