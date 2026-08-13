@@ -127,16 +127,59 @@ copy of the steps:
 3. **`dbt build --target dev`** (or dbt unit tests) — runs the models and
    their tests against dev data. This answers "does it work on data?".
 
-A `deploy.yml` workflow, deploying merged code to the entity's VM, is
-optional for a single-owner platform and must be explicitly documented as
-*not implemented* rather than left ambiguous if it isn't built — a manual
-deployment procedure written down in the entity's `runbook.md` is preferable
-to a half-working deploy pipeline that looks automated but silently isn't.
+Deployment to the entity's VM is a separate pipeline, described in
+[Deployment](#deployment) below.
 
 This CI/CD discipline is what answers the question a steering committee will
 ask sooner or later: *"how do we know this isn't hand-patched on the VM?"* —
 the answer is that code is tested before it is deployed, not modified
 directly on the machine that runs it.
+
+## Deployment
+
+<div class="dp-diagram-wrap" markdown="0">
+--8<-- "docs/assets/diagrams/deployment-flow.svg"
+</div>
+
+The platform is deployed as a **container image**, built once in CI and pulled
+by the entity's VM. The VM holds no checkout of the repository, no toolchain
+beyond a container runtime, and no credential — see
+[ADR 0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md)
+for why this shape was chosen over a self-hosted runner.
+
+Four rules define the pipeline:
+
+1. **A deployment names an exact build.** The image is tagged
+   `sha-<commit>` and a deployment always references that tag, never `:latest`
+   and never a branch name. Without this, *"what is running on the VM?"* has no
+   answer and a rollback has no target.
+2. **No secret is stored anywhere in the path.** GitHub authenticates to Azure
+   with an OIDC federated credential, and the VM pulls from the shared registry
+   `crpicotdata` with its own managed identity (`AcrPull`). Every credential
+   involved is minted per run and expires.
+3. **Nothing reaches the VM inbound.** The NSG allows SSH from a single admin
+   CIDR and nothing else. The deployment travels over the Azure control plane
+   via Run Command, so no port is opened and no agent of GitHub's runs on the
+   machine. The role granted to GitHub is a custom one limited to
+   `Microsoft.Compute/virtualMachines/runCommand/action` — never
+   `Virtual Machine Contributor`, which could delete the VM.
+4. **A deployment is approved, and the approval is enforced by Azure.** The
+   deploy job targets a GitHub Environment named `production` carrying required
+   reviewers, and the federated credential's subject is bound to that
+   environment (`repo:picot-data/<entity-repo>:environment:production`). A run
+   that skipped the gate cannot obtain an Azure token, so the approval is not
+   something a workflow edit can remove.
+
+Only `main` deploys. A pull request builds the image and never publishes it; a
+push to the integration branch publishes an image without touching any VM. A
+manual `workflow_dispatch` naming an existing tag is the rollback path, and
+skips the build entirely rather than producing a different tag than the one
+being deployed.
+
+A deployment reports success only once the platform **answers** — the script
+polls the Dagster webserver before going green. "Containers created" is not
+"platform working": a broken dbt profile or a failed import surfaces only when
+the code server starts.
 
 ## This standards repository's own delivery
 
