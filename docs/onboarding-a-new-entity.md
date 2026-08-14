@@ -59,7 +59,7 @@ locals {
 }
 
 module "platform" {
-  source  = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v1.2.0"
+  source  = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v2.1.0"
   entity  = "<code>"
   region  = "westeurope"
   vm_size = "Standard_D4s_v5"
@@ -67,7 +67,7 @@ module "platform" {
 }
 
 module "governance" {
-  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v1.2.0"
+  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v2.1.0"
   entity              = "<code>"
   resource_group_id   = module.platform.resource_group_id
   budget_amount       = var.budget_amount # from finance, never invented
@@ -75,12 +75,35 @@ module "governance" {
 }
 ```
 
+A third module, `modules/storage`, exists in the same repository and is
+**deliberately not called here**. It creates the group's shared ADLS account,
+whose name is globally unique in Azure — a second entity calling it would
+either fail or fight the first entity's state for the same resource. It is
+called once, by whichever root module owns the shared subscription.
+
 Add a new `<code>.tfvars` with the entity's values, then run:
 
 ```
 terraform init
-terraform apply -var-file=<code>.tfvars
+terraform plan  -var-file=<code>.tfvars -out=tfplan
+terraform apply tfplan
 ```
+
+**Always plan before applying, and apply the saved plan file rather than
+re-running `apply` on its own.** Two different reasons:
+
+- `apply` without a reviewed plan means the first time anyone sees what will
+  change is while it is changing. On a bumped `ref` especially, a shared-module
+  fix can produce a replacement rather than an update, and a replacement of the
+  wrong resource is not recoverable by re-running Terraform.
+- Applying `tfplan` guarantees Azure receives exactly what was reviewed. A bare
+  `terraform apply -var-file=...` re-plans against whatever the world looks like
+  at that moment, which is not necessarily what was on screen a minute earlier.
+
+What to look for in the plan, every time: no `destroy` and no `replace` on
+anything holding state or data — the storage account above all, then the VM's
+managed identity and the Key Vault. Resources being *added* are normal on a
+`ref` bump; resources being *removed* are a signal to stop and understand why.
 
 No new Terraform code is written for a new entity — only a new `.tfvars`
 file and a `ref` pin. That `ref` is pinned deliberately, not tracking
