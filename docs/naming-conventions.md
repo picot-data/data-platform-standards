@@ -58,14 +58,44 @@ is an `int_` model.
 ### Persistence per layer
 
 Each dbt layer has a fixed materialization and storage location, defined in
-[ADR 0001](https://github.com/picot-data/data-platform-standards/blob/main/adr/0001-medallion-dbt-layer-persistence.md):
+[ADR 0001](https://github.com/picot-data/data-platform-standards/blob/main/adr/0001-medallion-dbt-layer-persistence.md)
+and refined by
+[ADR 0013](https://github.com/picot-data/data-platform-standards/blob/main/adr/0013-local-duckdb-with-publication-step.md):
 
-| dbt layer | Medallion layer | Materialization | Physically lives in |
+| dbt layer | Medallion layer | Materialization | Ends up in |
 |---|---|---|---|
 | — (ingestion output) | Bronze | not a dbt model — written by the ingestion pipeline, read-only for dbt | ADLS `bronze/` (date-partitioned, immutable) |
-| `stg_` | Silver | `external` (Parquet) | ADLS `silver/` |
-| `int_` | late Silver (no ADLS folder) | `table` | DuckDB file on the VM only |
-| `dim_`, `fct_`, `mart_` | Gold | `external` (Parquet) | ADLS `gold/` |
+| `stg_` | Silver | `table` (local DuckDB) | ADLS `silver/`, via the publication step |
+| `int_` | late Silver (no ADLS folder) | `table` (local DuckDB) | DuckDB file on the VM only — never published |
+| `dim_`, `fct_`, `mart_` | Gold | `table` (local DuckDB) | ADLS `gold/`, via the publication step |
+
+**Every model materializes locally.** dbt never writes to `abfss://` — a
+publication step copies the durable models out at the end of the run, one
+Parquet file per model. Which ones get published is declared in dbt itself, as
+a `publish_container` entry in the model's `meta`, set per layer in
+`dbt_project.yml`:
+
+```yaml
+models:
+  <project>:
+    staging:
+      +materialized: table
+      +meta:
+        publish_container: silver
+    intermediate:
+      +materialized: table      # no publish_container: stays local
+    dimensions:
+      +materialized: table
+      +meta:
+        publish_container: gold
+```
+
+Do **not** reintroduce dbt-duckdb's `external` materialization to write models
+straight to ADLS. It makes every downstream `ref()` and every test re-open a
+remote file, and the resulting flood of Entra token requests hits the instance
+metadata service's rate limit — surfacing as `429 Temporarily throttled`,
+reported by DuckDB as a credentials error that it is not. ADR 0013 has the full
+account.
 
 ### Archiving
 

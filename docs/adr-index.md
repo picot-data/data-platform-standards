@@ -7,7 +7,7 @@ a new ADR that supersedes the old one, not an edit to it.
 
 | ADR | Title | Status |
 |---|---|---|
-| [0001](https://github.com/picot-data/data-platform-standards/blob/main/adr/0001-medallion-dbt-layer-persistence.md) | Persistence strategy per medallion / dbt layer | Accepted |
+| [0001](https://github.com/picot-data/data-platform-standards/blob/main/adr/0001-medallion-dbt-layer-persistence.md) | Persistence strategy per medallion / dbt layer | Partially superseded by 0013 |
 | [0002](https://github.com/picot-data/data-platform-standards/blob/main/adr/0002-caf-landing-zone-structure.md) | Adopt the CAF Landing Zone structure, one landing zone per entity | Accepted |
 | [0003](https://github.com/picot-data/data-platform-standards/blob/main/adr/0003-azure-tag-key-casing.md) | Azure tag keys use PascalCase, as an exception to snake_case | Accepted |
 | [0004](https://github.com/picot-data/data-platform-standards/blob/main/adr/0004-tagging-enforced-via-policy.md) | Tags are enforced by Azure Policy, not by discipline | Accepted |
@@ -19,6 +19,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0010](https://github.com/picot-data/data-platform-standards/blob/main/adr/0010-adf-not-python-scripts-for-sap.md) | Azure Data Factory for SAP ingestion, not Python scripts | Accepted |
 | [0011](https://github.com/picot-data/data-platform-standards/blob/main/adr/0011-shared-terraform-module-and-entity-template.md) | A shared Terraform module and a template repo, not a copied entity repo | Accepted |
 | [0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md) | Deploy via OIDC, a shared container registry and Azure Run Command, not a self-hosted runner | Accepted |
+| [0013](https://github.com/picot-data/data-platform-standards/blob/main/adr/0013-local-duckdb-with-publication-step.md) | dbt materializes locally; a publication step writes Silver and Gold | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues

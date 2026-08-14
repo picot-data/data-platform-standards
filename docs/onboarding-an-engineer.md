@@ -50,6 +50,11 @@ uv run dbt build          # runs every model + test against dev
 If `dbt build` passes, the local environment is working end to end: models
 compile, run against DuckDB, and pass their tests.
 
+Everything stays in the local DuckDB file — `dbt build` writes nothing to ADLS.
+Publishing Silver and Gold is a separate orchestration step that runs after the
+build ([ADR 0013](https://github.com/picot-data/data-platform-standards/blob/main/adr/0013-local-duckdb-with-publication-step.md)),
+so a local build cannot affect what anyone else reads.
+
 ## 3. Your first model
 
 Start from an existing `stg_` model as a template rather than from a blank

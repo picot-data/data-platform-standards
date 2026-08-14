@@ -20,6 +20,16 @@ and `mart_` models. This mapping, and exactly where each layer is physically
 stored, is decided in
 [ADR 0001](https://github.com/picot-data/data-platform-standards/blob/main/adr/0001-medallion-dbt-layer-persistence.md).
 
+How the data gets there is a separate question, decided in
+[ADR 0013](https://github.com/picot-data/data-platform-standards/blob/main/adr/0013-local-duckdb-with-publication-step.md):
+dbt builds every model as a table in a **local** DuckDB file, and a publication
+step copies the durable ones to ADLS once, at the end of the run. DuckDB is an
+embedded engine — it reads and writes local files, and the platform touches
+object storage only at the two edges of a run (load Bronze, publish Silver and
+Gold). See
+[Persistence per layer](naming-conventions.md#persistence-per-layer) for the
+configuration that expresses this.
+
 ## The dbt layers, in transformation order
 
 <div class="dp-diagram-wrap" markdown="0">
