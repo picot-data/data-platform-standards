@@ -35,7 +35,7 @@ Azure tags are the one deliberate, documented exception to `snake_case` — see
 | Dimension (Gold) | `dim_` | `dim_<business_entity>` | `dim_customer` |
 | Fact (Gold) | `fct_` | `fct_<business_process>` | `fct_order` |
 | Mart (Gold) | `mart_` | `mart_<domain>__<analysis>` | `mart_finance__monthly_revenue` |
-| Metric (MetricFlow) | — | `<metric_name>` | `revenue` |
+| Metric (a column in a mart) | — | `<metric_name>` | `revenue` |
 
 A **business entity** is a real-world object the business describes, not an
 event it measures — `customer`, `product`, `date`, `supplier`, `plant`. A

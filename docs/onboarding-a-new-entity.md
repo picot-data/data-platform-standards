@@ -108,8 +108,8 @@ entire shared subscription.
 ## 4. Bootstrap — same script, same order
 
 Run the same `bootstrap_vm.sh` script used for `dti`, in the same order
-(system updates, Python + uv, DuckDB, dbt Core + adapter, dbt MetricFlow,
-Dagster OSS, Metabase, DataHub last). The script is idempotent by design, so
+(system updates, Python + uv, DuckDB, dbt Core + adapter, Dagster OSS,
+Metabase, DataHub last). The script is idempotent by design, so
 re-running it is always safe — see the
 [Onboarding an engineer](onboarding-an-engineer.md) page for what each
 installation step verifies before moving to the next.

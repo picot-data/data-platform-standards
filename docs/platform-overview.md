@@ -62,11 +62,17 @@ marts — see [Data layers](data-layers.md) for the layer-by-layer breakdown and
 why the medallion architecture and the dbt model layers are two different,
 easily conflated axes.
 
-## Semantic layer — dbt MetricFlow
+## Metric definitions — dbt marts
 
-Each business metric (e.g. revenue) is defined once, centrally, in
-MetricFlow, rather than recomputed differently in every mart or dashboard —
-see [Semantic layer](semantic-layer.md).
+Each business metric (e.g. revenue) is defined once, in a `mart_` model, rather
+than recomputed differently in every dashboard — see
+[Metric definitions](semantic-layer.md).
+
+This was dbt MetricFlow's job until
+[ADR 0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md):
+MetricFlow only binds consumers that query *through* it, and in dbt Core it is
+reachable from a CLI, not from Metabase — so a metric defined there was
+invisible in the one place it had to be visible.
 
 ## Orchestration — Dagster OSS
 

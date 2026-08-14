@@ -1,14 +1,14 @@
 # Glossary
 
-Business terms are the same terms defined in the [Semantic
-layer](semantic-layer.md)'s metric definitions — this page documents them in
-prose; MetricFlow enforces them in code. This glossary also feeds the
+Business terms are the same terms defined in the
+[metric definitions](semantic-layer.md) — this page documents them in prose,
+the `mart_` models compute them in SQL. This glossary also feeds the
 DataHub business glossary once governance is wired up.
 
 ## Business terms
 
 **Revenue** (`revenue`)
-: Sum of `amount_excl_tax` across orders, defined once in dbt MetricFlow.
+: Sum of `amount_excl_tax` across orders, defined once in a `mart_` model.
   Excludes tax by convention — see
   [Naming conventions — Measure columns](naming-conventions.md#measure-columns)
   for why the unit/precision is always explicit in a column name.
@@ -55,10 +55,16 @@ DataHub business glossary once governance is wired up.
   carries business meaning from the source system. See
   [Naming conventions — Identity columns](naming-conventions.md#identity-columns-keys).
 
+**Metric definition**
+: The single place a business metric is computed — a `mart_` model — instead of
+  being recomputed independently in each dashboard. See
+  [Metric definitions](semantic-layer.md).
+
 **Semantic layer**
-: The layer where a business metric is defined once (in dbt MetricFlow) and
-  queried consistently by every consumer, instead of being recomputed
-  independently in each mart or dashboard. See [Semantic layer](semantic-layer.md).
+: A tool that resolves a metric definition at query time, so any consumer asking
+  for it at any grain gets the same answer. The platform does *not* run one:
+  [ADR 0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md)
+  records why dbt MetricFlow was dropped in favour of marts.
 
 **Star schema**
 : A modeling pattern (Kimball) where a fact table's measures are described by

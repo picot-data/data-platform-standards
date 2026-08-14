@@ -26,7 +26,7 @@ nav:
   - Home: index.md
   - Platform overview: platform-overview.md
   - Data layers: data-layers.md
-  - Semantic layer: semantic-layer.md
+  - Metric definitions: semantic-layer.md
   - Naming conventions: naming-conventions.md
   - Azure landing zones: azure-landing-zones.md
   - Repositories and delivery: repositories-and-delivery.md
@@ -65,7 +65,7 @@ plugins:
             Home: Accueil
             Platform overview: Vue d'ensemble de la plateforme
             Data layers: Couches de données
-            Semantic layer: Couche sémantique
+            Metric definitions: Définition des indicateurs
             Naming conventions: Conventions de nommage
             Azure landing zones: Landing zones Azure
             Repositories and delivery: Dépôts et livraison
@@ -80,7 +80,7 @@ plugins:
             Home: Home
             Platform overview: Platformoverzicht
             Data layers: Datalagen
-            Semantic layer: Semantische laag
+            Metric definitions: Metriekdefinities
             Naming conventions: Naamgevingsconventies
             Azure landing zones: Azure landing zones
             Repositories and delivery: Repository's en levering

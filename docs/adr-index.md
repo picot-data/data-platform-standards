@@ -21,6 +21,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md) | Deploy via OIDC, a shared container registry and Azure Run Command, not a self-hosted runner | Accepted |
 | [0013](https://github.com/picot-data/data-platform-standards/blob/main/adr/0013-local-duckdb-with-publication-step.md) | dbt materializes locally; a publication step writes Silver and Gold | Accepted |
 | [0014](https://github.com/picot-data/data-platform-standards/blob/main/adr/0014-duckdb-scale-ceiling.md) | When a single DuckDB node stops being the right engine | Accepted |
+| [0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md) | Metric definitions live in dbt marts, not in MetricFlow | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues

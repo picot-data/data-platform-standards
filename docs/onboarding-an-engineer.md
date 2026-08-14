@@ -73,7 +73,7 @@ Before opening a pull request:
 
 That's a separate, ordered procedure (`bootstrap_vm.sh`), not part of this
 30-minute local setup: system updates, then Python + uv, then DuckDB, then
-dbt Core + adapter, then dbt MetricFlow, then Dagster OSS, then Metabase,
+dbt Core + adapter, then Dagster OSS, then Metabase,
 and DataHub last — each step verified before moving to the next. See the
 entity repository's `infra/scripts/bootstrap_vm.sh` and its
 `docs/runbook.md`.

@@ -1,78 +1,94 @@
-# Semantic layer
+# Metric definitions
 
-## The problem a semantic layer solves
+## The problem this solves
 
-Without a semantic layer, a metric like revenue tends to get computed
-independently in several places: once in a dbt mart, once in a Metabase
-question, once in a spreadsheet someone builds for a meeting. Each
+Without a single place to define them, a metric like revenue tends to get
+computed independently in several places: once in a dbt mart, once in a
+Metabase question, once in a spreadsheet someone builds for a meeting. Each
 computation makes its own small, reasonable-looking choice — include tax or
 not, count cancelled orders or not — and the three numbers quietly diverge.
 Nobody notices until two people bring different "revenue" figures to the same
 meeting.
 
-**A metric is defined once, centrally, in dbt MetricFlow — never recomputed
-independently in a mart or in the BI tool.** Every consumer of that metric,
-whether a dbt mart, a Metabase dashboard, or an ad hoc query, resolves back to
-the same definition.
+**A metric is defined once, in a `mart_` model, and never recomputed in the BI
+tool.**
+
+This used to be dbt MetricFlow's job. It is not, any more:
+[ADR 0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md)
+records why. In short, MetricFlow only binds a consumer that *queries through*
+it, and in dbt Core it is reachable from a CLI — the BI integrations run
+through dbt Cloud's paid Semantic Layer API, and Metabase has no integration
+with either. A metric defined in MetricFlow was therefore invisible to the only
+BI tool in the platform, which is the one place it needed to be visible.
 
 ## Where metrics are defined
 
-Metrics are defined in `transformation/metrics/`, on top of the Gold star
-schema — never on top of staging or intermediate models. A metric definition
-references:
-
-- a **semantic model**, which maps a fact table (e.g. `fct_order`) to its
-  measures, dimensions, and entities;
-- one or more **measures**, the aggregation of a column (e.g. `sum` of
-  `amount_excl_tax`);
-- optionally, a **filter**, when the metric represents a subset (e.g.
-  revenue excluding cancelled orders).
-
-```yaml
-# transformation/metrics/fct_order.yml (illustrative)
-semantic_models:
-  - name: fct_order
-    model: ref('fct_order')
-    entities:
-      - name: order
-        type: primary
-    dimensions:
-      - name: date_order
-        type: time
-        type_params:
-          time_granularity: day
-    measures:
-      - name: revenue_excl_tax
-        agg: sum
-        expr: amount_excl_tax
-
-metrics:
-  - name: revenue
-    type: simple
-    type_params:
-      measure: revenue_excl_tax
-```
+In `transformation/models/marts/`, on top of the Gold star schema — never on
+top of staging or intermediate models. The mart is the metric: it computes it,
+documents it, and is what Metabase reads.
 
 The metric name follows the naming pattern in
-[Naming conventions](naming-conventions.md#dbt-model-naming) — no prefix, just
-the business term (`revenue`, not `mart_revenue` or `fct_revenue`).
+[Naming conventions](naming-conventions.md#dbt-model-naming): a mart is
+`mart_<domain>__<analysis>`, and the metric it carries is the business term
+itself (`revenue`, not `revenue_calc`).
 
-## Querying a metric
+## Three rules that make this safe
 
-MetricFlow resolves a metric query into SQL against the underlying Gold
-tables, at whatever dimension and time grain is requested — a BI tool query
-for "revenue by month" and one for "revenue by customer" both resolve to the
-same `revenue` definition, just grouped differently. This is what makes the
-single-definition guarantee real: it is not a discipline the team has to
-maintain by convention, it is what happens mechanically when a metric is
-queried through MetricFlow instead of hand-written in a dashboard.
+Moving metrics out of a semantic layer moves the responsibility for correct
+re-aggregation onto whoever writes the mart. These three rules contain that,
+and they are not stylistic:
+
+**1. Never store a ratio or an average.** Store the numerator and the
+denominator, and let the BI tool divide. The average of daily averages is not
+the average over the period, and a stored `average_order_value` column cannot
+be aggregated to a month without being wrong.
+
+```sql
+-- mart_sales__daily_orders
+select
+    date_day,
+    entity,
+    sum(amount_excl_tax) as revenue,      -- numerator
+    count(distinct order_id) as order_count  -- denominator
+from ...
+group by 1, 2
+```
+
+Metabase then shows average order value as `revenue / order_count`, computed
+over whatever period the user selected.
+
+**2. Only additive measures may be rolled up.** Sums and row counts add up
+across periods; `COUNT(DISTINCT ...)` does not, unless the distinct key cannot
+appear in two periods. Verify that assumption rather than inheriting it — an
+order whose lines span two dates breaks it silently, and the total is simply
+too high with nothing to indicate it.
+
+**3. Metric logic never appears in a Metabase question.** A `SUM` in a saved
+question is a second definition, and the fact that it usually agrees with the
+mart is what makes the day it disagrees so hard to find.
+
+## Self-service and marts are not alternatives
+
+Exposing only marts would make Metabase a viewer: every new question becomes a
+modelling ticket. Exposing dimensions and facts is what makes it a self-service
+tool — see [Data layers](data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging).
+
+Both are exposed, and they answer different needs:
+
+| | Dimensions + facts | Marts |
+|---|---|---|
+| For | Exploring a question nobody anticipated | A recurring or complex analysis |
+| Requires | Knowing which tables to join | Nothing |
+| Holds a metric definition | No — raw measures | Yes |
+| Changes when | The business model changes | A new recurring question appears |
+
+Rule of thumb: a question asked once is a Metabase query over facts and
+dimensions. A question asked every month, or one whose logic is subtle enough
+that two analysts would get different answers, becomes a mart.
 
 ## What this proves
 
-A dashboard that reads "chiffre d'affaires: 1.2M€" should be traceable back
-to one metric definition, one semantic model, one fact table — not to a
-`SUM()` written independently inside a Metabase question. This is the same
-traceability argument that motivates the [governance and lineage
-catalog](platform-overview.md#governance-datahub): if someone in finance asks
-"where does this number come from", the answer is a metric definition anyone
-can open, not something only one person remembers.
+A dashboard reading "chiffre d'affaires: 1.2M€" is traceable to one `mart_`
+model in Git, reviewed and tested — not to a `SUM()` written inside a Metabase
+question that only its author remembers. If someone in finance asks where the
+number comes from, the answer is a file anyone can open.
