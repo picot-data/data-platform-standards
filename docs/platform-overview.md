@@ -18,20 +18,26 @@ Every Level 1 tool that needs a machine runs on a single Azure VM per entity:
 Dagster, dbt Core, DuckDB, and the non-SAP ingestion scripts. Not one VM per
 tool, not one VM shared across entities — see
 [ADR 0006](https://github.com/picot-data/data-platform-standards/blob/main/adr/0006-single-vm-for-level-1.md).
-DataHub is a Level 1 tool too and also runs on that same VM — see
-[Governance — DataHub](#governance-datahub) below — but it sits outside the
-table because it's a governance layer on top of the core
-ingestion-to-transformation pipeline, not part of it.
+The table below is the complete list: what runs on an entity VM is the
+ingestion-to-Gold pipeline and nothing else.
 
-Two components are **not** on the entity VM:
+Three components are **not** on the entity VM:
 
 - **Azure Data Factory**, a managed Azure service with its own scheduling and
   monitoring, whose self-hosted integration runtime runs on a machine with
   network access to the on-premise SAP system — see
   [Extraction — SAP to cloud](#extraction-sap-to-cloud).
-- **Metabase**, which runs once for the whole group on a VM in the shared
-  landing zone rather than once per entity — see
-  [Consumption — Metabase](#consumption-metabase).
+- **Metabase** and **DataHub**, which both run once for the whole group on a
+  shared VM (`vm-picot-shared-bi-weu-01`) rather than once per entity — see
+  [Consumption — Metabase](#consumption-metabase) and
+  [Governance — DataHub](#governance-datahub).
+
+Because nothing interactive is left on it, an entity VM is started before its
+pipeline window and deallocated after it, with a fixed daily cut-off as a
+backstop — see
+[ADR 0018](https://github.com/picot-data/data-platform-standards/blob/main/adr/0018-scheduled-start-stop-for-entity-vms.md)
+and [Hard limits](azure-landing-zones.md#hard-limits). Any Dagster schedule must
+therefore sit inside that window.
 
 | Component | Role | Runs as |
 |---|---|---|
@@ -94,6 +100,22 @@ Level 1 stack — it runs as several Docker containers (backend, search index,
 metadata database), unlike the CLI-based tools above — and is installed only
 after Dagster and dbt are stable, so that installation problems can be
 isolated to one component at a time.
+
+It runs **once for the whole group**, on the same shared VM as Metabase, not on
+the entity VMs — see
+[ADR 0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md).
+A catalog split per entity would answer "where does this figure come from" per
+entity, hold the business glossary in as many copies as there are entities, and
+keep every entity VM awake to serve a UI. It reads the dbt artifacts from the
+`metadata` container on ADLS, published there by the entity pipeline — the
+entity writes to storage and the consumer reads from storage, exactly as for
+Silver and Gold.
+
+Because it shares a machine with Metabase, DataHub's containers carry explicit
+memory limits: it is the one component whose resource use can starve its
+neighbours, the failure mode
+[ADR 0007](https://github.com/picot-data/data-platform-standards/blob/main/adr/0007-python-scripts-not-airbyte.md)
+records from experience.
 
 ## Consumption — Metabase
 

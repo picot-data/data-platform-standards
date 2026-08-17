@@ -131,15 +131,20 @@ entire shared subscription.
 ## 4. Bootstrap — same script, same order
 
 Run the same `bootstrap_vm.sh` script used for `dti`, in the same order
-(system updates, Python + uv, DuckDB, dbt Core + adapter, Dagster OSS,
-DataHub last). The script is idempotent by design, so
-re-running it is always safe — see the
+(system updates, Python + uv, DuckDB, dbt Core + adapter, Dagster OSS last).
+The script is idempotent by design, so re-running it is always safe — see the
 [Onboarding an engineer](onboarding-an-engineer.md) page for what each
 installation step verifies before moving to the next.
 
-Metabase is **not** installed here. It runs once for the whole group on the
-shared BI VM — see step 8 and
-[ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md).
+Neither Metabase nor DataHub is installed here. Both run once for the whole
+group on the shared VM — see step 8,
+[ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md)
+and
+[ADR 0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md).
+An entity VM therefore runs the pipeline and nothing else, which is what lets it
+be deallocated outside its window
+([ADR 0018](https://github.com/picot-data/data-platform-standards/blob/main/adr/0018-scheduled-start-stop-for-entity-vms.md)) —
+check that the entity's Dagster schedule sits inside that window.
 
 ## 5. Data platform code — new entity mono-repo
 
@@ -176,10 +181,10 @@ module — the same pattern used for `dti`, not a new one invented per entity.
 Both are created by the same `terraform apply` in step 2, not configured by
 hand afterward.
 
-## 8. BI — new scope on the existing Metabase
+## 8. BI and catalog — new scope on the existing instances
 
-The new entity does **not** get its own Metabase. On the shared BI instance
-(`vm-picot-shared-bi-weu-01`):
+The new entity does **not** get its own Metabase or its own DataHub. On the
+shared VM (`vm-picot-shared-bi-weu-01`):
 
 - Add `<code>` to the refresh so it builds `serving_<code>.duckdb` from
   `gold/company_<code>/`, and includes the new folder in the unioned
@@ -195,6 +200,9 @@ The new entity does **not** get its own Metabase. On the shared BI instance
   `<code>_readers`, then set data permissions before collection permissions.
 - Grant `group_analysts` access to the new entity's database and collection —
   otherwise the group-level view silently keeps excluding it.
+- Add the entity's `metadata/company_<code>/` prefix to the DataHub ingestion
+  recipe, so its dbt models appear in the existing catalog and its lineage joins
+  the group graph. No new DataHub instance, no new glossary.
 
 The full specification of collections, groups and permissions is in
 [BI and access](bi-and-access.md); this step applies it, it does not restate it.
@@ -203,8 +211,11 @@ The full specification of collections, groups and permissions is in
 
 - **A new storage account.** There is exactly one, group-wide — see
   [Azure landing zones](azure-landing-zones.md#resource-naming-pattern).
-- **A new Metabase instance.** There is exactly one, group-wide — see
-  [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md).
+- **A new Metabase or DataHub instance.** There is exactly one of each,
+  group-wide — see
+  [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md)
+  and
+  [ADR 0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md).
 - **A new Azure Policy assignment.** Tag enforcement is assigned once, at
   `mg-picot-landingzones` scope, and applies automatically.
 - **A copy of this standards repository.** Link to it; never fork or copy

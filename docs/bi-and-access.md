@@ -15,17 +15,25 @@ several of the rules below.
 
 Metabase runs once, on `vm-picot-shared-bi-weu-01` in
 `rg-picot-shared-data-weu`, not on the entity VMs. Entity VMs run the pipeline
-up to Gold; the BI VM reads Gold. A group-level dashboard comparing entities is
-the reason the platform exists, and it can only exist in one instance that sees
-every entity.
+up to Gold; the shared VM reads Gold. A group-level dashboard comparing entities
+is the reason the platform exists, and it can only exist in one instance that
+sees every entity.
 
-Two operational rules follow from centralising:
+DataHub shares that machine, for the same reasons and on the same terms — see
+[ADR 0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md).
 
-- **The application database is Postgres, not H2.** H2 is acceptable for a
-  single throwaway instance and not for the system holding the group's users,
-  permissions and dashboards.
-- **Nothing entity-specific is installed on the BI VM.** No dbt project, no
-  Dagster, no ingestion. Its only jobs are Metabase and the refresh below.
+Three operational rules follow from centralising:
+
+- **The application database is Postgres, not H2.** This is Metabase's own
+  store of users, groups, permissions, saved questions and dashboards — nothing
+  to do with the analytics data, which lives in DuckDB. H2 is acceptable for a
+  single throwaway instance and not for the system holding the group's access
+  rules.
+- **Nothing entity-specific is installed on the shared VM.** No dbt project, no
+  Dagster, no ingestion. Its jobs are Metabase, DataHub and the refresh below.
+- **This VM is never on a start/stop schedule**, unlike the entity VMs
+  ([ADR 0018](https://github.com/picot-data/data-platform-standards/blob/main/adr/0018-scheduled-start-stop-for-entity-vms.md)).
+  It serves people during working hours; that is the opposite workload.
 
 ### How Gold reaches Metabase
 
