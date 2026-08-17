@@ -88,9 +88,30 @@ key genuinely has no testable parent, `metabase.fk_target_table` remains
 available as the explicit exception.
 
 Authentication is a Metabase API key, held in the entity's Key Vault, never in
-a repository or a `.env` committed to one. Metabase API keys inherit the
-permissions of the group they are assigned to and are **not** superuser by
-default, so the key belongs to a group with rights to edit metadata.
+a repository or a `.env` committed to one.
+
+**The key belongs to `Administrators`, and in the open-source edition there is
+no alternative.** Metabase API keys inherit the permissions of the group they
+are assigned to and are not superuser by default, so the instinct is to give the
+key its own least-privilege group. Metabase does have exactly the permission
+that would allow it — *Manage table metadata* — but data model permissions are a
+Pro/Enterprise feature. On the open-source edition, editing table metadata is
+admin or nothing.
+
+That is accepted rather than worked around, and contained instead:
+
+- The identity is an **API key, not a user account**, so it can be revoked in
+  one click without touching a person.
+- It lives in Key Vault, readable only by the VM's managed identity, and reaches
+  the container as an environment variable that no image layer contains.
+- It is used by exactly one asset, and is never a credential anyone
+  authenticates with by hand.
+
+What is given up honestly: an admin key can read every table and change every
+permission, so it is a genuine privilege escalation compared with the pipeline's
+other credentials, and its blast radius is the whole Metabase instance. If the
+group ever buys a Pro licence, moving the key to a group with *Manage table
+metadata* is a two-minute change and should be done.
 
 The command runs after publication, not as part of the dbt build: it describes
 what was published, so running it earlier would document models that may not
@@ -141,4 +162,6 @@ have passed their tests.
   [(#70029)](https://github.com/metabase/metabase/issues/70029)
 - [`dbt-metabase`](https://github.com/gouline/dbt-metabase)
 - [Metabase — API keys](https://www.metabase.com/docs/latest/people-and-groups/api-keys)
+- [Metabase — data permissions](https://www.metabase.com/docs/latest/permissions/data)
+  (*Manage table metadata* is Pro/Enterprise only)
 - [dbt-duckdb — foreign key constraints fail on re-run (#425)](https://github.com/duckdb/dbt-duckdb/issues/425)

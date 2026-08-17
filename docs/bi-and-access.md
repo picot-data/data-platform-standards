@@ -171,7 +171,7 @@ deserves it, a capability does not.
 | `<entity>_explorers` | Query builder only, no SQL. Build and save their own questions | anyone comfortable with self-service |
 | `<entity>_readers` | Consume only: open dashboards, filter, drill in. No question of their own | occasional consumer |
 | `group_analysts` | `<entity>_analysts`, across every entity plus the group scope | group-level controlling |
-| `platform_automation` | No humans — holds the API key that applies dbt metadata (ADR 0017) | — |
+| `platform_automation` | **Not a group to create.** The metadata sync's API key has to sit in `Administrators` — see [The automation key](#the-automation-key) | — |
 
 Group names are `snake_case`, and `<entity>` is the same entity code used
 everywhere else — Azure resource names, the `entity` column, ADLS prefixes (see
@@ -222,7 +222,6 @@ The *Create queries* setting is what separates the three tiers.
 | `dti_readers` | View data + **Create queries: No** | No access | No access |
 | `bg_analysts` / `bg_explorers` / `bg_readers` | No access | same three tiers on `gold_bg` | No access |
 | `group_analysts` | View data + query builder and native SQL | same | same |
-| `platform_automation` | no data access needed — metadata only | | |
 
 Why the tiers fall where they do:
 
@@ -258,7 +257,6 @@ display convenience and provides no security.
 | `<entity>_explorers` | View | Curate | No access | No access | No access |
 | `<entity>_readers` | View | No access | No access | No access | No access |
 | `group_analysts` | View | No access | View | Curate | View |
-| `platform_automation` | No access | No access | No access | No access | No access |
 
 Two deliberate asymmetries:
 
@@ -272,6 +270,36 @@ Two deliberate asymmetries:
 Promotion from `explorers` to `analysts` is therefore a real step: it grants SQL
 *and* the right to publish into a domain collection, which is the right to put a
 star on something.
+
+## The automation key
+
+The metadata sync (ADR 0017) authenticates with a Metabase API key, and that key
+**has to sit in `Administrators`**. Do not create a dedicated least-privilege
+group for it: the attempt fails for a reason worth knowing rather than
+rediscovering.
+
+Metabase has exactly the right permission — *Manage table metadata*, with a
+per-table *Granular* mode — but **data model permissions are Pro/Enterprise
+only**. On the open-source edition, editing table metadata is admin or nothing.
+
+The near-miss to avoid: granting the automation group *native SQL* on the
+database. Data permissions govern **querying**; metadata editing lives in
+**Admin**. Native SQL would give the key more power over the data and still no
+power at all over metadata — strictly worse on both counts.
+
+So it is contained rather than scoped down:
+
+- An **API key, not a user account** — revocable in one click, tied to no person.
+- **In Key Vault**, readable only by the VM's managed identity, reaching the
+  container as an environment variable that no image layer holds.
+- **Named for its job** (e.g. `dbt-metabase metadata sync`) so that its presence
+  in the admin key list is self-explanatory rather than alarming.
+- **Used by one asset**, never by a human authenticating by hand.
+
+Stated plainly, because it is the weakest point on this page: an admin key can
+read every table and change every permission. Its blast radius is the whole
+instance. If a Pro licence is ever bought, moving it to a group with *Manage
+table metadata* is a two-minute change and should be done that day.
 
 ## Where table metadata comes from
 
