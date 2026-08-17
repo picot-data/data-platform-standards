@@ -18,17 +18,20 @@ Every Level 1 tool that needs a machine runs on a single Azure VM per entity:
 Dagster, dbt Core, DuckDB, and the non-SAP ingestion scripts. Not one VM per
 tool, not one VM shared across entities — see
 [ADR 0006](https://github.com/picot-data/data-platform-standards/blob/main/adr/0006-single-vm-for-level-1.md).
-Metabase and DataHub are Level 1 tools too, and also run on that same VM —
-see [Governance — DataHub](#governance-datahub) and
-[Consumption — Metabase](#consumption-metabase) below — but they sit outside
-the table because they're consumption/governance layers on top of the core
+DataHub is a Level 1 tool too and also runs on that same VM — see
+[Governance — DataHub](#governance-datahub) below — but it sits outside the
+table because it's a governance layer on top of the core
 ingestion-to-transformation pipeline, not part of it.
 
-The one component in the table that is **not** on the VM is Azure Data
-Factory: a managed Azure service with its own scheduling and monitoring,
-whose self-hosted integration runtime runs on a machine with network access
-to the on-premise SAP system — see
-[Extraction — SAP to cloud](#extraction-sap-to-cloud).
+Two components are **not** on the entity VM:
+
+- **Azure Data Factory**, a managed Azure service with its own scheduling and
+  monitoring, whose self-hosted integration runtime runs on a machine with
+  network access to the on-premise SAP system — see
+  [Extraction — SAP to cloud](#extraction-sap-to-cloud).
+- **Metabase**, which runs once for the whole group on a VM in the shared
+  landing zone rather than once per entity — see
+  [Consumption — Metabase](#consumption-metabase).
 
 | Component | Role | Runs as |
 |---|---|---|
@@ -98,6 +101,24 @@ Metabase (open-source, self-hosted) queries the Gold layer through DuckDB —
 see
 [ADR 0008](https://github.com/picot-data/data-platform-standards/blob/main/adr/0008-metabase-not-power-bi.md)
 for why Power BI is not the BI tool here.
+
+It runs **once for the whole group**, on `vm-picot-shared-bi-weu-01` in the
+shared landing zone, not once per entity — a group-level dashboard comparing
+entities is the reason the platform exists, and no per-entity instance can
+build one. A scheduled refresh on that VM pulls the published Gold Parquet
+from ADLS to local disk and rebuilds one serving DuckDB database per entity,
+plus one unioned group database; Metabase never queries `abfss://` directly.
+See
+[ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md).
+
+Its table metadata — descriptions, foreign keys, hidden technical tables — is
+pushed from dbt's `manifest.json` through the Metabase API rather than typed
+into the UI, so the dbt `.yml` files stay the single source of truth for BI
+documentation as well as for the data. See
+[ADR 0017](https://github.com/picot-data/data-platform-standards/blob/main/adr/0017-dbt-metadata-to-metabase-via-api.md).
+
+Collections, user groups and permissions are specified in
+[BI and access](bi-and-access.md).
 
 ## Extraction — SAP to cloud
 

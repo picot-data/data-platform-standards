@@ -208,6 +208,20 @@ gold/group/fct_order_group/
 | Time partitioning in bronze only | Silver and Gold are managed by dbt/DuckDB, not by folder structure |
 | Gold folder names = dbt model names | Single naming repository |
 
+## BI naming
+
+Metabase collections, user groups, serving databases and the dashboard
+certification markers are documented once, in
+[BI and access](bi-and-access.md) — not repeated here. Two rules from this page
+apply to them unchanged: group names are `snake_case`, and the entity code in a
+group or database name is the same code used for the Azure infra `scope`
+segment and the `entity` column.
+
+The one deliberate departure: dashboard and question *titles* in Metabase are
+business-facing prose, so they are not bound by the `snake_case` and
+no-special-characters rules above — they carry an emoji marker by design. dbt
+model names never do.
+
 ## Git naming
 
 Branch and commit conventions are documented once, in

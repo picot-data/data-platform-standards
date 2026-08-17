@@ -13,6 +13,7 @@ pages.
 | New to the project entirely | [Platform overview](platform-overview.md), then [Onboarding an engineer](onboarding-an-engineer.md) |
 | Writing a dbt model | [Data layers](data-layers.md), then [Naming conventions](naming-conventions.md) |
 | Adding or changing a metric | [Semantic layer](semantic-layer.md) |
+| Building a dashboard, or granting someone access | [BI and access](bi-and-access.md) |
 | Provisioning Azure resources | [Azure landing zones](azure-landing-zones.md) |
 | Onboarding a new group entity | [Onboarding a new entity](onboarding-a-new-entity.md) |
 | Setting up a new repository | [Repositories and delivery](repositories-and-delivery.md) |

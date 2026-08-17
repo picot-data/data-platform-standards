@@ -12,7 +12,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0003](https://github.com/picot-data/data-platform-standards/blob/main/adr/0003-azure-tag-key-casing.md) | Azure tag keys use PascalCase, as an exception to snake_case | Accepted |
 | [0004](https://github.com/picot-data/data-platform-standards/blob/main/adr/0004-tagging-enforced-via-policy.md) | Tags are enforced by Azure Policy, not by discipline | Accepted |
 | [0005](https://github.com/picot-data/data-platform-standards/blob/main/adr/0005-budget-alerts-vs-automated-shutdown.md) | Budget alerts everywhere, automated shutdown only on dev/staging | Accepted |
-| [0006](https://github.com/picot-data/data-platform-standards/blob/main/adr/0006-single-vm-for-level-1.md) | A single VM for all Level 1 tools, per entity | Accepted |
+| [0006](https://github.com/picot-data/data-platform-standards/blob/main/adr/0006-single-vm-for-level-1.md) | A single VM for all Level 1 tools, per entity | Partially superseded by 0016 |
 | [0007](https://github.com/picot-data/data-platform-standards/blob/main/adr/0007-python-scripts-not-airbyte.md) | In-house Python ingestion scripts, not Airbyte OSS | Partially superseded by 0010 |
 | [0008](https://github.com/picot-data/data-platform-standards/blob/main/adr/0008-metabase-not-power-bi.md) | Metabase, not Power BI, as the BI tool | Accepted |
 | [0009](https://github.com/picot-data/data-platform-standards/blob/main/adr/0009-plain-parquet-not-iceberg.md) | Plain Parquet at Level 1, not Iceberg or Delta | Accepted |
@@ -22,6 +22,8 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0013](https://github.com/picot-data/data-platform-standards/blob/main/adr/0013-local-duckdb-with-publication-step.md) | dbt materializes locally; a publication step writes Silver and Gold | Accepted |
 | [0014](https://github.com/picot-data/data-platform-standards/blob/main/adr/0014-duckdb-scale-ceiling.md) | When a single DuckDB node stops being the right engine | Accepted |
 | [0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md) | Metric definitions live in dbt marts, not in MetricFlow | Accepted |
+| [0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md) | One central Metabase for the group, not one per entity | Accepted |
+| [0017](https://github.com/picot-data/data-platform-standards/blob/main/adr/0017-dbt-metadata-to-metabase-via-api.md) | dbt documentation reaches Metabase through its API, not through the database | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues
