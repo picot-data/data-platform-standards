@@ -71,9 +71,18 @@ Before opening a pull request:
 
 ## 4. If you're setting up the VM itself, not just a local dev environment
 
-That's a separate, ordered procedure (`bootstrap_vm.sh`), not part of this
-30-minute local setup: system updates, then Python + uv, then DuckDB, then
-dbt Core + adapter, then Dagster OSS, then Metabase,
-and DataHub last — each step verified before moving to the next. See the
-entity repository's `infra/scripts/bootstrap_vm.sh` and its
+That's a separate procedure (`bootstrap_vm.sh`), not part of this 30-minute local
+setup — and it is much shorter than it used to be: **system updates, Docker, `jq`
+and `git`, and nothing else.** The platform ships as a container image built in
+CI, so Python, uv, dbt and Dagster live inside that image; installing them on the
+machine as well would create a second copy of the stack, resolved from different
+versions, and "works on the VM" would stop meaning "works from the image".
+
+Neither Metabase nor DataHub is installed on an entity VM: both run once for the
+whole group on the shared BI machine — see
+[ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md)
+and
+[ADR 0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md).
+
+See the entity repository's `infra/scripts/bootstrap_vm.sh` and its
 `docs/runbook.md`.
