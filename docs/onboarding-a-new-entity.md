@@ -180,12 +180,14 @@ different versions, and "works on the VM" would stop meaning "works from the
 image". The script did install them, on the first entity, before the platform was
 containerised — that is history, not a fallback.
 
-Metabase is not installed here either: it runs once for the whole group on the
-shared VM — see step 8 and
-[ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md).
-No catalog service is installed here or anywhere else — the catalog is a static
-site the CI generates and attaches to its run as an artifact
-([ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md)).
+Neither Metabase nor the catalog is installed here: both run on the shared VM, the
+only always-on machine — see step 8,
+[ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md)
+and
+[ADR 0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md).
+What this VM owes the catalog is a publication step at the end of the run
+([ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md)):
+it deposits its dbt docs site on ADLS while it is awake, then shuts down.
 An entity VM therefore runs the pipeline and nothing else, which is what lets it
 be deallocated outside its window
 ([ADR 0018](https://github.com/picot-data/data-platform-standards/blob/main/adr/0018-scheduled-start-stop-for-entity-vms.md)) —

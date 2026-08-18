@@ -19,9 +19,13 @@ up to Gold; the shared VM reads Gold. A group-level dashboard comparing entities
 is the reason the platform exists, and it can only exist in one instance that
 sees every entity.
 
-Metabase is the only tenant of that machine. The catalog was once planned to
-share it, and no longer needs a machine at all — see
-[ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md).
+The catalog is served from that machine too, at `/catalog/<entity>/` — not because
+it needs a machine of its own, but because this is the only one always on
+([ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md)
+for why dbt docs,
+[ADR 0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md)
+for why here). It is a static site, so serving it costs a web server and no
+application.
 
 Three operational rules follow from centralising:
 
@@ -31,7 +35,8 @@ Three operational rules follow from centralising:
   single throwaway instance and not for the system holding the group's access
   rules.
 - **Nothing entity-specific is installed on the shared VM.** No dbt project, no
-  Dagster, no ingestion. Its jobs are Metabase and the refresh below.
+  Dagster, no ingestion. Its jobs are Metabase, the catalog, and the refresh
+  below — which pulls the dbt docs site along with the Gold Parquet.
 - **This VM is never on a start/stop schedule**, unlike the entity VMs
   ([ADR 0018](https://github.com/picot-data/data-platform-standards/blob/main/adr/0018-scheduled-start-stop-for-entity-vms.md)).
   It serves people during working hours; that is the opposite workload.

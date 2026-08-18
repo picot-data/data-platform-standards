@@ -29,6 +29,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0020](https://github.com/picot-data/data-platform-standards/blob/main/adr/0020-shared-scope-as-a-root-module.md) | The group-scoped resources live in a root module, not in a module and not in an entity | Accepted |
 | [0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md) | dbt docs is the catalog, not DataHub | Accepted |
 | [0022](https://github.com/picot-data/data-platform-standards/blob/main/adr/0022-business-logic-in-dbt-metabase-is-presentation.md) | Business logic lives in dbt; Metabase is a presentation layer only | Accepted |
+| [0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md) | The catalog is served from the shared BI VM, on the corporate network | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues
