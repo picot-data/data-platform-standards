@@ -37,13 +37,13 @@ holding only two subscriptions at first.
   entities arrive) or `shared` for group-wide resources
 - `region` = `weu` (West Europe)
 - `workload` = `data` for an entity's pipeline VM at Level 1 (everything on a
-  single VM), or `bi` for the group's shared VM running Metabase and DataHub —
-  the one Level 1 split, because that machine serves people rather than being
-  part of any entity's pipeline (see
-  [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md)
-  and [ADR 0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md)).
-  `bi` covers the catalog as well as the dashboards: same audience, same
-  session, same question. Splits further into `compute`, `orch`, etc. at Level 2
+  single VM), or `bi` for the group's shared VM running Metabase — the one
+  Level 1 split, because that machine serves people rather than being part of any
+  entity's pipeline (see
+  [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md)).
+  The catalog does not appear here: it is a static site, not a hosted workload
+  ([ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md)).
+  Splits further into `compute`, `orch`, etc. at Level 2
 
 | Resource | Name | Notes |
 |---|---|---|
@@ -59,7 +59,7 @@ holding only two subscriptions at first.
 | Resource Group (shared, prod) | `rg-picot-shared-data-weu` | Created in `sub-picot-shared-prod`; dev/staging stay empty at Level 1 |
 | Resource Group (Dirickx, prod) | `rg-picot-dti-data-weu` | Created in `sub-picot-dti-prod`; dev/staging stay empty at Level 1 |
 | Storage Account (ADLS Gen2) | `stpicotdata` | 3-24 char, lowercase alphanumeric only, **global Azure uniqueness** — check availability before locking it in |
-| VM (shared, BI + catalog) | `vm-picot-shared-bi-weu-01` | Runs the group's single Metabase and single DataHub — see [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md) and [ADR 0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md). Sized for DataHub plus Metabase, not their average, and never on a start/stop schedule — it serves people during working hours. Lives in `rg-picot-shared-data-weu` with the storage account: one shared resource group at Level 1, even though its `workload` segment differs |
+| VM (shared, BI) | `vm-picot-shared-bi-weu-01` | Runs the group's single Metabase — see [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md). Sized for Metabase alone; the catalog is a static site and needs no machine ([ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md)). Never on a start/stop schedule — it serves people during working hours. Lives in `rg-picot-shared-data-weu` with the storage account: one shared resource group at Level 1, even though its `workload` segment differs |
 | VM (Dirickx) | `vm-picot-dti-data-weu-01` | |
 | Key Vault (Dirickx) | `kv-picot-dti-weu-01` | 3-24 char, global Azure uniqueness — also to be checked |
 | NSG (Dirickx) | `nsg-picot-dti-data-weu-01` | |

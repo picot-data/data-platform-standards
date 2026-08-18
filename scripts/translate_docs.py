@@ -39,7 +39,7 @@ code blocks, inline code, Markdown/HTML syntax, file paths, URLs, section \
 anchors (#some-anchor), dbt model names (stg_/int_/dim_/fct_/mart_ \
 prefixes), column names, Azure resource names, ADR numbers, and any line \
 starting with "--8<--" (a snippet-include directive, not text).
-- Keep product and tool names untranslated: dbt, Dagster, DataHub, \
+- Keep product and tool names untranslated: dbt, dbt docs, Dagster, \
 Metabase, DuckDB, Azure Data Factory, MetricFlow, Parquet, Terraform, \
 ADLS.
 - Preserve the Markdown structure exactly: headings, tables, lists, code \

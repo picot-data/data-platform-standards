@@ -2,8 +2,11 @@
 
 Business terms are the same terms defined in the
 [metric definitions](semantic-layer.md) — this page documents them in prose,
-the `mart_` models compute them in SQL. This glossary also feeds the
-DataHub business glossary once governance is wired up.
+the `mart_` models compute them in SQL. There is no separate glossary tool to
+feed: each term below also lives in the `description` of the `mart_` model that
+computes it, which is what the catalog publishes — see
+[ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md).
+When a definition changes here, it changes in that model's YAML too.
 
 ## Business terms
 

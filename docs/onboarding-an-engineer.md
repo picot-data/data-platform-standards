@@ -78,11 +78,13 @@ CI, so Python, uv, dbt and Dagster live inside that image; installing them on th
 machine as well would create a second copy of the stack, resolved from different
 versions, and "works on the VM" would stop meaning "works from the image".
 
-Neither Metabase nor DataHub is installed on an entity VM: both run once for the
-whole group on the shared BI machine — see
-[ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md)
-and
-[ADR 0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md).
+Metabase is not installed on an entity VM: it runs once for the whole group on
+the shared BI machine — see
+[ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md).
+No catalog service is installed either, on any machine: the catalog is the static
+site `dbt docs generate` produces, attached to each CI run as an artifact and read
+from there or with `dbt docs serve` — see
+[ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md).
 
 See the entity repository's `infra/scripts/bootstrap_vm.sh` and its
 `docs/runbook.md`.

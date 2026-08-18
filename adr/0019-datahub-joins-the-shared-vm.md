@@ -1,6 +1,6 @@
 # ADR 0019: DataHub joins Metabase on the shared VM, on one machine rather than two
 
-**Status**: Accepted
+**Status**: Superseded by ADR-0021
 
 **Date**: 2026-08-17
 
