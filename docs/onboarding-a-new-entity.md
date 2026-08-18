@@ -215,6 +215,14 @@ repo's README are easy to skip and each fails in its own way:
 - **`dbt parse` once before starting Dagster.** The publication asset reads the
   manifest at import time, so definitions do not load until it exists.
 
+The new repository's `ci.yml` calls the reusable workflow in
+`data-platform-workflows`, which is **private** — so that repository's
+*Settings → Actions → General → Access* must allow
+"Accessible from repositories in the `picot-data` organization". It is a one-time
+organisation-level setting, not a per-entity one, but it is worth knowing because
+its absence fails with `workflow was not found`, which reads like a wrong path and
+is not.
+
 Because the template is copied once and not kept in sync afterward, an entity
 generated a while ago can be behind it. That is the accepted trade-off of
 ADR 0011 — the template is kept current against the reference entity rather than
