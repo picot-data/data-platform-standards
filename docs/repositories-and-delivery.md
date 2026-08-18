@@ -41,7 +41,7 @@ carry what would otherwise be duplicated into every entity mono-repo (see
 
 | Repo | Carries | Consumed by an entity repo as |
 |---|---|---|
-| `terraform-azure-data-platform` | The actual Terraform code, as two modules: `modules/entity` (resource group, VM, NSG, Key Vault) and `modules/governance` (budgets, action groups) — mandatory tags stay a `local.common_tags` block in the entity's own root module | `infra/terraform/` — a thin root module calling both, pinned to a tagged `ref` |
+| `terraform-azure-data-platform` | The actual Terraform code: `modules/entity` (resource group, VM, NSG, Key Vault, the VM's user-assigned managed identity, the entity's container registry, and every role assignment that identity needs), `modules/governance` (budgets, action groups), `modules/storage` (the group's lake) and `shared/` — the root module for what exists once for the whole group. Mandatory tags stay a `local.common_tags` block in each root module | `infra/terraform/` — a thin root module calling `entity` and `governance`, pinned to a tagged `ref`. Never `storage` or `shared/`: those are group-scoped |
 | `data-platform-entity-template` | The mono-repo skeleton below, as a GitHub template repository | "Use this template", once, when the entity repo is created |
 | `data-platform-workflows` | The reusable CI workflow | `ci.yml` — a few lines calling it with `uses:` |
 
@@ -121,11 +121,21 @@ and pull request. The steps below are implemented once, in
 entity's own `ci.yml` is a few lines calling it with `uses:`, not a
 copy of the steps:
 
-1. **Lint** the code (Python, SQL/dbt style).
-2. **`dbt parse`** — catches syntax and reference errors without touching any
-   data. This answers "does it compile?", not "does it work?".
-3. **`dbt build --target dev`** (or dbt unit tests) — runs the models and
-   their tests against dev data. This answers "does it work on data?".
+1. **Lint** the Python, with the `ruff` version the entity repo itself pins — a
+   lint failing because the tool moved is indistinguishable from one failing
+   because the code did.
+2. **`dbt parse`** — resolves every `ref()`, `source()` and macro and validates
+   every schema file, without touching any data. This answers "does it compile?",
+   not "does it work?".
+3. **dbt unit tests** — executes the transformation logic against inline
+   fixtures. This answers "does it work on data?" *without a credential*, which
+   is what allows it to run on every push from every branch.
+
+Step 3 is deliberately **not** `dbt build`. Building runs against real data, which
+means a storage credential in GitHub secrets, and keeping CI credential-free is
+worth more than the extra coverage — especially since unit tests cover cases real
+data only produces months later, such as Bronze holding several daily partitions
+at once.
 
 Deployment to the entity's VM is a separate pipeline, described in
 [Deployment](#deployment) below.

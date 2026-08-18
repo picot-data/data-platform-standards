@@ -111,6 +111,12 @@ keep every entity VM awake to serve a UI. It reads the dbt artifacts from the
 entity writes to storage and the consumer reads from storage, exactly as for
 Silver and Gold.
 
+One practical detail, checked rather than assumed: DataHub's dbt source accepts a
+local path, `s3://` or `gs://`, but **not** `abfss://`. The ingestion recipe on the
+shared machine therefore downloads the two artifacts before reading them. That
+does not change where they belong — the point is that they are reachable from a
+machine which is not the entity's.
+
 Because it shares a machine with Metabase, DataHub's containers carry explicit
 memory limits: it is the one component whose resource use can starve its
 neighbours, the failure mode

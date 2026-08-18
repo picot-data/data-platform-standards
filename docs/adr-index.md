@@ -26,6 +26,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0017](https://github.com/picot-data/data-platform-standards/blob/main/adr/0017-dbt-metadata-to-metabase-via-api.md) | dbt documentation reaches Metabase through its API, not through the database | Accepted |
 | [0018](https://github.com/picot-data/data-platform-standards/blob/main/adr/0018-scheduled-start-stop-for-entity-vms.md) | Entity VMs are started and stopped on a schedule, with a hard cut-off | Accepted |
 | [0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md) | DataHub joins Metabase on the shared VM, on one machine rather than two | Accepted |
+| [0020](https://github.com/picot-data/data-platform-standards/blob/main/adr/0020-shared-scope-as-a-root-module.md) | The group-scoped resources live in a root module, not in a module and not in an entity | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues

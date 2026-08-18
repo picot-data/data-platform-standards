@@ -69,10 +69,19 @@ marts are commodities** built on top of them, never the other way around.
 Every fact and dimension table carries an `entity` column (`'dti'` = Dirickx,
 `'bg'` = B&G, etc.) rather than one table per entity. When a new entity's
 data lands in `fct_order`, it arrives as additional rows with a new `entity`
-value in the same table — a group-level dashboard filters on
-`entity IN ('dti', 'bg')` (Dirickx and B&G), an entity-level dashboard
-filters on `entity = 'dti'` (Dirickx).
-Same table, same structure, no duplication. See
+value in the same table. Same table, same structure, no duplication.
+
+**The column is the data model, not the access control.** It is what lets one set
+of models serve every entity and one query compare them. What an entity is
+*allowed* to see is enforced one level down, at the serving database Metabase
+connects to: `gold_dti` holds Dirickx's rows, `gold_group` holds everyone's, and a
+group tied to one of them cannot reach the other. Metabase's open-source edition
+has no row or column security — filtering on `entity` inside a query is a
+convention, and a convention is not a boundary. See
+[BI and access — Data permissions](bi-and-access.md#data-permissions) for what
+actually holds the line.
+
+See
 [Naming conventions](naming-conventions.md#technical-metadata-columns) for the
 column definition, and
 [Azure landing zones](azure-landing-zones.md#resource-naming-pattern) for how

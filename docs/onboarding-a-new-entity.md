@@ -36,7 +36,9 @@ policy assignment is needed per entity.
 The Terraform code is not written per entity — it lives once in
 `terraform-azure-data-platform`, versioned by Git tags
 (see [ADR 0011](https://github.com/picot-data/data-platform-standards/blob/main/adr/0011-shared-terraform-module-and-entity-template.md)),
-as two modules: `modules/entity` (resource group, VM, NSG, Key Vault) and
+as two modules: `modules/entity` (resource group, VM, NSG, Key Vault, the VM's
+user-assigned managed identity, this entity's container registry, **and every role
+assignment that identity needs**) and
 `modules/governance` (budgets, action groups — see
 [Azure landing zones — Everything in Terraform](azure-landing-zones.md#everything-in-terraform)).
 Mandatory tags are **not** part of either module — they stay a
@@ -59,27 +61,53 @@ locals {
 }
 
 module "platform" {
-  source  = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v2.1.0"
-  entity  = "<code>"
-  region  = "westeurope"
-  vm_size = "Standard_D4s_v5"
-  tags    = local.common_tags
+  source               = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v2.2.0"
+  entity               = var.entity
+  region               = var.region
+  vm_size              = var.vm_size
+  admin_source_cidr    = var.admin_source_cidr
+  admin_ssh_public_key = var.admin_ssh_public_key
+
+  # Plain resource ids from this entity's .tfvars, not module references. The
+  # module grants its VM identity data-plane access to the first, and grants the
+  # CI deployer AcrPush plus the runCommand custom role using the second.
+  shared_storage_account_id    = var.shared_storage_account_id
+  github_deployer_principal_id = var.github_deployer_principal_id
+
+  tags = local.common_tags
 }
 
 module "governance" {
-  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v2.1.0"
-  entity              = "<code>"
+  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v2.2.0"
   resource_group_id   = module.platform.resource_group_id
+  resource_group_name = module.platform.resource_group_name
   budget_amount       = var.budget_amount # from finance, never invented
+  budget_start_date   = var.budget_start_date # first day of a month, RFC3339
+  notification_emails = [var.owner]
   tags                = local.common_tags
 }
 ```
 
+`shared_storage_account_id` looks optional — the module defaults it to null so
+that an entity can be applied before the lake exists — and in practice it is
+not. Without it the VM provisions perfectly and then fails **every** blob read
+and write with a 403, because being subscription Owner covers the control plane
+and the data plane is a separate RBAC system. DuckDB reports that 403 as
+"this could mean the credentials used were wrong", which sends the investigation
+after credentials that are fine. Read the id from the shared root module rather
+than composing it by hand — Azure accepts a role assignment on a resource id that
+does not exist, silently:
+
+```
+terraform -chdir=shared output -raw storage_account_id
+```
+
 A third module, `modules/storage`, exists in the same repository and is
 **deliberately not called here**. It creates the group's shared ADLS account,
-whose name is globally unique in Azure — a second entity calling it would
-either fail or fight the first entity's state for the same resource. It is
-called once, by whichever root module owns the shared subscription.
+whose name is globally unique in Azure — a second entity calling it would either
+fail or fight the first entity's state for the same resource. It is called once,
+by the `shared/` root module in that same repository, which owns everything
+existing once for the whole group (the lake today, the BI VM when it is created).
 
 Add a new `<code>.tfvars` with the entity's values, then run:
 
@@ -124,19 +152,35 @@ silver/company_<entity>/...
 gold/company_<entity>/...
 ```
 
-Grant the new VM's managed identity `Storage Blob Data Contributor` on the
-relevant containers/folders — scoped to the storage account, not to the
-entire shared subscription.
+Nothing is granted by hand here. Passing `shared_storage_account_id` in step 2 is
+what makes `modules/entity` grant this entity's VM identity
+`Storage Blob Data Contributor` on the account — scoped to the storage account,
+never to the shared subscription. That assignment lives in the shared module
+rather than in each entity's root module precisely so that onboarding an entity
+writes no HCL at all
+([ADR 0011](https://github.com/picot-data/data-platform-standards/blob/main/adr/0011-shared-terraform-module-and-entity-template.md)).
 
-## 4. Bootstrap — same script, same order
+Folder-level grants are not used: the assignment is on the account, and entity
+separation inside it is by prefix. At Level 1 the entity VMs are operated by the
+same team, so a data-plane boundary between prefixes would be a boundary nobody
+is on the other side of. Revisit it when an entity has its own contributors.
 
-Run the same `bootstrap_vm.sh` script used for `dti`, in the same order
-(system updates, Python + uv, DuckDB, dbt Core + adapter, Dagster OSS last).
-The script is idempotent by design, so re-running it is always safe — see the
-[Onboarding an engineer](onboarding-an-engineer.md) page for what each
-installation step verifies before moving to the next.
+## 4. Bootstrap — a container host, and nothing else
 
-Neither Metabase nor DataHub is installed here. Both run once for the whole
+Run the `bootstrap_vm.sh` script from the entity template. It installs **Docker,
+`jq` and `git`, and stops there**: system updates, the container runtime, and the
+two utilities the deployment needs. It is idempotent by design, which is what
+lets the VM be destroyed and recreated by Terraform without re-inventing the
+install by hand.
+
+**No Python, no uv, no dbt, no Dagster on the machine.** The platform ships as a
+container image built in CI, so all of that lives *inside* the image; installing
+it natively as well would create a second copy of the stack, resolved from
+different versions, and "works on the VM" would stop meaning "works from the
+image". The script did install them, on the first entity, before the platform was
+containerised — that is history, not a fallback.
+
+Neither Metabase nor DataHub is installed here either. Both run once for the whole
 group on the shared VM — see step 8,
 [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md)
 and
@@ -154,10 +198,28 @@ template"), rather than creating one freehand — this is what makes the
 structure in
 [Repositories and delivery](repositories-and-delivery.md#entity-mono-repo-structure)
 actually identical across entities instead of merely documented as such.
-The template's `<entity>` placeholders (folder names, `pyproject.toml`,
-`ci.yml`'s call into `data-platform-workflows`) are filled in with `<code>`;
-`infra/terraform/` is completed with the `ref` and `.tfvars` from step 2. It
-links to this standards site rather than copying any of its content.
+The template's `<entity>` placeholders are filled in with `<code>` and
+`infra/terraform/` is completed with the `ref` and `.tfvars` from step 2. It links
+to this standards site rather than copying any of its content. Four steps in that
+repo's README are easy to skip and each fails in its own way:
+
+- **`shared_storage_account_id` in the `.tfvars`** — see step 2. The one omission
+  that produces a working-looking VM that cannot touch the lake.
+- **The source declaration and the ingestion asset's object list are the same
+  list.** The dbt models reach Bronze through `source()`, and Dagster derives the
+  asset key from that source — if the two disagree, nothing errors, the lineage
+  simply splits into two disconnected graphs.
+- **`uv lock` once in each of the three projects.** The template ships no
+  lockfiles: a lockfile pins versions to the day it was written, and a stale one
+  is worse than none. The image builds `--frozen`, so it fails loudly.
+- **`dbt parse` once before starting Dagster.** The publication asset reads the
+  manifest at import time, so definitions do not load until it exists.
+
+Because the template is copied once and not kept in sync afterward, an entity
+generated a while ago can be behind it. That is the accepted trade-off of
+ADR 0011 — the template is kept current against the reference entity rather than
+being a fork of it, so the gap is always "the template is ahead", never "the
+template is stale".
 
 Because the template is copied once and not kept in sync afterward, a
 structural change made to `data-platform-entity-template` later has to be
@@ -182,6 +244,17 @@ Both are created by the same `terraform apply` in step 2, not configured by
 hand afterward.
 
 ## 8. BI and catalog — new scope on the existing instances
+
+!!! note "Target, not current machinery"
+
+    The shared BI machine does not exist yet: `vm-picot-shared-bi-weu-01` has no
+    Terraform behind it (it is the second thing the `shared/` root module will
+    own), and the reference entity currently runs Metabase on its own VM as a
+    documented deviation. The steps below are what an entity is measured against.
+    Two prerequisites are recorded rather than assumed: Metabase's application
+    database has to move from H2 to Postgres before it holds the whole group's
+    users and dashboards, and DataHub's containers need explicit memory limits so
+    its search index cannot starve the dashboards it shares a machine with.
 
 The new entity does **not** get its own Metabase or its own DataHub. On the
 shared VM (`vm-picot-shared-bi-weu-01`):

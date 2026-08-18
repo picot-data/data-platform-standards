@@ -56,7 +56,7 @@
   <text x="305" y="383" font-size="10.5" font-style="italic" text-anchor="middle" fill="#888">each entity repo references, never copies:</text>
 
   <g class="dp-node" data-href="repositories-and-delivery.md#three-shared-repos-deduplicated-once-not-per-entity">
-    <title>Two Terraform modules — entity (resource group, VM, NSG, Key Vault) and governance (budgets, action groups) — consumed by infra/terraform/ as a root module pinned to a tagged ref. Mandatory tags stay a local.common_tags block in the entity's own root module. See ADR 0011.</title>
+    <title>The Terraform code: entity (resource group, VM, NSG, Key Vault, the VM's managed identity, the entity's registry and every role assignment that identity needs), governance (budgets, action groups), storage (the group's lake) and shared/ — the root module for what exists once for the whole group. An entity consumes entity and governance, pinned to a tagged ref; never storage or shared/. Mandatory tags stay a local.common_tags block in each root module. See ADR 0011.</title>
     <rect x="45" y="393" width="160" height="52" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
     <text x="125" y="415" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">terraform-azure-</text>
     <text x="125" y="428" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">data-platform</text>
@@ -64,7 +64,7 @@
   </g>
 
   <g class="dp-node" data-href="repositories-and-delivery.md#three-shared-repos-deduplicated-once-not-per-entity">
-    <title>The reusable CI workflow (lint, dbt parse, dbt build --target dev), called by each entity's ci.yml via workflow_call. See ADR 0011.</title>
+    <title>The reusable CI workflow (lint, dbt parse, dbt unit tests), called by each entity's ci.yml via workflow_call. See ADR 0011.</title>
     <rect x="225" y="393" width="160" height="52" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
     <text x="305" y="415" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">data-platform-</text>
     <text x="305" y="428" font-size="10" font-weight="bold" text-anchor="middle" fill="#4c1d95">workflows</text>
@@ -117,9 +117,9 @@
   <line x1="775" y1="356" x2="775" y2="384" stroke="#5b6570" stroke-width="2" marker-end="url(#rp-arrow)"/>
 
   <g class="dp-node" data-href="onboarding-an-engineer.md#2-local-dev-setup-about-20-minutes">
-    <title>"Does it work on data?" — runs the models and their tests against dev data: a local DuckDB file, no cloud resources.</title>
+    <title>"Does it work on data?" — executes the transformation logic against inline fixtures. No warehouse and no credential, which is what lets it run on every push.</title>
     <rect x="640" y="384" width="270" height="50" rx="6" fill="#c7d2fe" stroke="#4338ca" stroke-width="1.5"/>
-    <text x="775" y="414" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#312e81">dbt build --target dev</text>
+    <text x="775" y="414" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#312e81">dbt test --select test_type:unit</text>
   </g>
 
   <line x1="775" y1="434" x2="775" y2="462" stroke="#5b6570" stroke-width="2" marker-end="url(#rp-arrow)"/>

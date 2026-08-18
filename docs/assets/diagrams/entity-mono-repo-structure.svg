@@ -31,14 +31,14 @@
     <text x="24" y="332">│   ├── seeds/</text>
     <text x="24" y="354">│   ├── macros/</text>
     <text x="24" y="376">│   ├── tests/</text>
-    <text x="24" y="398">│   └── metrics/</text>
-    <text x="320" y="398" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-style="italic" fill="#888">← MetricFlow definitions</text>
+    <text x="24" y="398">│   └── vm/profiles.yml</text>
+    <text x="320" y="398" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-style="italic" fill="#888">← credential-free, used by the image</text>
 
     <g class="dp-node" data-href="platform-overview.md#orchestration-dagster-oss">
       <title>Dagster project scheduling the ingestion and dbt assets. See "Orchestration — Dagster OSS".</title>
       <text x="24" y="420">├── orchestration/</text>
     </g>
-    <text x="24" y="442">│   └── dagster_project/</text>
+    <text x="24" y="442">│   └── src/orchestration/defs/</text>
 
     <g class="dp-node" data-href="azure-landing-zones.md#everything-in-terraform">
       <title>A thin root module and the VM bootstrap script — the module code itself lives in terraform-azure-data-platform. See "Everything in Terraform".</title>

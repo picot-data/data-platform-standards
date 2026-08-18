@@ -67,6 +67,8 @@ holding only two subscriptions at first.
 | Subnet (Dirickx) | `snet-picot-dti-data-weu-01` | Single subnet at Level 1 (everything on one VM) |
 | Public IP (Dirickx) | `pip-picot-dti-data-weu-01` | Standard SKU |
 | Network Interface (Dirickx) | `nic-picot-dti-data-weu-01` | The NSG attaches here, not on the VM resource itself |
+| Managed Identity (Dirickx VM) | `id-picot-dti-data-weu-01` | The identity every process on the VM authenticates as. **User-assigned**, not system-assigned: the VM is deliberately disposable, and a system-assigned identity dies with it — every role granted to it would have to be recreated and re-propagated on each rebuild. `id-` is the CAF-standard prefix |
+| Container Registry (Dirickx) | `crpicotdtidataweu01` | **No hyphens**: registry names accept only alphanumerics, so the pattern is the same segments concatenated. One registry per entity, not one shared — ACR grants `AcrPull`/`AcrPush` over a whole registry, so a shared one would let any entity's CI overwrite another entity's images ([ADR 0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md)) |
 | ADLS Containers | `bronze`, `silver`, `gold`, `metadata` | No leading underscore: Azure container names accept only lowercase letters, digits and hyphens, and must start with a letter or digit |
 
 The `entity` column in dbt tables (see
