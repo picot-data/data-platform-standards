@@ -31,8 +31,27 @@ uv run mkdocs serve
 
 Then open http://127.0.0.1:8000.
 
+## The standards as a Claude Code plugin
+
+The dbt rules in `docs/` are also packaged as a Claude Code plugin, so an
+agent applies them instead of an engineer remembering them. It lives in this
+repository on purpose: a rule and the tool that enforces it move in the same
+commit. Three skills — review a dbt YAML against the standards, generate a
+model's test battery, draft descriptions without ever inventing a business
+definition.
+
+```
+/plugin marketplace add picot-data/data-platform-standards
+/plugin install picot-dbt-standards@picot-data-platform-standards
+```
+
+See [`plugins/picot-dbt-standards/`](plugins/picot-dbt-standards/) for what
+each skill does and how updates are pulled.
+
 ## Structure
 
 - `docs/` — reference documentation, published via MkDocs Material
 - `adr/` — Architecture Decision Records (immutable, one per decision)
+- `plugins/picot-dbt-standards/` — the standards as agent skills
+- `.claude-plugin/marketplace.json` — makes this repository a plugin marketplace
 - `.github/workflows/docs.yml` — builds and publishes the site to GitHub Pages on every push to `main`

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "picot-data-platform-standards",
+  "description": "The Picot group's data-platform standards, packaged as agent skills — dbt YAML review, test batteries and description drafting that follow the group's own conventions rather than generic dbt practice.",
+  "owner": {
+    "name": "Picot Data",
+    "url": "https://github.com/picot-data"
+  },
+  "plugins": [
+    {
+      "name": "picot-dbt-standards",
+      "source": "./plugins/picot-dbt-standards",
+      "description": "Enforces the Picot group's dbt conventions: review a YAML file against the standards, generate the required test battery, and draft descriptions without ever inventing a business definition."
+    }
+  ]
+}
