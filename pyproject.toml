@@ -5,6 +5,7 @@ description = "Group-wide data platform standards, conventions and architecture 
 requires-python = ">=3.11"
 dependencies = [
     "mkdocs-material>=9.5",
+    "mkdocs-redirects>=1.2",
     "mkdocs-static-i18n>=1.2",
     "openai>=1.0",
     "pyyaml>=6.0",

@@ -72,6 +72,11 @@ markdown_extensions:
 
 plugins:
   - search
+  # Renaming a file changes its published URL, and entity repositories and
+  # external documents link to those URLs. Each rename leaves a stub at the old
+  # address here instead of a 404.
+  - redirects:
+      redirect_maps: {}
   - i18n:
       docs_structure: suffix
       fallback_to_default: true
