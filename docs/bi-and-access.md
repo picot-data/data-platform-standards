@@ -1,4 +1,4 @@
-# BI and access
+﻿# BI and access
 
 How Metabase is organised, and who is allowed to see what. The reasoning behind
 the central instance is in
@@ -380,7 +380,7 @@ The order matters: every step but the first is undone by skipping it.
 - A dashboard is one intention, and roughly seven cards. Beyond that, split it.
 - Business logic never lives in a Metabase question. A `SUM` or a ratio that
   encodes a business definition belongs in a `mart_` model — see
-  [Metric definitions](semantic-layer.md).
+  [Metric definitions](metric-definitions.md).
 - A Metabase model that several dashboards depend on is a signal that it should
   become a dbt model. Metabase models are presentation: scope, renaming, joins
   for convenience. They are not stored in Git, not tested, and not visible to

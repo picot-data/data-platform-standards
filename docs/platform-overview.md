@@ -1,4 +1,4 @@
-# Platform overview
+﻿# Platform overview
 
 This page describes the Level 1 architecture: everything needed to prove the
 pipeline end to end, on a single VM per entity, at POC scale.
@@ -81,7 +81,7 @@ MetricFlow held this job until
 [ADR 0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md)
 dropped it. The rules that make a mart a safe place for a metric — and the
 re-aggregation traps they exist to avoid — are in
-[Metric definitions](semantic-layer.md).
+[Metric definitions](metric-definitions.md).
 
 ## Orchestration — Dagster OSS
 

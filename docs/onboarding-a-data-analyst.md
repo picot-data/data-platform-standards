@@ -1,4 +1,4 @@
-# Onboarding a data analyst
+﻿# Onboarding a data analyst
 
 For the person who builds questions and dashboards in Metabase. It assumes no
 knowledge of dbt, Azure or git, and it is the only page on this site written for
@@ -156,5 +156,5 @@ back.
 
 - [BI and access](bi-and-access.md) — the instance, groups and permissions
 - [Glossary](glossary.md) — what the group's business terms mean
-- [Metric definitions](semantic-layer.md) — where a figure is defined and why
+- [Metric definitions](metric-definitions.md) — where a figure is defined and why
   only once

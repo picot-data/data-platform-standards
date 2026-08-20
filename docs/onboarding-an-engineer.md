@@ -1,4 +1,4 @@
-# Onboarding an engineer
+﻿# Onboarding an engineer
 
 A reading order and a working local setup, aimed at getting a new team member
 productive on an entity repository in about 30 minutes.
@@ -15,7 +15,7 @@ productive on an entity repository in about 30 minutes.
    specific to that entity's data sources and operational quirks lives there,
    not in this standards site.
 
-Everything else ([Semantic layer](semantic-layer.md),
+Everything else ([Metric definitions](metric-definitions.md),
 [Azure landing zones](azure-landing-zones.md),
 [Repositories and delivery](repositories-and-delivery.md)) is reference
 material — read it when the task at hand needs it, not up front.

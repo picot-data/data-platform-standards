@@ -1,4 +1,4 @@
-# Picot Data Platform — Standards
+﻿# Picot Data Platform — Standards
 
 This site is the single source of truth for how the Picot group's data
 platform is built and named, across every entity. Rules live here. The
@@ -13,7 +13,7 @@ pages.
 | New to the project entirely | [Platform overview](platform-overview.md), then [Onboarding an engineer](onboarding-an-engineer.md) |
 | Writing a dbt model | [Data layers](data-layers.md), then [Naming conventions](naming-conventions.md) and [dbt project structure](project-structure.md) |
 | Finishing a dbt model | [Writing descriptions](writing-descriptions.md) and [Testing](testing.md) — a model without either is not finished |
-| Adding or changing a metric | [Semantic layer](semantic-layer.md) |
+| Adding or changing a metric | [Metric definitions](metric-definitions.md) |
 | Building questions and dashboards in Metabase | [Onboarding a data analyst](onboarding-a-data-analyst.md) |
 | Administering Metabase, or granting someone access | [BI and access](bi-and-access.md) |
 | Provisioning Azure resources | [Azure landing zones](azure-landing-zones.md) |

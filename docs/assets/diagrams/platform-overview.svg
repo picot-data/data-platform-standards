@@ -92,7 +92,7 @@
   <line x1="680" y1="471" x2="730" y2="471" stroke="#5b6570" stroke-width="2" marker-end="url(#po-arrow)"/>
 
   <!-- Right column: semantic layer and consumption -->
-  <g class="dp-node" data-href="semantic-layer.md">
+  <g class="dp-node" data-href="metric-definitions.md">
     <title>Each business metric (e.g. revenue) is defined once, in a mart_ model on top of the Gold star schema — not in MetricFlow, which Metabase cannot query through (ADR 0015). See "Metric definitions".</title>
     <rect x="730" y="436" width="180" height="70" rx="6" fill="#fee2e2" stroke="#ee4631" stroke-width="1.5"/>
     <text x="820" y="466" font-size="14" font-weight="bold" text-anchor="middle" fill="#991b1b">mart_ models</text>

@@ -1,4 +1,4 @@
-site_name: Picot Data Platform Standards
+﻿site_name: Picot Data Platform Standards
 site_description: Group-wide data platform standards, conventions and architecture decisions
 repo_url: https://github.com/picot-data/data-platform-standards
 repo_name: picot-data/data-platform-standards
@@ -47,7 +47,7 @@ nav:
       - dbt project structure: project-structure.md
       - Writing descriptions: writing-descriptions.md
       - Testing: testing.md
-      - Metric definitions: semantic-layer.md
+      - Metric definitions: metric-definitions.md
   - BI and access: bi-and-access.md
   - Azure landing zones: azure-landing-zones.md
   - Repositories and delivery: repositories-and-delivery.md
@@ -76,7 +76,10 @@ plugins:
   # external documents link to those URLs. Each rename leaves a stub at the old
   # address here instead of a 404.
   - redirects:
-      redirect_maps: {}
+      redirect_maps:
+        # The filename said "semantic layer"; the page says the platform runs
+        # none (ADR 0015). Renamed to match its own H1.
+        semantic-layer.md: metric-definitions.md
   - i18n:
       docs_structure: suffix
       fallback_to_default: true

@@ -1,7 +1,7 @@
-# Glossary
+﻿# Glossary
 
 Business terms are the same terms defined in the
-[metric definitions](semantic-layer.md) — this page documents them in prose,
+[metric definitions](metric-definitions.md) — this page documents them in prose,
 the `mart_` models compute them in SQL. There is no separate glossary tool to
 feed: each term below also lives in the `description` of the `mart_` model that
 computes it, which is what the catalog publishes — see
@@ -61,7 +61,7 @@ When a definition changes here, it changes in that model's YAML too.
 **Metric definition**
 : The single place a business metric is computed — a `mart_` model — instead of
   being recomputed independently in each dashboard. See
-  [Metric definitions](semantic-layer.md).
+  [Metric definitions](metric-definitions.md).
 
 **Semantic layer**
 : A tool that resolves a metric definition at query time, so any consumer asking
