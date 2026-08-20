@@ -76,14 +76,12 @@ easily conflated axes.
 ## Metric definitions — dbt marts
 
 Each business metric (e.g. revenue) is defined once, in a `mart_` model, rather
-than recomputed differently in every dashboard — see
+than recomputed differently in every dashboard. No semantic layer runs: dbt
+MetricFlow held this job until
+[ADR 0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md)
+dropped it. The rules that make a mart a safe place for a metric — and the
+re-aggregation traps they exist to avoid — are in
 [Metric definitions](semantic-layer.md).
-
-This was dbt MetricFlow's job until
-[ADR 0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md):
-MetricFlow only binds consumers that query *through* it, and in dbt Core it is
-reachable from a CLI, not from Metabase — so a metric defined there was
-invisible in the one place it had to be visible.
 
 ## Orchestration — Dagster OSS
 
@@ -106,51 +104,24 @@ the code, because it is read out of the code.
 
 There is no catalog service to run. Nothing is installed, sized, patched or
 memory-limited for governance — the site is a by-product of a pipeline that
-already runs.
+already runs. `dbt-metabase exposures` extends the same graph forward into
+Metabase, so lineage reaches the dashboard and not only the mart
+([ADR 0022](https://github.com/picot-data/data-platform-standards/blob/main/adr/0022-business-logic-in-dbt-metabase-is-presentation.md)).
 
-**Descriptions are the product.** A tool that only reports what the YAML says
-gives an undocumented column no place to hide *and no way to be noticed*, so the
-entity CI fails when a model or a column has no `description`. This is a gate,
-not a warning. A catalog with empty descriptions is worse than no catalog,
-because it looks complete.
+Because the site reports only what the YAML says, the descriptions *are* the
+catalog, and the entity CI fails on a model or a column that has none — a gate,
+not a warning. What a description has to contain to clear it is in
+[Writing descriptions](writing-descriptions.md); how CI and the pipeline each
+build the site is in
+[Repositories and delivery](repositories-and-delivery.md#minimal-cicd).
 
-**Where it is read.** At `/catalog/<entity>/` on the shared BI VM, next to
-Metabase, reachable from the corporate network and the VPN — see
-[ADR 0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md).
-That machine is the only one always on: an entity VM is deallocated outside its
-pipeline window, so nothing that has to be reachable during the day can be served
-from it. It is deliberately **not** published to GitHub Pages, which would be
-public unless the organisation is on GitHub Enterprise Cloud, and a catalog
-enumerates every table and column name in the SAP extract.
-
-**Where it is built.** Twice, for two different jobs, and neither duplicates the
-other:
-
-- **The entity CI owns the gate.** It runs
-  `dbt docs generate --empty-catalog` — that flag skips the only step needing a
-  warehouse connection, so CI stays credential-free — and fails on a missing
-  description.
-- **The entity pipeline owns the published site.** At the end of a run, while the
-  VM is still awake, it publishes `manifest.json`, `catalog.json` and `index.html`
-  to `metadata/company_<entity>/dbt/`. Because that copy comes from a real build
-  against real data, it carries the real column types the CI's copy cannot know.
-  The shared VM's scheduled refresh pulls it — a pull, like the Gold serving
-  copies, so no entity needs a credential reaching into the BI machine.
-
-The entity VM therefore deposits and shuts down; the always-on machine serves.
-
-**Lineage reaches the dashboard**, not only the mart: `dbt-metabase exposures`
-generates dbt `exposures:` from the live Metabase instance, and they are committed
-to the entity repository — see
-[ADR 0022](https://github.com/picot-data/data-platform-standards/blob/main/adr/0022-business-logic-in-dbt-metabase-is-presentation.md).
-That is what lets "where does this figure come from" be answered by clicking from
-a dashboard back to a `mart_` model.
-
-**What this deliberately does not do**: search, cross-entity lineage, a glossary
-UI, or access control on metadata. Business definitions live in the `description`
-of the `mart_` model that implements them, in Git, rather than in a separate
-glossary. The conditions that would justify a real catalog platform are recorded
-in ADR 0021.
+It is served at `/catalog/<entity>/` on the shared BI VM, the only always-on
+machine, and deliberately not on GitHub Pages — see
+[ADR 0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md)
+and [Azure landing zones](azure-landing-zones.md#resource-naming-pattern).
+What the catalog deliberately does not do — search, cross-entity lineage, a
+glossary UI — and what would justify a real catalog platform are recorded in
+ADR 0021.
 
 ## Consumption — Metabase
 

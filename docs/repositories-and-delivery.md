@@ -145,6 +145,26 @@ ask sooner or later: *"how do we know this isn't hand-patched on the VM?"* —
 the answer is that code is tested before it is deployed, not modified
 directly on the machine that runs it.
 
+### The catalog is built twice, for two different jobs
+
+Neither build duplicates the other, and separating them is what keeps the
+description gate credential-free:
+
+- **CI owns the gate.** It runs `dbt docs generate --empty-catalog` — that flag
+  skips the only step needing a warehouse connection — and fails on a model or
+  column with no `description`. It publishes nothing.
+- **The entity pipeline owns the published site.** At the end of a run, while the
+  VM is still awake, it publishes `manifest.json`, `catalog.json` and `index.html`
+  to `metadata/company_<entity>/dbt/`. That copy comes from a real build against
+  real data, so it carries the real column types CI cannot know. The shared BI
+  VM's scheduled refresh **pulls** it, like the Gold serving copies, so no entity
+  holds a credential reaching into the BI machine.
+
+The entity VM deposits and shuts down; the always-on machine serves. See
+[ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md)
+and
+[ADR 0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md).
+
 ## Deployment
 
 <div class="dp-diagram-wrap" markdown="0">
