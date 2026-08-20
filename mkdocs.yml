@@ -26,12 +26,24 @@ theme:
 # published so far keeps working. Entity repositories link to
 # /naming-conventions/, and moving the file into a dbt/ directory would break
 # those links for no gain.
+#
+# NAMING CONVENTIONS STAYS AT THE TOP LEVEL, deliberately. It is not a dbt page:
+# it also carries the ADLS path layout, the cross-cutting lexical rules
+# (snake_case, English, abbreviations), and pointers to the BI and git naming
+# rules that live on their own pages. Filing it under a tool would be the same
+# mistake as filing the glossary under one.
+#
+# The section is named after the task rather than after dbt. dbt is the only
+# transformation tool on the platform, so naming it adds nothing, and what the
+# section actually describes is the life of one model: which layer it belongs
+# to, where the file goes, how it is documented, how it is tested, how a metric
+# on it is defined. The order of the entries is the order of that work.
 nav:
   - Home: index.md
   - Platform overview: platform-overview.md
-  - Building models with dbt:
+  - Naming conventions: naming-conventions.md
+  - Building a data model:
       - Data layers: data-layers.md
-      - Naming conventions: naming-conventions.md
       - dbt project structure: project-structure.md
       - Writing descriptions: writing-descriptions.md
       - Testing: testing.md
@@ -76,7 +88,7 @@ plugins:
             Data layers: Couches de données
             Metric definitions: Définition des indicateurs
             BI and access: BI et accès
-            Building models with dbt: Construire des modèles avec dbt
+            Building a data model: Construire un modèle de données
             Naming conventions: Conventions de nommage
             dbt project structure: Structure d'un projet dbt
             Writing descriptions: Rédiger les descriptions
@@ -96,7 +108,7 @@ plugins:
             Data layers: Datalagen
             Metric definitions: Metriekdefinities
             BI and access: BI en toegang
-            Building models with dbt: Modellen bouwen met dbt
+            Building a data model: Een datamodel bouwen
             Naming conventions: Naamgevingsconventies
             dbt project structure: Structuur van een dbt-project
             Writing descriptions: Beschrijvingen schrijven
