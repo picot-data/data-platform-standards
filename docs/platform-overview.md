@@ -1,4 +1,4 @@
-﻿# Platform overview
+# Platform overview
 
 This page describes the Level 1 architecture: everything needed to prove the
 pipeline end to end, on a single VM per entity, at POC scale.

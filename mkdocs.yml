@@ -1,4 +1,4 @@
-﻿site_name: Picot Data Platform Standards
+site_name: Picot Data Platform Standards
 site_description: Group-wide data platform standards, conventions and architecture decisions
 repo_url: https://github.com/picot-data/data-platform-standards
 repo_name: picot-data/data-platform-standards
@@ -52,7 +52,7 @@ nav:
   - Azure landing zones: azure-landing-zones.md
   - Repositories and delivery: repositories-and-delivery.md
   - Onboarding a new entity: onboarding-a-new-entity.md
-  - Onboarding an engineer: onboarding-an-engineer.md
+  - Onboarding a data engineer: onboarding-a-data-engineer.md
   - Onboarding a data analyst: onboarding-a-data-analyst.md
   - Glossary: glossary.md
   - Architecture Decision Records: adr-index.md
@@ -80,6 +80,8 @@ plugins:
         # The filename said "semantic layer"; the page says the platform runs
         # none (ADR 0015). Renamed to match its own H1.
         semantic-layer.md: metric-definitions.md
+        # Renamed for symmetry, once a sibling analyst page existed.
+        onboarding-an-engineer.md: onboarding-a-data-engineer.md
   - i18n:
       docs_structure: suffix
       fallback_to_default: true
@@ -105,7 +107,7 @@ plugins:
             Azure landing zones: Landing zones Azure
             Repositories and delivery: Dépôts et livraison
             Onboarding a new entity: Intégrer une nouvelle entité
-            Onboarding an engineer: Intégrer un ingénieur
+            Onboarding a data engineer: Intégrer un ingénieur data
             Onboarding a data analyst: Intégrer un analyste de données
             Glossary: Glossaire
             Architecture Decision Records: Décisions d'architecture (ADR)
@@ -126,7 +128,7 @@ plugins:
             Azure landing zones: Azure landing zones
             Repositories and delivery: Repository's en levering
             Onboarding a new entity: Een nieuwe entiteit onboarden
-            Onboarding an engineer: Een engineer onboarden
+            Onboarding a data engineer: Een data-engineer onboarden
             Onboarding a data analyst: Een data-analist onboarden
             Glossary: Woordenlijst
             Architecture Decision Records: Architectuurbeslissingen (ADR)

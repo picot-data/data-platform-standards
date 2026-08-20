@@ -1,4 +1,4 @@
-﻿# ADR 0022: Business logic lives in dbt; Metabase is a presentation layer only
+# ADR 0022: Business logic lives in dbt; Metabase is a presentation layer only
 
 **Status**: Accepted
 

@@ -1,4 +1,4 @@
-﻿# ADR 0009: Plain Parquet at Level 1, not Iceberg or Delta
+# ADR 0009: Plain Parquet at Level 1, not Iceberg or Delta
 
 **Status**: Accepted
 

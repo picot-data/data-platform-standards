@@ -1,11 +1,16 @@
-﻿# Onboarding a data analyst
+# Onboarding a data analyst
 
 For the person who builds questions and dashboards in Metabase. It assumes no
 knowledge of dbt, Azure or git, and it is the only page on this site written for
 someone who will never open the repository.
 
 If you administer the instance rather than build in it, read
-[BI and access](bi-and-access.md) instead.
+[BI and access](bi-and-access.md) instead. If you will write the dbt models
+behind the data, read
+[Onboarding a data engineer](onboarding-a-data-engineer.md) — and then this
+page too, because [When a question has to become a dbt
+model](#when-a-question-has-to-become-a-dbt-model) is the one boundary both
+sides have to hold.
 
 ## What you can do
 

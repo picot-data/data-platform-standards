@@ -1,4 +1,4 @@
-﻿# BI and access
+# BI and access
 
 How Metabase is organised, and who is allowed to see what. The reasoning behind
 the central instance is in

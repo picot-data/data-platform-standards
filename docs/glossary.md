@@ -1,4 +1,4 @@
-﻿# Glossary
+# Glossary
 
 Business terms are the same terms defined in the
 [metric definitions](metric-definitions.md) — this page documents them in prose,

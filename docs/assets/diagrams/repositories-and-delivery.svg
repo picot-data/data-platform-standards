@@ -1,4 +1,4 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 630" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Left: one standards repository that every entity mono-repo links to, plus three shared repos (Terraform module, CI workflow, entity template) referenced by each entity repo. Right: the minimal CI pipeline every entity repository runs on each push and pull request.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 630" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Left: one standards repository that every entity mono-repo links to, plus three shared repos (Terraform module, CI workflow, entity template) referenced by each entity repo. Right: the minimal CI pipeline every entity repository runs on each push and pull request.">
 
   <rect width="960" height="630" fill="#ffffff"/>
 
@@ -116,7 +116,7 @@
 
   <line x1="775" y1="356" x2="775" y2="384" stroke="#5b6570" stroke-width="2" marker-end="url(#rp-arrow)"/>
 
-  <g class="dp-node" data-href="onboarding-an-engineer.md#2-local-dev-setup-about-20-minutes">
+  <g class="dp-node" data-href="onboarding-a-data-engineer.md#2-local-dev-setup-about-20-minutes">
     <title>"Does it work on data?" — executes the transformation logic against inline fixtures. No warehouse and no credential, which is what lets it run on every push.</title>
     <rect x="640" y="384" width="270" height="50" rx="6" fill="#c7d2fe" stroke="#4338ca" stroke-width="1.5"/>
     <text x="775" y="414" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#312e81">dbt test --select test_type:unit</text>

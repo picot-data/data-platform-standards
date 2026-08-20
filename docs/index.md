@@ -1,4 +1,4 @@
-﻿# Picot Data Platform — Standards
+# Picot Data Platform — Standards
 
 This site is the single source of truth for how the Picot group's data
 platform is built and named, across every entity. Rules live here. The
@@ -10,7 +10,7 @@ pages.
 
 | You are | Start with |
 |---|---|
-| New to the project entirely | [Platform overview](platform-overview.md), then [Onboarding an engineer](onboarding-an-engineer.md) |
+| New to the project entirely | [Platform overview](platform-overview.md), then [Onboarding a data engineer](onboarding-a-data-engineer.md) |
 | Writing a dbt model | [Data layers](data-layers.md), then [Naming conventions](naming-conventions.md) and [dbt project structure](project-structure.md) |
 | Finishing a dbt model | [Writing descriptions](writing-descriptions.md) and [Testing](testing.md) — a model without either is not finished |
 | Adding or changing a metric | [Metric definitions](metric-definitions.md) |

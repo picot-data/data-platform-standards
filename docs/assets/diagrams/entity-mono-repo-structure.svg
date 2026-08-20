@@ -52,14 +52,14 @@
     <text x="24" y="508">│   └── scripts/</text>
     <text x="24" y="530">│       └── bootstrap_vm.sh</text>
 
-    <g class="dp-node" data-href="onboarding-an-engineer.md">
-      <title>Entity-specific operational notes — not a copy of this standards site. See "Onboarding an engineer".</title>
+    <g class="dp-node" data-href="onboarding-a-data-engineer.md">
+      <title>Entity-specific operational notes — not a copy of this standards site. See "Onboarding a data engineer".</title>
       <text x="24" y="552">├── docs/</text>
     </g>
     <text x="24" y="574">│   └── runbook.md</text>
     <text x="320" y="574" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-style="italic" fill="#888">← operational procedures specific to this entity</text>
 
-    <g class="dp-node" data-href="onboarding-an-engineer.md#2-local-dev-setup-about-20-minutes">
+    <g class="dp-node" data-href="onboarding-a-data-engineer.md#2-local-dev-setup-about-20-minutes">
       <title>Python dependencies, pinned — installed with `uv sync`, never an ad hoc `uvx dbt`. See "Local dev setup".</title>
       <text x="24" y="596">├── pyproject.toml</text>
       <text x="24" y="618">└── uv.lock</text>

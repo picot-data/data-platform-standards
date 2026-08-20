@@ -1,4 +1,4 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 816" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Level 1 end-to-end flow: SAP is extracted by Azure Data Factory (or, as a fallback, an existing ABAP script) into Bronze, refined by dbt into Silver and then into the Gold star schema, where each metric is defined once in a dbt mart, exposed through Metabase and catalogued by dbt's own documentation site.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 816" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Level 1 end-to-end flow: SAP is extracted by Azure Data Factory (or, as a fallback, an existing ABAP script) into Bronze, refined by dbt into Silver and then into the Gold star schema, where each metric is defined once in a dbt mart, exposed through Metabase and catalogued by dbt's own documentation site.">
 
   <rect width="940" height="816" fill="#ffffff"/>
 
