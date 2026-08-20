@@ -279,8 +279,8 @@ The new entity does **not** get its own Metabase. On the shared VM
 - Run `dbt-metabase models` against the new entity's manifest so its tables
   arrive documented, joined and with the technical ones hidden.
 - Create the collection tree (entity at the top level, business domains below)
-  and the three groups `<code>_analysts`, `<code>_explorers` and
-  `<code>_readers`, then set data permissions before collection permissions.
+  and the two groups `<code>_analysts` and `<code>_readers`, then set data
+  permissions before collection permissions.
 - Grant `group_analysts` access to the new entity's database and collection —
   otherwise the group-level view silently keeps excluding it.
 Nothing is added centrally for the catalog: the entity's CI builds its own dbt

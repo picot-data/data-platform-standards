@@ -53,6 +53,7 @@ nav:
   - Repositories and delivery: repositories-and-delivery.md
   - Onboarding a new entity: onboarding-a-new-entity.md
   - Onboarding an engineer: onboarding-an-engineer.md
+  - Onboarding a data analyst: onboarding-a-data-analyst.md
   - Glossary: glossary.md
   - Architecture Decision Records: adr-index.md
 
@@ -97,6 +98,7 @@ plugins:
             Repositories and delivery: Dépôts et livraison
             Onboarding a new entity: Intégrer une nouvelle entité
             Onboarding an engineer: Intégrer un ingénieur
+            Onboarding a data analyst: Intégrer un analyste de données
             Glossary: Glossaire
             Architecture Decision Records: Décisions d'architecture (ADR)
         - locale: nl
@@ -117,6 +119,7 @@ plugins:
             Repositories and delivery: Repository's en levering
             Onboarding a new entity: Een nieuwe entiteit onboarden
             Onboarding an engineer: Een engineer onboarden
+            Onboarding a data analyst: Een data-analist onboarden
             Glossary: Woordenlijst
             Architecture Decision Records: Architectuurbeslissingen (ADR)
 

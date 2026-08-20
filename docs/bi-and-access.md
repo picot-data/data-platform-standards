@@ -166,18 +166,46 @@ Rules that keep the convention meaningful:
 ## Groups
 
 Two axes, and both are needed: **entity** decides which data, **tier** decides
-what a person may do with it. Three tiers per entity, named after the capability
+what a person may do with it. Two tiers per entity, named after the capability
 they carry rather than after a job title — a title invites debate about who
 deserves it, a capability does not.
 
 | Group | Capability | Typical member |
 |---|---|---|
 | `Administrators` | Built in — everything. Do not create a second admin group | platform owner |
-| `<entity>_analysts` | Native SQL, and **Curate** on their entity's collections: they publish | controller, power user |
-| `<entity>_explorers` | Query builder only, no SQL. Build and save their own questions | anyone comfortable with self-service |
-| `<entity>_readers` | Consume only: open dashboards, filter, drill in. No question of their own | occasional consumer |
+| `<entity>_analysts` | Native SQL, and **Curate** on their entity's collections: they build and they publish | controller, power user |
+| `<entity>_readers` | Consume only: open dashboards, filter, sort, drill in. No content of their own | occasional consumer |
 | `group_analysts` | `<entity>_analysts`, across every entity plus the group scope | group-level controlling |
 | `platform_automation` | **Not a group to create.** The metadata sync's API key has to sit in `Administrators` — see [The automation key](#the-automation-key) | — |
+
+### Why there is no tier between the two
+
+A middle tier — build your own questions, but publish only to `Explorations` —
+is the obvious design, and it is deliberately not used. Its purpose is to
+separate *creating* from *publishing* with a permission. At this scale that
+separation is made by a **conversation** instead: an analyst who wants a
+dashboard read by others shows what they built, and the calculation behind it
+either stays in Metabase or becomes a dbt model (see
+[Onboarding a data analyst](onboarding-a-data-analyst.md#when-a-question-has-to-become-a-dbt-model)).
+
+Be clear about what that costs. The dbt/Metabase boundary ([ADR 0022](adr-index.md))
+becomes a rule that is **respected** rather than a rule that is **enforced**.
+Nothing stops an analyst from publishing a dashboard whose definition of revenue
+exists only inside a SQL question, and that is the one kind of drift that cannot
+be undone later — logic that left the repository appears in no inventory, and
+surfaces the day two figures disagree in a meeting.
+
+Two things carry the weight instead of a permission, and both have to be real:
+
+- **The certification markers below**, applied strictly. An analyst may publish;
+  a ⭐ still means reviewed.
+- **A periodic inspection.** Listing published questions that use native SQL and
+  rest on no mart is possible through the Metabase API, which the metadata sync
+  already talks to. Not built yet — tracked as an open question, and the moment
+  the instance has more than a handful of authors it stops being optional.
+
+Adding the middle tier back is a two-click change if trust turns out to have
+been the wrong bet.
 
 Group names are `snake_case`, and `<entity>` is the same entity code used
 everywhere else — Azure resource names, the `entity` column, ADLS prefixes (see
@@ -185,24 +213,26 @@ everywhere else — Azure resource names, the `entity` column, ADLS prefixes (se
 
 Two naming choices worth knowing the reason for:
 
-- **`readers`, not `viewers`.** Metabase's own collection permission levels are
-  *Curate* / *View* / *No access*, and the explorers tier also holds *View*. A
-  group called `<entity>_viewers` would therefore describe two tiers, in the
+- **`readers`, not `viewers`.** *Viewer* would name the Metabase permission
+  level rather than the person, and `group_analysts` also holds *View* on the
+  entity collections — so the word would describe two different things in the
   exact screen where the distinction matters.
 - **`analysts` at both scopes.** `dti_analysts` and `group_analysts` are the
   same capability at two scopes, and the parallel names say so.
 
-**Create only the groups an onboarded entity needs.** Three per entity, plus the
-three fixed ones. Do not pre-create groups for entities that are not yet
+**Create only the groups an onboarded entity needs.** Two per entity, plus the
+two fixed ones. Do not pre-create groups for entities that are not yet
 onboarded, and do not create a group per department: a department that must not
 see a figure gets a restricted sub-collection, not a group of its own.
 Multiplying groups is what makes a Metabase instance unmaintainable, and a
 person's effective rights are the *most permissive* of their groups — so every
 extra group is an extra way to be wrong.
 
-**Start people one tier lower than they ask for.** Promoting someone is a
-two-click change; discovering that a dashboard everyone relies on was built by
-someone who did not know the model is not.
+**Put people in `readers` unless they are going to build something.** With only
+two tiers, `analysts` carries the right to publish next to certified content, so
+it is granted to people who have had the conversation about where logic lives —
+not to everyone who is curious. Moving someone up is two clicks; a dashboard
+that everyone relies on and that nobody can explain is not.
 
 Group membership is maintained by hand in Metabase. Automatic mapping from an
 identity provider (SAML/JWT) is a paid feature, which is a further reason to
@@ -219,33 +249,36 @@ content*; they never hide *data*.
 is done, every grant below is decorative, because rights are cumulative across
 groups.
 
-The *Create queries* setting is what separates the three tiers.
+The *Create queries* setting is what separates the two tiers.
 
 | Group | `gold_dti` | `gold_bg` | `gold_group` |
 |---|---|---|---|
 | `dti_analysts` | View data + **query builder and native SQL** | No access | No access |
-| `dti_explorers` | View data + **query builder only** | No access | No access |
 | `dti_readers` | View data + **Create queries: No** | No access | No access |
-| `bg_analysts` / `bg_explorers` / `bg_readers` | No access | same three tiers on `gold_bg` | No access |
+| `bg_analysts` / `bg_readers` | No access | same two tiers on `gold_bg` | No access |
 | `group_analysts` | View data + query builder and native SQL | same | same |
 
-Why the tiers fall where they do:
+Why the line falls there:
 
-- **Native SQL is an analyst right** because a SQL question is opaque to its
-  readers and cannot be re-explored in one click — someone publishing one takes
-  on the job of explaining it.
-- **The explorers tier is the point of the platform.** Supervised self-service
-  is the value being delivered; what must be locked down is the *scope of data*,
-  not curiosity. Most people belong here, not in `readers`.
+- **Analysts get native SQL, even though the query builder is preferred.** A
+  question built in the query builder stays explorable in one click by whoever
+  reads it; a SQL question is a black box, and publishing one means taking on
+  the job of explaining it. But refusing SQL outright would prevent an analyst
+  from *demonstrating* the calculation that justifies asking for a mart, which
+  is the conversation the whole arrangement depends on. The preference is stated
+  as a rule in [Onboarding a data analyst](onboarding-a-data-analyst.md), not
+  imposed as a permission.
 - **`readers` exists for consumers, not as a punishment.** Someone who opens one
   dashboard a month gains nothing from a query builder and is better served by
-  an interface that offers only what they need.
+  an interface offering only what they need. What makes that tier workable is
+  that dashboards carry filter widgets, so a reader can slice and sort without
+  creating anything.
 
 One thing to verify in your instance rather than assume: *Create queries: No*
 also removes the ability to drill through a chart into the underlying rows,
 because a drill-through is an ad hoc query. If that turns out to matter for
-readers, the answer is to move them to `explorers` — not to loosen the data
-scope.
+readers, the answer is to move that person to `analysts` — not to loosen the
+data scope.
 
 **There is no row-level filtering in the open-source edition.** Row and column
 security is paid, so the finest free grain is the database — which is exactly
@@ -260,22 +293,24 @@ display convenience and provides no security.
 | Group | Its entity's domain collections | Its `Explorations` | Other entities | `Group` | `Platform` |
 |---|---|---|---|---|---|
 | `<entity>_analysts` | Curate | Curate | No access | View | View |
-| `<entity>_explorers` | View | Curate | No access | No access | No access |
 | `<entity>_readers` | View | No access | No access | No access | No access |
 | `group_analysts` | View | No access | View | Curate | View |
 
-Two deliberate asymmetries:
+Two things to note:
 
-- **Explorers curate `Explorations`, and only view the domain collections.** They
-  need somewhere to publish work their colleagues can see, without that work
-  landing next to certified dashboards. `Explorations` is that place, and it is
-  why the collection exists.
 - **Readers are cut off from `Explorations` entirely.** It holds 🚧 content and a
-  reader has no way to judge it.
+  reader has no way to judge it. This is the one place where the separation
+  between validated and unvalidated work *is* a permission rather than a
+  convention, which is why the collection still exists even though analysts can
+  write anywhere in their entity.
+- **`Explorations` is a discipline, not a gate.** An analyst can publish straight
+  into a domain collection; putting work in progress in `Explorations` first is
+  something they choose to do. The marker rules make that choice visible: 🚧 in
+  `Explorations`, ⭐ only on what has been reviewed.
 
-Promotion from `explorers` to `analysts` is therefore a real step: it grants SQL
-*and* the right to publish into a domain collection, which is the right to put a
-star on something.
+Moving someone into `analysts` is therefore a real step: it grants SQL *and* the
+right to publish next to certified content, which is the right to put a star on
+something.
 
 ## The automation key
 
