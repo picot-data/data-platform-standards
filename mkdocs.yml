@@ -22,13 +22,21 @@ theme:
     - content.code.copy
     - content.action.edit
 
+# Grouped in the navigation only -- the files stay flat in docs/, so every URL
+# published so far keeps working. Entity repositories link to
+# /naming-conventions/, and moving the file into a dbt/ directory would break
+# those links for no gain.
 nav:
   - Home: index.md
   - Platform overview: platform-overview.md
-  - Data layers: data-layers.md
-  - Metric definitions: semantic-layer.md
+  - Building models with dbt:
+      - Data layers: data-layers.md
+      - Naming conventions: naming-conventions.md
+      - dbt project structure: project-structure.md
+      - Writing descriptions: writing-descriptions.md
+      - Testing: testing.md
+      - Metric definitions: semantic-layer.md
   - BI and access: bi-and-access.md
-  - Naming conventions: naming-conventions.md
   - Azure landing zones: azure-landing-zones.md
   - Repositories and delivery: repositories-and-delivery.md
   - Onboarding a new entity: onboarding-a-new-entity.md
@@ -68,7 +76,11 @@ plugins:
             Data layers: Couches de données
             Metric definitions: Définition des indicateurs
             BI and access: BI et accès
+            Building models with dbt: Construire des modèles avec dbt
             Naming conventions: Conventions de nommage
+            dbt project structure: Structure d'un projet dbt
+            Writing descriptions: Rédiger les descriptions
+            Testing: Tests
             Azure landing zones: Landing zones Azure
             Repositories and delivery: Dépôts et livraison
             Onboarding a new entity: Intégrer une nouvelle entité
@@ -84,7 +96,11 @@ plugins:
             Data layers: Datalagen
             Metric definitions: Metriekdefinities
             BI and access: BI en toegang
+            Building models with dbt: Modellen bouwen met dbt
             Naming conventions: Naamgevingsconventies
+            dbt project structure: Structuur van een dbt-project
+            Writing descriptions: Beschrijvingen schrijven
+            Testing: Testen
             Azure landing zones: Azure landing zones
             Repositories and delivery: Repository's en levering
             Onboarding a new entity: Een nieuwe entiteit onboarden
