@@ -55,61 +55,9 @@ domains, choose the primary one and document it in the dbt description.
 Keep staging thin: no joins, no aggregation. A `stg_` model that needs a join
 is an `int_` model.
 
-### Persistence per layer
-
-Each dbt layer has a fixed materialization and storage location, defined in
-[ADR 0001](https://github.com/picot-data/data-platform-standards/blob/main/adr/0001-medallion-dbt-layer-persistence.md)
-and refined by
-[ADR 0013](https://github.com/picot-data/data-platform-standards/blob/main/adr/0013-local-duckdb-with-publication-step.md):
-
-| dbt layer | Medallion layer | Materialization | Ends up in |
-|---|---|---|---|
-| — (ingestion output) | Bronze | not a dbt model — written by the ingestion pipeline, read-only for dbt | ADLS `bronze/` (date-partitioned, immutable) |
-| `stg_` | Silver | `table` (local DuckDB) | ADLS `silver/`, via the publication step |
-| `int_` | late Silver (no ADLS folder) | `table` (local DuckDB) | DuckDB file on the VM only — never published |
-| `dim_`, `fct_`, `mart_` | Gold | `table` (local DuckDB) | ADLS `gold/`, via the publication step |
-
-**Every model materializes locally.** dbt never writes to `abfss://` — a
-publication step copies the durable models out at the end of the run, one
-Parquet file per model. Which ones get published is declared in dbt itself, as
-a `publish_container` entry in the model's `meta`, set per layer in
-`dbt_project.yml`:
-
-```yaml
-models:
-  <project>:
-    staging:
-      +materialized: table
-      +meta:
-        publish_container: silver
-    intermediate:
-      +materialized: table      # no publish_container: stays local
-    dimensions:
-      +materialized: table
-      +meta:
-        publish_container: gold
-```
-
-Do **not** reintroduce dbt-duckdb's `external` materialization to write models
-straight to ADLS. It makes every downstream `ref()` and every test re-open a
-remote file, and the resulting flood of Entra token requests hits the instance
-metadata service's rate limit — surfacing as `429 Temporarily throttled`,
-reported by DuckDB as a credentials error that it is not. ADR 0013 has the full
-account.
-
-### Archiving
-
-Persistence and archiving are different questions. Only three needs carry an
-archiving obligation:
-
-| Need | Where it is answered |
-|---|---|
-| Rebuild a past state / prove where a figure came from | Bronze — immutable, date-partitioned raw extracts |
-| Keep the history of a business change (a customer renamed, a price revised) | dbt snapshots (`snapshots/`, `dbt snapshot`) |
-| Reduce the cost of old raw files | ADLS lifecycle rules (hot → cool → archive) on `bronze/` |
-
-`stg_` and `int_` models are not archived: they are fully derivable from
-Bronze. Restoring them is a `dbt build`, not a restore from backup.
+Where each layer is materialized and what gets published to ADLS is a
+different question, answered in
+[Data layers — Persistence per layer](data-layers.md#persistence-per-layer).
 
 ## Column naming
 

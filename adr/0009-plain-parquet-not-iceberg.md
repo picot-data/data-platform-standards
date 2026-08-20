@@ -1,4 +1,4 @@
-# ADR 0009: Plain Parquet at Level 1, not Iceberg or Delta
+﻿# ADR 0009: Plain Parquet at Level 1, not Iceberg or Delta
 
 **Status**: Accepted
 
@@ -29,7 +29,7 @@ Option 2. Plain Parquet for Bronze, Silver, and Gold at Level 1.
 
 - No time travel or schema evolution at the storage layer — replay and
   history rely on Bronze's immutable date partitions and dbt snapshots (see
-  [Naming conventions — Archiving](../docs/naming-conventions.md#archiving)),
+  [Data layers — Archiving](../docs/data-layers.md#archiving)),
   not on the table format.
 - The migration cost to a table format later is close to zero: Parquet files
   are already the underlying format Iceberg and Delta build on. Level 2's
