@@ -1,5 +1,6 @@
 site_name: Picot Data Platform Standards
 site_description: Group-wide data platform standards, conventions and architecture decisions
+site_url: https://picot-data.github.io/data-platform-standards/
 repo_url: https://github.com/picot-data/data-platform-standards
 repo_name: picot-data/data-platform-standards
 edit_uri: edit/main/docs/
