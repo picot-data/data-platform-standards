@@ -17,6 +17,11 @@ from "warehouse"."main"."mart_sales__daily_orders"
 where revenue is null
 ```
 
+!!! warning "`expression_is_true` compiles to `select 1`"
+    Run its compiled file by hand and you get a count, not the rows. It selects
+    the offending rows only when `store_failures` is on — which is another reason
+    that setting is not optional. Read the audit table, not the compiled SQL.
+
 ## The four built-in tests
 
 dbt Core ships **four** generic tests. Everything else comes from a package or
@@ -129,23 +134,151 @@ look thorough.
     `not_accepted_values: [0]` forbids zero and allows −50. A lower bound states
     the actual rule and catches both.
 
-## Severity and thresholds
+## Name every test whose generated name is unreadable
 
-```yaml
-- unique:
-    config:
-      severity: warn        # or: error_if: ">10"
-      store_failures: true
+Left unnamed, dbt builds the test name from the test type plus every argument:
+
+```
+dbt_utils_expression_is_true_stg_sap__production_order_date_actual_end_date_actual_start
 ```
 
-- **`severity: warn`** is legitimate, but only with the reason written next to
-  it. A downgrade with no explanation is indistinguishable from giving up.
-- **`error_if` / `warn_if`** express a tolerance — "fail only above ten
-  offending rows" — which is honest for known dirty sources and dishonest as a
-  way to keep a dashboard green.
-- **`store_failures: true`** writes the offending rows to a table so they can be
-  inspected in SQL rather than by re-running the test by hand. Worth enabling on
-  any test that fails more than once.
+That string is not an internal detail. It is what appears in the alert sent when
+the test fails, in the Dagster asset check, and as the **table name** under
+`_dbt_test__audit` that the offending rows are written to. A reader then has to
+decode an expression instead of reading a claim, and querying the audit table
+means finding a truncated hash first.
+
+```yaml
+- dbt_utils.expression_is_true:
+    name: production_order_actual_dates_run_forwards
+    arguments:
+      expression: date_actual_end >= date_actual_start
+```
+
+`name:` is a sibling of `arguments:` and `config:`, not a child. The convention
+is **`<model scope>_<what must be true>`** — the prefix is not decoration, dbt
+requires test names to be unique across the whole project.
+
+Which tests need it: every `dbt_utils.expression_is_true` and
+`dbt_utils.accepted_range`, and `relationships`. Which do not: `not_null`,
+`unique` and `accepted_values`, whose generated names already read as the rule
+they enforce — `accepted_values_..._plant_id__P100__P200` even lists the values.
+The criterion is not length, it is whether the name states what must be true.
+
+## Severity: three tiers, and the choice is a decision
+
+A failing test at `error` fails the whole `dbt build`, and therefore blocks
+publication (see [Data layers](data-layers.md)). That is the right default and it
+has a consequence worth stating plainly: **leaving every test at `error` means
+one absurd date in one row can hold all of Gold hostage until somebody edits a
+record in the source system.** That hands the refresh SLA to another team's
+ticket queue.
+
+So severity is assigned per test, on purpose, in one of three tiers.
+
+| Tier | Meaning | Effect |
+|---|---|---|
+| `error` | nothing publishable can be computed until this is fixed | blocks. Reserved for the key, and for anything that makes "one row" meaningless |
+| `warn` | anomalous, but it invalidates no total | publishes, records the rows, does not block |
+| **quarantine** | a source error known to recur | handled *in the model*, not by a test |
+
+```yaml
+- dbt_utils.expression_is_true:
+    name: production_order_planned_dates_run_forwards
+    arguments:
+      expression: date_planned_end >= date_planned_start
+    config:
+      # warn: a planned date the wrong way round distorts a lead-time figure
+      # and nothing else. The day a mart_ computes a planned lead time, this
+      # test is that model's dependency and belongs back at error.
+      severity: warn
+```
+
+Rules that make the tiers hold:
+
+- **A downgrade carries its reason, next to it, in the YAML.** A `warn` with no
+  explanation is indistinguishable from giving up, and it is the normal way a
+  build gets unblocked at 18:00 on a Friday.
+- **Write the condition that would move it back.** The comment above is useful
+  because it names what has to change. "warn for now" does not.
+- **`error_if` / `warn_if`** express a tolerance — "fail only above ten offending
+  rows" — honest for a known dirty source, dishonest as a way to keep a dashboard
+  green.
+
+### Never `warn` a foreign key
+
+The tempting third option for an orphan foreign key is `severity: warn`. It is
+the worst of the three: the orphan is published, then vanishes from every inner
+join downstream, so the per-product total comes out too low with nothing to show
+for it. The anomaly is both live and invisible.
+
+The answer is quarantine. Either an `UNKNOWN` member in the dimension that
+orphans attach to — the group total stays right and the anomaly becomes readable
+in the dashboard as "600 units on unknown product" — or an explicit exclusion
+**with the excluded rows counted** in a rejects model. The distinction that
+matters:
+
+!!! danger "Filtering is not quarantining"
+    Silently dropping a bad row turns a visible error into an invisible one. The
+    pipeline is green, the dashboard is green, the number is wrong. Rows may be
+    set aside; they may never be set aside uncounted.
+
+## `store_failures` is on for the whole project
+
+Not per test, and not passed on the command line:
+
+```yaml
+# dbt_project.yml
+data_tests:
+  +store_failures: true
+```
+
+A test fails at 03:00 in a scheduled run nobody is watching. The default keeps
+the count and throws the rows away, so the first question the next morning —
+*which rows?* — requires re-running the build, by which time the source may have
+moved and the evidence is gone.
+
+Cost: one table per test under `<schema>_dbt_test__audit`, most of them empty.
+That schema belongs to no model folder, so publication never sees it and nothing
+leaks into the serving databases the BI tool reads. The tables are recreated on
+every run — this is evidence for the run that just failed, not a history.
+
+Side benefit: dbt then prints the exact query to run in its own error output, so
+investigating stops being a treasure hunt.
+
+## When a test goes red
+
+1. **Read which test.** The alert or the Dagster asset check names it. With
+   readable test names, this is often the whole investigation.
+2. **Read the rows** in `<schema>_dbt_test__audit`.
+3. **Qualify it.** Source error, or too-strict test? This is the only question
+   that matters, and it decides everything after.
+    - Source error → a ticket to the source owner. The pipeline stays red, which
+      is it doing its job.
+    - Too-strict test → a plant opened and nobody said so. Fix the test, commit,
+      CI validates, re-run.
+4. **Communicate freshness.** The most commonly skipped step. Consumers must be
+   able to see "data as of the 20th" without asking anyone.
+5. **Re-run.** The pipeline is idempotent; there is no manual data repair.
+
+!!! note "Do not optimise the re-ingestion, reduce what blocks"
+    A fix in the source system takes hours to days. Re-extraction takes minutes
+    to hours. The bottleneck is never the pipeline, so making it faster changes
+    nothing — and a daily schedule picks the correction up on its own. "This
+    blockage is unbearable" is the symptom of a test sitting at `error` that
+    belongs at `warn` or in quarantine.
+
+### Warnings need their own alert
+
+A `warn` does not fail the step, so the run succeeds and any failure hook stays
+silent. Watching only failures therefore makes `warn` a way of making a problem
+disappear rather than a decision to publish despite it — and a warning nobody
+reads is the same as no test.
+
+Warned data **has been published**. That is a different message from a blocked
+pipeline and must not be worded like one: the reader is not being asked to
+unblock anything, they are being told that a number they can already see was
+computed over rows with a known anomaly.
 
 ## Anti-patterns
 
@@ -157,6 +290,11 @@ look thorough.
 | A blacklist where a bound is meant | catches the value you thought of, not the ones you did not |
 | Adding tests to raise a count | 100 tests of which 60 are tautologies is worse than 40 that mean something |
 | Testing what the warehouse already enforces | the column is typed `date`; it will not contain "hello" |
+| Leaving every test at `error` | one bad row blocks every domain; the refresh SLA becomes another team's ticket queue |
+| `severity: warn` on a foreign key | publishes the orphan *and* hides it in the joins — worse than either blocking or quarantining |
+| Filtering bad rows without counting them | turns a visible error into an invisible one, which is the only failure nobody detects |
+| Watching failures but not warnings | makes `warn` a way to hide a problem rather than a decision to publish despite it |
+| Leaving a `dbt_utils` test unnamed | the generated name is what lands in the alert and names the audit table |
 
 ## Related
 

@@ -82,7 +82,28 @@ from names — an inferred grain is a weaker claim and the reader must know.
   `dbt_utils.accepted_range` with `min_value: 0, inclusive: false`.
 - The same guarantee re-asserted at a layer that did not create it, and
   tautological tests added to raise a count.
-- `severity: warn` with no reason written beside it.
+- `severity: warn` with no reason written beside it, or a reason that does not
+  state **the condition that would move it back to `error`**. "warn for now" is
+  not that condition.
+- **`severity: warn` on a `relationships` test — always a finding.** It publishes
+  the orphan and then loses it in every inner join, so the total comes out too
+  low with nothing to show for it. The alternatives are blocking (`error`) or
+  quarantine in the model; a warning is worse than both.
+- A model whose every test sits at the default `error`, on a `stg_` reading a
+  source the team does not control. Worth raising as a question, not a defect:
+  each `error` blocks the whole publication, so the set of blocking tests is a
+  deliberate choice about which failures are worth freezing every domain for.
+- A `dbt_utils.expression_is_true`, `dbt_utils.accepted_range` or `relationships`
+  test with **no `name:`**. The generated name is built from the test type plus
+  every argument, and it is what appears in the failure alert, in the Dagster
+  asset check and as the audit table name — so the cost is paid by whoever
+  investigates, not by whoever wrote the YAML. Expect
+  `<model scope>_<what must be true>`. Not a finding on `not_null`, `unique` or
+  `accepted_values`, whose generated names already state the rule.
+- `store_failures: true` set on an individual test, or `--store-failures`
+  suggested as a flag. It is a project-wide setting in `dbt_project.yml`
+  (`data_tests: +store_failures: true`); setting it per test implies the others
+  discard their evidence.
 
 **Naming**
 

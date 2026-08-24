@@ -107,7 +107,47 @@ Stop and ask, rather than guessing, when:
 List the open questions explicitly instead of emitting a battery that looks
 complete and is not.
 
-### 5. Emit the YAML in the required syntax
+### 5. Assign a severity tier to every test, and say why
+
+Not a default to inherit. A test at `error` fails the whole `dbt build` and
+therefore blocks publication, so leaving the battery entirely at `error` means
+one absurd row holds every domain hostage until someone edits a record in the
+source system — which hands the refresh SLA to another team's ticket queue.
+
+| Tier | Reserved for |
+|---|---|
+| `error` (default) | the key, and anything that makes "one row" meaningless |
+| `warn` | anomalies that invalidate no total — a reversed date distorts a lead time and no quantity |
+| quarantine | a source error known to recur; handled in the model, so **ask the user** rather than emitting it |
+
+Every `warn` you emit carries a comment stating the reason **and the condition
+that would move it back to `error`**. Without that, a downgrade is
+indistinguishable from unblocking a build, which is what it will be used for.
+
+**Never emit `severity: warn` on a `relationships` test.** It publishes the
+orphan and then loses it in every inner join, so the total comes out too low with
+nothing to show for it — worse than blocking and worse than quarantining. If
+blocking is untenable, say so and describe the quarantine options (an `UNKNOWN`
+dimension member, or an explicit exclusion with the rows counted); do not
+downgrade it yourself.
+
+### 6. Name the tests whose generated name is unreadable
+
+Unnamed, dbt builds the name from the test type plus every argument, giving
+`dbt_utils_expression_is_true_stg_sap__production_order_date_actual_end_date_actual_start`.
+That string is not internal: it lands in the failure alert, in the Dagster asset
+check, and as the audit table name holding the offending rows.
+
+Emit `name:` — a sibling of `arguments:` and `config:` — on every
+`dbt_utils.expression_is_true`, `dbt_utils.accepted_range` and `relationships`.
+Convention `<model scope>_<what must be true>`; the prefix is required because
+dbt enforces project-wide uniqueness. Leave `not_null`, `unique` and
+`accepted_values` unnamed — their generated names already state the rule.
+
+Do not propose `--store-failures` as a flag: `data_tests: +store_failures: true`
+in `dbt_project.yml` is the standard, so the rows are always kept.
+
+### 7. Emit the YAML in the required syntax
 
 Two rules, both hard:
 
@@ -135,6 +175,7 @@ models:
         tests:
           - not_null
           - relationships:
+              name: production_operation_work_center_exists
               arguments:
                 to: ref('dim_work_center')
                 field: work_center_id
@@ -149,10 +190,14 @@ models:
         tests:
           - not_null
           - dbt_utils.accepted_range:
+              name: production_operation_duration_is_positive
               arguments:
                 min_value: 0
               config:
-                severity: warn   # source known to emit zero-length setups
+                # warn: the source is known to emit zero-length setups, and a
+                # zero distorts no total. Back to error the day a mart_ divides
+                # by this duration.
+                severity: warn
 ```
 
 Composite key, tested on the model rather than a column:
@@ -166,7 +211,7 @@ Composite key, tested on the model rather than a column:
               - operation_number
 ```
 
-### 6. Report what you generated and what you did not
+### 8. Report what you generated and what you did not
 
 State the minimum bar explicitly: key covered, every FK covered, every code
 column covered — or which one is not, and why (usually: waiting on an answer

@@ -97,13 +97,66 @@ look thorough.
 **Bounds beat blacklists.** `not_accepted_values: [0]` forbids zero and allows
 −50. A lower bound states the actual rule and catches both.
 
-## Severity
+## Name the tests whose generated name is unreadable
 
-`severity: warn` is legitimate **only with the reason written next to it**; an
-unexplained downgrade is indistinguishable from giving up. `error_if` /
-`warn_if` express a tolerance — honest for a known dirty source, dishonest as a
-way to keep a dashboard green. `store_failures: true` is worth enabling on any
-test that has failed more than once.
+Unnamed, dbt builds the name from the test type plus every argument:
+`dbt_utils_expression_is_true_stg_sap__production_order_date_actual_end_date_actual_start`.
+That string is what lands in the failure alert, in the Dagster asset check, and
+as the **audit table name** the offending rows are written to.
+
+```yaml
+- dbt_utils.expression_is_true:
+    name: production_order_actual_dates_run_forwards
+    arguments:
+      expression: date_actual_end >= date_actual_start
+```
+
+`name:` is a sibling of `arguments:` and `config:`. Convention:
+**`<model scope>_<what must be true>`** — the prefix is required, dbt enforces
+project-wide uniqueness of test names.
+
+| Needs a `name:` | Does not |
+|---|---|
+| `dbt_utils.expression_is_true`, `dbt_utils.accepted_range`, `relationships` | `not_null`, `unique`, `accepted_values` |
+
+The criterion is not length: `accepted_values_..._plant_id__P100__P200` is long
+and already states the rule, values included.
+
+## Severity — three tiers, assigned per test
+
+A test at `error` fails the whole `dbt build` and therefore blocks publication.
+Leaving everything at `error` means one absurd row holds every domain hostage
+until someone edits a record in the source system.
+
+| Tier | Effect | Reserved for |
+|---|---|---|
+| `error` | blocks publication | the key, and anything making "one row" meaningless |
+| `warn` | publishes, records the rows, does not block | anomalies that invalidate no total |
+| **quarantine** | handled in the model, not by a test | source errors known to recur |
+
+- A downgrade to `warn` carries **its reason and the condition that would move it
+  back**, in a comment next to it. "warn for now" is not that.
+- `error_if` / `warn_if` express a tolerance — honest for a known dirty source,
+  dishonest as a way to keep a dashboard green.
+- **Never `warn` a foreign key.** It publishes the orphan *and* loses it in every
+  inner join, so the total is wrong with nothing to show for it — worse than
+  blocking and worse than quarantining. Quarantine means an `UNKNOWN` dimension
+  member, or an explicit exclusion **with the excluded rows counted**. Filtering
+  without counting turns a visible error into an invisible one.
+
+## `store_failures` is project-wide, not per test
+
+```yaml
+# dbt_project.yml
+data_tests:
+  +store_failures: true
+```
+
+A test fails at 03:00 in a run nobody watches; the default keeps the count and
+discards the rows, so answering *which rows?* needs a rebuild. Do not propose
+`--store-failures` as a flag or `store_failures: true` on one test — the project
+setting is the standard. `dbt_utils.expression_is_true` also compiles to
+`select 1` without it, so its compiled SQL shows a count and never the rows.
 
 ## Anti-patterns — always a finding
 
@@ -117,3 +170,7 @@ test that has failed more than once.
 | a permanently red test | teaches everyone to ignore failures |
 | adding tests to raise a count | 100 tests of which 60 are tautologies is worse than 40 that mean something |
 | testing what the warehouse enforces | a `date` column will not contain "hello" |
+| every test left at the default `error` | one bad row blocks every domain; the SLA becomes another team's ticket queue |
+| `severity: warn` on a foreign key | publishes the orphan *and* hides it in the joins |
+| filtering bad rows without counting them | the only failure mode nobody ever detects |
+| a `dbt_utils` test left unnamed | its generated name is what the alert and the audit table carry |
