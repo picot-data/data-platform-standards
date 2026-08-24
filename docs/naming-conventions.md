@@ -42,7 +42,7 @@ event it measures — `customer`, `product`, `date`, `supplier`, `plant`. A
 **business process** is a measurable event involving one or more of those
 entities — `order`, `delivery`, `production_run`. That distinction is what
 separates `dim_` from `fct_` (see [Why a star
-schema](data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging)).
+schema](building-a-data-model/data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging)).
 
 The double underscore `__` is a semantic separator: it separates the object's
 origin (source) or the analysis domain. **Source names** reflect the
@@ -57,7 +57,7 @@ is an `int_` model.
 
 Where each layer is materialized and what gets published to ADLS is a
 different question, answered in
-[Data layers — Persistence per layer](data-layers.md#persistence-per-layer).
+[Data layers — Persistence per layer](building-a-data-model/data-layers.md#persistence-per-layer).
 
 ## Column naming
 

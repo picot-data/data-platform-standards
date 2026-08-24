@@ -12,7 +12,7 @@ otherwise re-enter by hand in *Table Metadata*:
 - **Foreign keys.** Without them the query builder offers no implicit joins, so
   "sales by customer region" requires hand-written SQL instead of two clicks.
   The star schema's whole self-service promise
-  ([Data layers](../docs/data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging))
+  ([Data layers](../docs/building-a-data-model/data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging))
   depends on this one piece of metadata.
 - **Table and column descriptions**, which Metabase shows on hover — the only
   place a business user will ever read them.

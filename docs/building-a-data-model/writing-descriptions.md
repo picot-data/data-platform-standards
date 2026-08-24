@@ -1,6 +1,6 @@
 # Writing descriptions
 
-Descriptions are not comments. Since [ADR 0021](adr-index.md) replaced DataHub
+Descriptions are not comments. Since [ADR 0021](../adr-index.md) replaced DataHub
 with `dbt docs`, **they are the catalogue** — the only place a reader learns what
 a table holds and what a number means. CI fails on a missing one.
 
@@ -136,4 +136,4 @@ bring two different production figures.
 
 - [Testing](testing.md) — the other half of what makes a model finished
 - [Data layers](data-layers.md) — what belongs in each layer
-- [Glossary](glossary.md) — group-wide business terms
+- [Glossary](../glossary.md) — group-wide business terms

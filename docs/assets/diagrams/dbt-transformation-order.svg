@@ -100,7 +100,7 @@
   </g>
 
   <!-- MARTS node -->
-  <g class="dp-node" data-href="data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging">
+  <g class="dp-node" data-href="building-a-data-model/data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging">
     <title>Marts (mart_): pre-aggregated, domain-specific views for a recurring or complex analysis. A commodity built on top of dimensions and facts, never the source of truth. See "Why a star schema".</title>
     <rect x="875" y="163" width="170" height="80" rx="5" fill="#f0fdf4" stroke="#15803d" stroke-width="1.5"/>
     <text x="960" y="195" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#14532d">mart_finance__</text>

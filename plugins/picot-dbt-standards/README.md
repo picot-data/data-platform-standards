@@ -54,9 +54,9 @@ reasoning:
 
 | Checklist | Source of truth |
 |---|---|
-| `references/testing-checklist.md` | [`docs/testing.md`](../../docs/testing.md) |
-| `references/naming-checklist.md` | [`docs/naming-conventions.md`](../../docs/naming-conventions.md), [`docs/project-structure.md`](../../docs/project-structure.md), [`docs/data-layers.md`](../../docs/data-layers.md) |
-| `references/description-checklist.md` | [`docs/writing-descriptions.md`](../../docs/writing-descriptions.md) |
+| `references/testing-checklist.md` | [`docs/building-a-data-model/testing.md`](../../docs/building-a-data-model/testing.md) |
+| `references/naming-checklist.md` | [`docs/naming-conventions.md`](../../docs/naming-conventions.md), [`docs/building-a-data-model/project-structure.md`](../../docs/building-a-data-model/project-structure.md), [`docs/building-a-data-model/data-layers.md`](../../docs/building-a-data-model/data-layers.md) |
+| `references/description-checklist.md` | [`docs/building-a-data-model/writing-descriptions.md`](../../docs/building-a-data-model/writing-descriptions.md) |
 
 **The checklists are a second copy of rule text that also lives in `docs/`.**
 That is a deliberate trade — a self-contained, token-efficient reference the
@@ -69,8 +69,9 @@ Two things keep the copies honest:
 2. A change to any of the four source pages must update the matching
    checklist in the same pull request. This is the rule to enforce in review,
    and the obvious candidate for a CI check: fail the build when a commit
-   touches `docs/testing.md`, `docs/writing-descriptions.md`,
-   `docs/naming-conventions.md`, `docs/project-structure.md` or
-   `docs/data-layers.md` without touching
+   touches `docs/building-a-data-model/testing.md`,
+   `docs/building-a-data-model/writing-descriptions.md`,
+   `docs/naming-conventions.md`, `docs/building-a-data-model/project-structure.md` or
+   `docs/building-a-data-model/data-layers.md` without touching
    `plugins/picot-dbt-standards/references/`. That check is not implemented
    yet.

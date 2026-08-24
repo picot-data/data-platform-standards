@@ -14,9 +14,9 @@ boundary is yours to hold.
 
 1. [Platform overview](../platform-overview.md) — the end-to-end flow and why
    each tool is there.
-2. [Data layers](../data-layers.md) — the two axes (medallion vs. dbt layers)
+2. [Data layers](../building-a-data-model/data-layers.md) — the two axes (medallion vs. dbt layers)
    that are easy to conflate, and where each layer persists.
-3. [dbt project structure](../project-structure.md) — which folder a model goes
+3. [dbt project structure](../building-a-data-model/project-structure.md) — which folder a model goes
    in, and why the folder is configuration rather than tidiness.
 4. [Naming conventions](../naming-conventions.md) — skim it once, then refer back
    to it while writing your first model rather than memorizing it up front.
@@ -24,11 +24,11 @@ boundary is yours to hold.
    specific to that entity's data sources and operational quirks lives there,
    not in this standards site.
 
-[Writing descriptions](../writing-descriptions.md) and [Testing](../testing.md) are
+[Writing descriptions](../building-a-data-model/writing-descriptions.md) and [Testing](../building-a-data-model/testing.md) are
 not on that list because reading them cold teaches little. You need them at the
 moment you finish your first model, which is step 3 below.
 
-Everything else ([Metric definitions](../metric-definitions.md),
+Everything else ([Metric definitions](../building-a-data-model/metric-definitions.md),
 [Azure landing zones](../azure-landing-zones.md),
 [Repositories and delivery](../repositories-and-delivery.md)) is reference
 material — read it when the task at hand needs it, not up front.
@@ -79,14 +79,14 @@ Before opening a pull request:
 
 - Is it in the right folder — `staging/`, `intermediate/`, `dimensions/`,
   `facts/` or `marts/`, and the right sub-folder within it? See
-  [Data layers](../data-layers.md) and
-  [dbt project structure](../project-structure.md).
+  [Data layers](../building-a-data-model/data-layers.md) and
+  [dbt project structure](../building-a-data-model/project-structure.md).
 - Does every model and every column carry a `description` that says something
   the name does not? CI fails on a missing one, and a description that restates
   the column name passes CI while teaching nothing — see
-  [Writing descriptions](../writing-descriptions.md).
+  [Writing descriptions](../building-a-data-model/writing-descriptions.md).
 - Do its tests assert the guarantee this model creates, rather than one the
-  warehouse already enforces? [Testing](../testing.md) has the minimum bar per
+  warehouse already enforces? [Testing](../building-a-data-model/testing.md) has the minimum bar per
   layer and the anti-patterns worth knowing before you hit them.
 - Does the commit message follow
   [Conventional Commits](../repositories-and-delivery.md#commits)?

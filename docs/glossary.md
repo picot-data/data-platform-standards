@@ -1,7 +1,7 @@
 # Glossary
 
 Business terms are the same terms defined in the
-[metric definitions](metric-definitions.md) — this page documents them in prose,
+[metric definitions](building-a-data-model/metric-definitions.md) — this page documents them in prose,
 the `mart_` models compute them in SQL. There is no separate glossary tool to
 feed: each term below also lives in the `description` of the `mart_` model that
 computes it, which is what the catalog publishes — see
@@ -20,7 +20,7 @@ When a definition changes here, it changes in that model's YAML too.
 : A group company (Dirickx, B&G, and future entities). Represented in data
   by the `entity` column (`'dti'` = Dirickx, `'bg'` = B&G, ...) on every fact
   and dimension table — see
-  [Data layers — multi-entity tables](data-layers.md#multi-entity-tables).
+  [Data layers — multi-entity tables](building-a-data-model/data-layers.md#multi-entity-tables).
   The same code is also used for the Azure infrastructure `scope` segment in
   resource names — one code, not two — see
   [Azure landing zones](azure-landing-zones.md#resource-naming-pattern).
@@ -46,11 +46,11 @@ When a definition changes here, it changes in that model's YAML too.
 **Medallion architecture**
 : The bronze/silver/gold refinement model for data storage — describes *how
   refined and how durable* data is. Orthogonal to the dbt model layers below.
-  See [Data layers](data-layers.md).
+  See [Data layers](building-a-data-model/data-layers.md).
 
 **dbt model layers** (staging, intermediate, dimensions, facts, marts)
 : Describe *what kind of SQL transformation* produced a model — orthogonal to
-  the medallion architecture above. See [Data layers](data-layers.md).
+  the medallion architecture above. See [Data layers](building-a-data-model/data-layers.md).
 
 **Surrogate key** (`_sk` suffix)
 : A generated technical key (via `dbt_utils.generate_surrogate_key`), used to
@@ -61,7 +61,7 @@ When a definition changes here, it changes in that model's YAML too.
 **Metric definition**
 : The single place a business metric is computed — a `mart_` model — instead of
   being recomputed independently in each dashboard. See
-  [Metric definitions](metric-definitions.md).
+  [Metric definitions](building-a-data-model/metric-definitions.md).
 
 **Semantic layer**
 : A tool that resolves a metric definition at query time, so any consumer asking
@@ -73,7 +73,7 @@ When a definition changes here, it changes in that model's YAML too.
 : A modeling pattern (Kimball) where a fact table's measures are described by
   surrounding dimension tables, joined by keys — as opposed to flat,
   pre-aggregated marts built directly from staging. See
-  [Data layers — Why a star schema](data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging).
+  [Data layers — Why a star schema](building-a-data-model/data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging).
 
 **Landing zone**
 : In the Cloud Adoption Framework, a management group + set of subscriptions

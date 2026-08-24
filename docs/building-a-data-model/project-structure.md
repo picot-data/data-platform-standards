@@ -108,11 +108,11 @@ where dbt looks, not what kind of object it is.
 | Source declarations | `_<source>__sources.yml` | the source and its tables |
 | Model documentation | `_<source>__models.yml` in staging, `_<layer>__models.yml` elsewhere | descriptions and tests |
 | Unit tests | `_<source>__unit_tests.yml` | unit test definitions |
-| Model | `<prefix>_<name>.sql` | see [naming conventions](naming-conventions.md) |
+| Model | `<prefix>_<name>.sql` | see [naming conventions](../naming-conventions.md) |
 
 ## Related
 
 - [Data layers](data-layers.md) — which layer a model belongs to
-- [Naming conventions](naming-conventions.md) — how to name the model itself
+- [Naming conventions](../naming-conventions.md) — how to name the model itself
 - [Testing](testing.md), [Writing descriptions](writing-descriptions.md) — what
   goes in the YAML files above

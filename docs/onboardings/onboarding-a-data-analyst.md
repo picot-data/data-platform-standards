@@ -161,5 +161,5 @@ back.
 
 - [BI and access](../bi-and-access.md) — the instance, groups and permissions
 - [Glossary](../glossary.md) — what the group's business terms mean
-- [Metric definitions](../metric-definitions.md) — where a figure is defined and why
+- [Metric definitions](../building-a-data-model/metric-definitions.md) — where a figure is defined and why
   only once

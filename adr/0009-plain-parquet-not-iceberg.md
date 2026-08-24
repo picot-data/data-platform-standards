@@ -29,7 +29,7 @@ Option 2. Plain Parquet for Bronze, Silver, and Gold at Level 1.
 
 - No time travel or schema evolution at the storage layer — replay and
   history rely on Bronze's immutable date partitions and dbt snapshots (see
-  [Data layers — Archiving](../docs/data-layers.md#archiving)),
+  [Data layers — Archiving](../docs/building-a-data-model/data-layers.md#archiving)),
   not on the table format.
 - The migration cost to a table format later is close to zero: Parquet files
   are already the underlying format Iceberg and Delta build on. Level 2's

@@ -132,7 +132,7 @@ For each finding:
 
 ```
 [Blocking] models/staging/sap/_sap__models.yml:42 — stg_sap__order.customer_id
-  Rule: `unique` belongs on the primary key only (testing.md).
+  Rule: `unique` belongs on the primary key only (building-a-data-model/testing.md).
   Why:  customer_id is a foreign key here; the grain is one row per order, so
         the value repeats and this test is red by construction.
   Fix:  remove `unique`; keep `not_null` and add

@@ -6,7 +6,7 @@
 
 ## Context
 
-This rule is already written down. [Metric definitions](../docs/metric-definitions.md)
+This rule is already written down. [Metric definitions](../docs/building-a-data-model/metric-definitions.md)
 states that metric logic never appears in a Metabase question, and
 [BI and access](../docs/bi-and-access.md) states that Metabase models are
 presentation — "scope, renaming, joins for convenience" — and that a Metabase
@@ -59,7 +59,7 @@ things and no more: rename columns for readability, hide technical columns, join
 for convenience where the join is trivial and carries no semantics, and scope a
 question to a subset of rows.
 
-The three re-aggregation rules in [Metric definitions](../docs/metric-definitions.md)
+The three re-aggregation rules in [Metric definitions](../docs/building-a-data-model/metric-definitions.md)
 stay in force unchanged, and are the operational form of this decision:
 
 1. never store a ratio or an average — store numerator and denominator, and let

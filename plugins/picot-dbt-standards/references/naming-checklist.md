@@ -1,7 +1,7 @@
 # Naming checklist (enforceable form)
 
-Condensed from `docs/naming-conventions.md`, `docs/data-layers.md` and
-`docs/project-structure.md`. The prose pages carry the reasoning; this file
+Condensed from `docs/naming-conventions.md`, `docs/building-a-data-model/data-layers.md` and
+`docs/building-a-data-model/project-structure.md`. The prose pages carry the reasoning; this file
 carries only what can be checked mechanically.
 
 ## Universal

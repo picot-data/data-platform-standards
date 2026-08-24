@@ -161,7 +161,7 @@ look thorough.
 ## Related
 
 - [Data layers](data-layers.md) — what belongs in each layer
-- [Naming conventions](naming-conventions.md) — the key and column patterns the
+- [Naming conventions](../naming-conventions.md) — the key and column patterns the
   tests above assert
 - [Writing descriptions](writing-descriptions.md) — the other half of what makes
   a model finished

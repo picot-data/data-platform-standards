@@ -64,12 +64,12 @@ Every layer is stored as Parquet — see
 [ADR 0009](https://github.com/picot-data/data-platform-standards/blob/main/adr/0009-plain-parquet-not-iceberg.md).
 The full naming and persistence rules live in
 [Naming conventions](naming-conventions.md#cloud-storage-naming-adls) and
-[Data layers](data-layers.md).
+[Data layers](building-a-data-model/data-layers.md).
 
 ## Transformation — dbt Core + DuckDB
 
 dbt models the data as a star schema (dimensions and facts), not just ad hoc
-marts — see [Data layers](data-layers.md) for the layer-by-layer breakdown and
+marts — see [Data layers](building-a-data-model/data-layers.md) for the layer-by-layer breakdown and
 why the medallion architecture and the dbt model layers are two different,
 easily conflated axes.
 
@@ -81,7 +81,7 @@ MetricFlow held this job until
 [ADR 0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md)
 dropped it. The rules that make a mart a safe place for a metric — and the
 re-aggregation traps they exist to avoid — are in
-[Metric definitions](metric-definitions.md).
+[Metric definitions](building-a-data-model/metric-definitions.md).
 
 ## Orchestration — Dagster OSS
 
@@ -111,7 +111,7 @@ Metabase, so lineage reaches the dashboard and not only the mart
 Because the site reports only what the YAML says, the descriptions *are* the
 catalog, and the entity CI fails on a model or a column that has none — a gate,
 not a warning. What a description has to contain to clear it is in
-[Writing descriptions](writing-descriptions.md); how CI and the pipeline each
+[Writing descriptions](building-a-data-model/writing-descriptions.md); how CI and the pipeline each
 build the site is in
 [Repositories and delivery](repositories-and-delivery.md#minimal-cicd).
 

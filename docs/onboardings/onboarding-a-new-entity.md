@@ -242,7 +242,7 @@ scale (see ADR 0011).
 The new entity's data lands in the **same** `dim_customer`, `fct_order`, etc.
 tables as every other entity, distinguished by its `entity` column value
 (e.g. `'bg'` for B&G) — not by a new set of entity-specific tables. See
-[Data layers — multi-entity tables](../data-layers.md#multi-entity-tables).
+[Data layers — multi-entity tables](../building-a-data-model/data-layers.md#multi-entity-tables).
 
 ## 7. Budgets and tags — inherited, not recreated
 

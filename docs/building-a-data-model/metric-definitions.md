@@ -28,7 +28,7 @@ top of staging or intermediate models. The mart is the metric: it computes it,
 documents it, and is what Metabase reads.
 
 The metric name follows the naming pattern in
-[Naming conventions](naming-conventions.md#dbt-model-naming): a mart is
+[Naming conventions](../naming-conventions.md#dbt-model-naming): a mart is
 `mart_<domain>__<analysis>`, and the metric it carries is the business term
 itself (`revenue`, not `revenue_calc`).
 

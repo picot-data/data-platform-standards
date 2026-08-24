@@ -76,7 +76,7 @@ isolation enforceable — see [Data permissions](#data-permissions).
 
 `gold_group` holds the same tables with rows from every entity, distinguished by
 the `entity` column — see
-[Data layers](data-layers.md#multi-entity-tables). It is not a different data
+[Data layers](building-a-data-model/data-layers.md#multi-entity-tables). It is not a different data
 model, only a wider selection of rows.
 
 **Delete Metabase's Sample Database.** From version 63 it is a SQLite file, and
@@ -380,7 +380,7 @@ The order matters: every step but the first is undone by skipping it.
 - A dashboard is one intention, and roughly seven cards. Beyond that, split it.
 - Business logic never lives in a Metabase question. A `SUM` or a ratio that
   encodes a business definition belongs in a `mart_` model — see
-  [Metric definitions](metric-definitions.md).
+  [Metric definitions](building-a-data-model/metric-definitions.md).
 - A Metabase model that several dashboards depend on is a signal that it should
   become a dbt model. Metabase models are presentation: scope, renaming, joins
   for convenience. They are not stored in Git, not tested, and not visible to

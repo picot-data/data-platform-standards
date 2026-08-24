@@ -43,11 +43,11 @@ nav:
   - Platform overview: platform-overview.md
   - Naming conventions: naming-conventions.md
   - Building a data model:
-      - Data layers: data-layers.md
-      - dbt project structure: project-structure.md
-      - Writing descriptions: writing-descriptions.md
-      - Testing: testing.md
-      - Metric definitions: metric-definitions.md
+      - Data layers: building-a-data-model/data-layers.md
+      - dbt project structure: building-a-data-model/project-structure.md
+      - Writing descriptions: building-a-data-model/writing-descriptions.md
+      - Testing: building-a-data-model/testing.md
+      - Metric definitions: building-a-data-model/metric-definitions.md
   - BI and access: bi-and-access.md
   - Azure landing zones: azure-landing-zones.md
   - Repositories and delivery: repositories-and-delivery.md
@@ -80,13 +80,19 @@ plugins:
       redirect_maps:
         # The filename said "semantic layer"; the page says the platform runs
         # none (ADR 0015). Renamed to match its own H1.
-        semantic-layer.md: metric-definitions.md
+        semantic-layer.md: building-a-data-model/metric-definitions.md
         # Renamed for symmetry, once a sibling analyst page existed.
         onboarding-an-engineer.md: onboardings/onboarding-a-data-engineer.md
         # Grouped the three onboarding pages under their own section.
         onboarding-a-new-entity.md: onboardings/onboarding-a-new-entity.md
         onboarding-a-data-engineer.md: onboardings/onboarding-a-data-engineer.md
         onboarding-a-data-analyst.md: onboardings/onboarding-a-data-analyst.md
+        # Grouped the five model-building pages under their own section.
+        data-layers.md: building-a-data-model/data-layers.md
+        project-structure.md: building-a-data-model/project-structure.md
+        writing-descriptions.md: building-a-data-model/writing-descriptions.md
+        testing.md: building-a-data-model/testing.md
+        metric-definitions.md: building-a-data-model/metric-definitions.md
   - i18n:
       docs_structure: suffix
       fallback_to_default: true

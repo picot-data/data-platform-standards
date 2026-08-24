@@ -132,12 +132,12 @@ connects to: `gold_dti` holds Dirickx's rows, `gold_group` holds everyone's, and
 group tied to one of them cannot reach the other. Metabase's open-source edition
 has no row or column security — filtering on `entity` inside a query is a
 convention, and a convention is not a boundary. See
-[BI and access — Data permissions](bi-and-access.md#data-permissions) for what
+[BI and access — Data permissions](../bi-and-access.md#data-permissions) for what
 actually holds the line.
 
 See
-[Naming conventions](naming-conventions.md#technical-metadata-columns) for the
+[Naming conventions](../naming-conventions.md#technical-metadata-columns) for the
 column definition, and
-[Azure landing zones](azure-landing-zones.md#resource-naming-pattern) for how
+[Azure landing zones](../azure-landing-zones.md#resource-naming-pattern) for how
 this same code is used for the Azure infra `scope` segment in resource
 names.

@@ -1,6 +1,6 @@
 # Testing checklist (enforceable form)
 
-Condensed from `docs/testing.md`. The prose page carries the reasoning.
+Condensed from `docs/building-a-data-model/testing.md`. The prose page carries the reasoning.
 
 ## The four built-in tests — and nothing else is built in
 

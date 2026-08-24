@@ -18,7 +18,7 @@ the group-level question is asked. Three facts made the per-entity placement
 untenable once the first Metabase was actually in use:
 
 1. **The group view is the point.** The platform exists to analyse the group's
-   sales. [Data layers](../docs/data-layers.md) states this explicitly: a
+   sales. [Data layers](../docs/building-a-data-model/data-layers.md) states this explicitly: a
    group-level dashboard filters `entity IN ('dti', 'bg')`. With one Metabase
    per entity, each instance sees only its own entity's Gold folder, and that
    dashboard cannot exist anywhere.
@@ -87,7 +87,7 @@ would reproduce exactly the throttling that ADR 0013 exists to avoid. The pull
 itself is a handful of file reads per refresh, which is well inside the limit.
 
 **One serving database per entity is a permissions mechanism, not a
-convenience.** [Data layers](../docs/data-layers.md#multi-entity-tables) says
+convenience.** [Data layers](../docs/building-a-data-model/data-layers.md#multi-entity-tables) says
 entity scoping is expressed as a filter on the `entity` column — and a filter
 is exactly what Metabase's open-source edition cannot enforce, because row and
 column security is a paid feature. Metabase's finest free-of-charge grain is
