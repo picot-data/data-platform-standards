@@ -51,9 +51,10 @@ nav:
   - BI and access: bi-and-access.md
   - Azure landing zones: azure-landing-zones.md
   - Repositories and delivery: repositories-and-delivery.md
-  - Onboarding a new entity: onboarding-a-new-entity.md
-  - Onboarding a data engineer: onboarding-a-data-engineer.md
-  - Onboarding a data analyst: onboarding-a-data-analyst.md
+  - Onboardings:
+      - Onboarding a new entity: onboardings/onboarding-a-new-entity.md
+      - Onboarding a data engineer: onboardings/onboarding-a-data-engineer.md
+      - Onboarding a data analyst: onboardings/onboarding-a-data-analyst.md
   - Glossary: glossary.md
   - Architecture Decision Records: adr-index.md
 
@@ -81,7 +82,11 @@ plugins:
         # none (ADR 0015). Renamed to match its own H1.
         semantic-layer.md: metric-definitions.md
         # Renamed for symmetry, once a sibling analyst page existed.
-        onboarding-an-engineer.md: onboarding-a-data-engineer.md
+        onboarding-an-engineer.md: onboardings/onboarding-a-data-engineer.md
+        # Grouped the three onboarding pages under their own section.
+        onboarding-a-new-entity.md: onboardings/onboarding-a-new-entity.md
+        onboarding-a-data-engineer.md: onboardings/onboarding-a-data-engineer.md
+        onboarding-a-data-analyst.md: onboardings/onboarding-a-data-analyst.md
   - i18n:
       docs_structure: suffix
       fallback_to_default: true

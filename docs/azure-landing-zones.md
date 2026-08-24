@@ -262,4 +262,4 @@ next entity's subscription.
   [open questions](https://github.com/picot-data/data-platform-standards/issues?q=is%3Aissue+is%3Aopen+label%3Aopen-question).
 - When onboarding a new entity, apply the same template documented here
   rather than improvising — see
-  [Onboarding a new entity](onboarding-a-new-entity.md).
+  [Onboarding a new entity](onboardings/onboarding-a-new-entity.md).

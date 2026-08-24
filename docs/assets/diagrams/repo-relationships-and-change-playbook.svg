@@ -57,7 +57,7 @@
   <text x="700" y="196" font-size="9.5" font-style="italic" text-anchor="end" fill="#6d28d9">called via uses: @main</text>
   <text x="822" y="196" font-size="9.5" font-style="italic" text-anchor="middle" fill="#888">copied once</text>
 
-  <g class="dp-node" data-href="onboarding-a-new-entity.md">
+  <g class="dp-node" data-href="onboardings/onboarding-a-new-entity.md">
     <title>Any entity repo — dti, bg, or a future one. Created from the template, wired to the other three.</title>
     <rect x="330" y="270" width="340" height="65" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
     <text x="500" y="298" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#0d47a1">data-platform-&lt;entity&gt;</text>
@@ -90,7 +90,7 @@
   <!-- Row 2 -->
   <line x1="45" y1="490" x2="955" y2="490" stroke="#e5e7eb"/>
   <text x="45" y="512" font-size="11" fill="#333">Change one entity's monthly budget amount</text>
-  <g class="dp-node" data-href="onboarding-a-new-entity.md#2-infrastructure-new-tfvars-same-terraform-module">
+  <g class="dp-node" data-href="onboardings/onboarding-a-new-entity.md#2-infrastructure-new-tfvars-same-terraform-module">
     <title>Only that entity's own .tfvars — nothing shared changes.</title>
     <rect x="400" y="498" width="150" height="34" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.2"/>
     <text x="475" y="519" font-size="10.5" text-anchor="middle" fill="#0d47a1">that entity's .tfvars</text>
@@ -134,7 +134,7 @@
   <!-- Row 6 -->
   <line x1="45" y1="706" x2="955" y2="706" stroke="#e5e7eb"/>
   <text x="45" y="728" font-size="11" fill="#333">Add a new mandatory tag</text>
-  <g class="dp-node" data-href="onboarding-a-new-entity.md#2-infrastructure-new-tfvars-same-terraform-module">
+  <g class="dp-node" data-href="onboardings/onboarding-a-new-entity.md#2-infrastructure-new-tfvars-same-terraform-module">
     <title>local.common_tags lives in each entity's own root module, not in a shared module — see ADR 0011.</title>
     <rect x="400" y="714" width="150" height="34" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.2"/>
     <text x="475" y="735" font-size="10.5" text-anchor="middle" fill="#0d47a1">each entity's root module</text>

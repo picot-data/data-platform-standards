@@ -5,7 +5,7 @@ knowledge of dbt, Azure or git, and it is the only page on this site written for
 someone who will never open the repository.
 
 If you administer the instance rather than build in it, read
-[BI and access](bi-and-access.md) instead. If you will write the dbt models
+[BI and access](../bi-and-access.md) instead. If you will write the dbt models
 behind the data, read
 [Onboarding a data engineer](onboarding-a-data-engineer.md) — and then this
 page too, because [When a question has to become a dbt
@@ -77,7 +77,7 @@ restriction.
 
 Metabase is for **presentation**. The definition of a business figure lives in
 the transformation layer, versioned, tested and documented
-([ADR 0022](adr-index.md)). The boundary is not "does it calculate" — aggregating
+([ADR 0022](../adr-index.md)). The boundary is not "does it calculate" — aggregating
 is what a BI tool is for. The boundary is **does it decide**.
 
 ### Always fine in Metabase
@@ -159,7 +159,7 @@ back.
 
 ## Related
 
-- [BI and access](bi-and-access.md) — the instance, groups and permissions
-- [Glossary](glossary.md) — what the group's business terms mean
-- [Metric definitions](metric-definitions.md) — where a figure is defined and why
+- [BI and access](../bi-and-access.md) — the instance, groups and permissions
+- [Glossary](../glossary.md) — what the group's business terms mean
+- [Metric definitions](../metric-definitions.md) — where a figure is defined and why
   only once

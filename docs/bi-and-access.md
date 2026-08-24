@@ -186,7 +186,7 @@ separate *creating* from *publishing* with a permission. At this scale that
 separation is made by a **conversation** instead: an analyst who wants a
 dashboard read by others shows what they built, and the calculation behind it
 either stays in Metabase or becomes a dbt model (see
-[Onboarding a data analyst](onboarding-a-data-analyst.md#when-a-question-has-to-become-a-dbt-model)).
+[Onboarding a data analyst](onboardings/onboarding-a-data-analyst.md#when-a-question-has-to-become-a-dbt-model)).
 
 Be clear about what that costs. The dbt/Metabase boundary ([ADR 0022](adr-index.md))
 becomes a rule that is **respected** rather than a rule that is **enforced**.
@@ -266,7 +266,7 @@ Why the line falls there:
   the job of explaining it. But refusing SQL outright would prevent an analyst
   from *demonstrating* the calculation that justifies asking for a mart, which
   is the conversation the whole arrangement depends on. The preference is stated
-  as a rule in [Onboarding a data analyst](onboarding-a-data-analyst.md), not
+  as a rule in [Onboarding a data analyst](onboardings/onboarding-a-data-analyst.md), not
   imposed as a permission.
 - **`readers` exists for consumers, not as a punishment.** Someone who opens one
   dashboard a month gains nothing from a query builder and is better served by
@@ -387,4 +387,4 @@ The order matters: every step but the first is undone by skipping it.
   lineage.
 - Onboarding an entity adds two groups, one collection tree and one serving
   database — never a second Metabase instance. See
-  [Onboarding a new entity](onboarding-a-new-entity.md).
+  [Onboarding a new entity](onboardings/onboarding-a-new-entity.md).
