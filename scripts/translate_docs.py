@@ -10,12 +10,21 @@ Diagrams stay English on every language: they are pulled into each page via
 "--8<-- docs/assets/diagrams/*.svg" snippet-include lines, which this script
 copies through untouched rather than translating the SVG itself.
 
+Each translation is cached under .translation-cache/<locale>/<hash>.md, keyed
+on a hash of the English source, PROMPT_VERSION and the locale. CI restores
+that directory from actions/cache before running this script (see
+.github/workflows/docs.yml), so a page whose English content hasn't changed
+is served from cache instead of spending a Swiftask call on it. Bump
+PROMPT_VERSION whenever SYSTEM_PROMPT changes, to invalidate every cached
+translation at once rather than leaving stale ones behind under the old rules.
+
 Requires SWIFTASK_API_KEY in the environment. Uses Swiftask's OpenAI-SDK-
 compatible endpoint — see https://docs.swiftask.ai/fr/help/articles/8458754.
 """
 
 from __future__ import annotations
 
+import hashlib
 import os
 import sys
 from pathlib import Path
@@ -26,8 +35,14 @@ from openai import OpenAI
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_DIR = ROOT / "docs"
 MKDOCS_YML = ROOT / "mkdocs.yml"
+CACHE_DIR = ROOT / ".translation-cache"
 
 LANGUAGES = {"fr": "French", "nl": "Dutch"}
+
+# Bump this when SYSTEM_PROMPT (or the translation logic) changes, so every
+# cached translation is invalidated instead of silently reused under stale
+# rules.
+PROMPT_VERSION = 1
 
 SYSTEM_PROMPT = """\
 You are translating technical documentation for a data platform standards \
@@ -74,6 +89,13 @@ def translated_path(source: Path, locale: str) -> Path:
     return source.with_name(f"{source.stem}.{locale}{source.suffix}")
 
 
+def cache_path(english: str, locale: str) -> Path:
+    digest = hashlib.sha256(
+        f"{PROMPT_VERSION}\0{locale}\0{english}".encode("utf-8")
+    ).hexdigest()
+    return CACHE_DIR / locale / f"{digest}.md"
+
+
 def translate(client: OpenAI, model: str, text: str, language: str) -> str:
     response = client.chat.completions.create(
         model=model,
@@ -106,6 +128,13 @@ def main() -> int:
         english = source.read_text(encoding="utf-8")
         for locale, language in LANGUAGES.items():
             target = translated_path(source, locale)
+            cached = cache_path(english, locale)
+
+            if cached.exists():
+                print(f"Cache hit  {relative_path} -> {target.name} ({language})")
+                target.write_text(cached.read_text(encoding="utf-8"), encoding="utf-8")
+                continue
+
             print(f"Translating {relative_path} -> {target.name} ({language})")
             try:
                 text = translate(client, model, english, language)
@@ -115,6 +144,8 @@ def main() -> int:
                 print(f"  failed: {exc}", file=sys.stderr)
                 continue
             target.write_text(text, encoding="utf-8")
+            cached.parent.mkdir(parents=True, exist_ok=True)
+            cached.write_text(text, encoding="utf-8")
 
     return 0
 

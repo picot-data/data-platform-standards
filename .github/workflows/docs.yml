@@ -31,6 +31,18 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: astral-sh/setup-uv@v3
       - run: uv sync
+      # Content-addressed cache of past translations (keyed on a hash of each
+      # English source file — see scripts/translate_docs.py), so a page that
+      # hasn't changed since the last run is restored here instead of
+      # spending a Swiftask call on it. The save key never matches on restore
+      # (it embeds the current tree's hash), so restore-keys falls back to
+      # the most recent cache and this step always saves a new one on top.
+      - uses: actions/cache@v4
+        with:
+          path: .translation-cache
+          key: translation-cache-${{ hashFiles('docs/**/*.md') }}
+          restore-keys: |
+            translation-cache-
       # Regenerates docs/*.fr.md and docs/*.nl.md from the current English
       # docs/*.md on every deploy — never hand-edited, so the translations
       # cannot desync from the English source. See scripts/translate_docs.py.
