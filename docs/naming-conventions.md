@@ -73,6 +73,12 @@ The `_sk` suffix indicates a generated technical key (via
 `dbt_utils.generate_surrogate_key`), not a business identifier. `_id` keys are
 identifiers with business meaning (SAP order number, customer code, etc.).
 
+### Code / classification columns
+
+| Type | Pattern | Example |
+|---|---|---|
+| code | `<object>_<domain>_code`|`production_order_status_code` |
+
 ### Measure columns
 
 | Type | Pattern | Example |

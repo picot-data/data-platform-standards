@@ -55,6 +55,7 @@ carries only what can be checked mechanically.
 | timestamp (UTC) | `ts_<event>` | `ts_creation` |
 | year / month / week | `year`, `month`, `week_iso` | — |
 | boolean | `is_<state>` | `is_active` |
+| code | `<object>_<domain>_code`|`production_order_status_code` |
 
 - `rate_` is reserved for **dimensionless ratios**. A price per hour is an
   amount, not a rate — `rate_cost_hour` for a currency-per-hour figure is a
