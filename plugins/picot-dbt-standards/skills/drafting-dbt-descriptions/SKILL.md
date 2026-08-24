@@ -105,7 +105,7 @@ Rules for the marker:
 - State the questions concretely — a question the user can answer in one line,
   not "please clarify the business logic".
 - Keep the derived facts alongside it. They are real and they are useful.
-- Name who has to confirm it if you know. `docs/writing-descriptions.md` is
+- Name who has to confirm it if you know. `docs/building-a-data-model/writing-descriptions.md` is
   explicit that an honest "to be confirmed with X" is worth more than a
   confident guess.
 

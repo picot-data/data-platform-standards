@@ -1,6 +1,6 @@
 # Description checklist (enforceable form)
 
-Condensed from `docs/writing-descriptions.md`. The prose page carries the
+Condensed from `docs/building-a-data-model/writing-descriptions.md`. The prose page carries the
 reasoning and the worked examples.
 
 Since ADR 0021 replaced DataHub with `dbt docs`, **descriptions are the
