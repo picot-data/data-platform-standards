@@ -24,10 +24,17 @@ There is no approval step in the tool. The rules below are what makes that
 workable, and the last one — knowing when a calculation stops being yours to
 make — is the one that matters.
 
-You see one database, `gold_<entity>`, holding your entity's data. Comparing
-entities uses `gold_group`, which is a separate database and a separate
-permission. There is no filter to switch between them: separate databases are
-how entity isolation is enforced.
+You see one database, `gold_<entity>`, holding your entity's data — and only that
+one. There is no filter that would widen it: separate databases are how entity
+isolation is enforced, so another entity's data is not hidden from you, it is
+unreachable.
+
+Comparing entities is a separate permission (`group_analysts`, granted access to
+each entity's database) and it works differently from what you might expect:
+**there is no combined table.** A group dashboard puts one card per entity side by
+side, each reading its own database. Two entities' figures are only comparable if
+the marts behind them implement the same written definition — a question to settle
+before building the dashboard, not after.
 
 ## Where things go
 

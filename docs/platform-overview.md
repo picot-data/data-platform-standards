@@ -131,12 +131,16 @@ see
 for why Power BI is not the BI tool here.
 
 It runs **once for the whole group**, on `vm-picot-shared-bi-weu-01` in the
-shared landing zone, not once per entity — a group-level dashboard comparing
-entities is the reason the platform exists, and no per-entity instance can
-build one. A scheduled refresh on that VM pulls the published Gold Parquet
-from ADLS to local disk and rebuilds one serving DuckDB database per entity,
-plus one unioned group database; Metabase never queries `abfss://` directly.
-See
+shared landing zone, not once per entity: N instances would duplicate every
+piece of BI configuration — table metadata, collections, groups, users,
+dashboards — and a group controller would need N logins. A scheduled refresh on
+that VM pulls the published Gold Parquet from ADLS to local disk and rebuilds
+**one serving DuckDB database per entity**; Metabase never queries `abfss://`
+directly. There is no group database: entities have their own models, so a
+group-level dashboard puts one card per entity side by side rather than merging
+them — see
+[BI and access](bi-and-access.md#the-group-scope-is-juxtaposition-not-a-union)
+and
 [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md).
 
 Its table metadata — descriptions, foreign keys, hidden technical tables — is

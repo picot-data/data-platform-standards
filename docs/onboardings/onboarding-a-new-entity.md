@@ -321,8 +321,10 @@ The new entity does **not** get its own Metabase. On the shared VM
 (`vm-picot-shared-bi-weu-01`):
 
 - Add `<code>` to the refresh so it builds `serving_<code>.duckdb` from
-  `gold/company_<code>/`, and includes the new folder in the unioned
-  `gold_group` database.
+  `gold/company_<code>/`. There is **no group database to extend**: entities have
+  their own models, so the group scope is one card per entity side by side on a
+  dashboard, never a union — see
+  [BI and access](../bi-and-access.md#the-group-scope-is-juxtaposition-not-a-union).
 - Add the serving file as a **read-only** Metabase database named `gold_<code>`.
   One database per entity is what makes entity isolation enforceable in the
   open-source edition — see
@@ -332,8 +334,11 @@ The new entity does **not** get its own Metabase. On the shared VM
 - Create the collection tree (entity at the top level, business domains below)
   and the two groups `<code>_analysts` and `<code>_readers`, then set data
   permissions before collection permissions.
-- Grant `group_analysts` access to the new entity's database and collection —
-  otherwise the group-level view silently keeps excluding it.
+- **Grant `group_analysts` data access to the new entity's database**, and View on
+  its collections. With no group database this grant *is* the group scope, and
+  nothing fails if it is forgotten: the group dashboards simply keep excluding the
+  new entity. Add the entity's card to the existing `Group` dashboards in the same
+  sitting, or the omission is invisible.
 Nothing is added centrally for the catalog: the entity's CI builds its own dbt
 docs site from its own project, so onboarding costs zero catalog configuration
 ([ADR 0021](https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md)).

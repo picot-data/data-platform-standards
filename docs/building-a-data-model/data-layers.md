@@ -190,14 +190,17 @@ producing the table is copied per entity — a separate question, answered in
 
 **The column is never the access control** — in the POC or in production. What an
 entity is *allowed* to see is enforced one level down, at the serving database
-Metabase connects to: `gold_dti` holds Dirickx's rows, `gold_group` holds
-everyone's, and a group tied to one of them cannot reach the other. Metabase's
-open-source edition has no row or column security, so filtering on `entity` inside
-a query is a convention, and a convention is not a boundary. This part *is*
-production-relevant: one database per entity is the natural shape whether or not
-the models are shared. See
-[BI and access — Data permissions](../bi-and-access.md#data-permissions) for what
-actually holds the line.
+Metabase connects to: `gold_dti` holds Dirickx's data, `gold_bg` holds B&G's, and
+a group tied to one cannot reach the other. Metabase's open-source edition has no
+row or column security, so filtering on `entity` inside a query is a convention,
+and a convention is not a boundary.
+
+This part *is* production-relevant, and it survives the section above unchanged:
+one serving database per entity is the right shape whether or not the models are
+shared. What does **not** carry over is the POC's unioned group database — in
+production the group scope is one card per entity side by side, never a merge. See
+[BI and access — Data permissions](../bi-and-access.md#data-permissions) and
+[The group scope is juxtaposition](../bi-and-access.md#the-group-scope-is-juxtaposition-not-a-union).
 
 See
 [Naming conventions](../naming-conventions.md#technical-metadata-columns) for the

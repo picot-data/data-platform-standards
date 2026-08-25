@@ -56,8 +56,8 @@ it exactly.
 
 The refresh is a **pull on a schedule**, not a push from each entity's Dagster
 run. A push would need N sets of credentials reaching across the landing-zone
-boundary, and would leave `gold_group` owned by whichever entity's pipeline
-happened to finish last.
+boundary — N couplings through the one boundary the landing zone structure exists
+to keep clean.
 
 Consequence to state on dashboards rather than hide: Metabase lags the pipeline
 by up to one refresh interval. Every dashboard surfaces the `_loaded_at` of its
@@ -72,12 +72,34 @@ isolation enforceable — see [Data permissions](#data-permissions).
 |---|---|---|
 | `gold_dti` | `serving_dti.duckdb` | `gold/company_dti/*.parquet` |
 | `gold_bg` | `serving_bg.duckdb` | `gold/company_bg/*.parquet` |
-| `gold_group` | `serving_group.duckdb` | every `gold/company_*/` folder, unioned by name |
 
-`gold_group` holds the same tables with rows from every entity, distinguished by
-the `entity` column — see
-[Data layers](building-a-data-model/data-layers.md#multi-entity-tables). It is not a different data
-model, only a wider selection of rows.
+**One database per entity, and no group database.** Entities have their own
+sources and their own models, so there is no table that two of them could
+meaningfully share — see
+[Where a model's code comes from](building-a-data-model/data-layers.md#where-a-models-code-comes-from).
+A unioned `gold_group` exists in the POC, where a fabricated second entity shares
+the reference entity's model; it is scaffolding for that demonstration and is not
+built here.
+
+### The group scope is juxtaposition, not a union
+
+A group-level dashboard puts **one card per entity side by side**, each querying
+that entity's own database. Metabase places cards from different databases on the
+same dashboard, so the comparison is visual and the data never has to be merged.
+
+What this buys and what it costs, stated rather than discovered:
+
+- **No union means no silent merge.** Two entities' figures cannot be summed by
+  accident into a column named `revenue`, which is what a union by column name
+  does when the two definitions have drifted apart.
+- **A group total is a human addition, and it is only meaningful if the two marts
+  agree.** That agreement is a written definition each entity's mart declares it
+  implements, not a property of the query — see
+  [ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-mutualisation-is-of-code-not-of-tables.md).
+  Without it, a group figure is two numbers that answer two questions.
+- **Cross-entity questions in one query are not possible**, and that is the point.
+  Wanting one is the signal that the two models need to conform first, which is a
+  modelling decision and not a BI one.
 
 **Delete Metabase's Sample Database.** From version 63 it is a SQLite file, and
 leaving it connected means a query editor silently pointed at it fails with
@@ -93,7 +115,7 @@ top level, where it can be stated once and inherited.
 **Entity first, business domain second.**
 
 ```
-Group                    ← cross-entity, gold_group
+Group                    ← cross-entity, one card per entity database
   Sales
   Finance
 Dirickx                  ← dti, gold_dti
@@ -175,7 +197,7 @@ deserves it, a capability does not.
 | `Administrators` | Built in — everything. Do not create a second admin group | platform owner |
 | `<entity>_analysts` | Native SQL, and **Curate** on their entity's collections: they build and they publish | controller, power user |
 | `<entity>_readers` | Consume only: open dashboards, filter, sort, drill in. No content of their own | occasional consumer |
-| `group_analysts` | `<entity>_analysts`, across every entity plus the group scope | group-level controlling |
+| `group_analysts` | `<entity>_analysts`, across **every** entity's database, plus Curate on the `Group` collection | group-level controlling |
 | `platform_automation` | **Not a group to create.** The metadata sync's API key has to sit in `Administrators` — see [The automation key](#the-automation-key) | — |
 
 ### Why there is no tier between the two
@@ -251,12 +273,18 @@ groups.
 
 The *Create queries* setting is what separates the two tiers.
 
-| Group | `gold_dti` | `gold_bg` | `gold_group` |
-|---|---|---|---|
-| `dti_analysts` | View data + **query builder and native SQL** | No access | No access |
-| `dti_readers` | View data + **Create queries: No** | No access | No access |
-| `bg_analysts` / `bg_readers` | No access | same two tiers on `gold_bg` | No access |
-| `group_analysts` | View data + query builder and native SQL | same | same |
+| Group | `gold_dti` | `gold_bg` |
+|---|---|---|
+| `dti_analysts` | View data + **query builder and native SQL** | No access |
+| `dti_readers` | View data + **Create queries: No** | No access |
+| `bg_analysts` / `bg_readers` | No access | same two tiers on `gold_bg` |
+| `group_analysts` | View data + query builder and native SQL | same |
+
+`group_analysts` is the **only** group holding more than one entity's database,
+and with no group database that grant is the entire group scope. Onboarding an
+entity therefore has to add its database to that group, or the group-level
+dashboards silently keep excluding it — there is no union that would have failed
+loudly.
 
 Why the line falls there:
 
