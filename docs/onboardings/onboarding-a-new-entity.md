@@ -203,7 +203,9 @@ structure in
 actually identical across entities instead of merely documented as such.
 The template's `<entity>` placeholders are filled in with `<code>` and
 `infra/terraform/` is completed with the `ref` and `.tfvars` from step 2. It links
-to this standards site rather than copying any of its content. Four steps in that
+to this standards site rather than copying any of its content. What it does **not**
+bring is a data model — its `transformation/` holds the project configuration and
+no models at all, which is step 6's subject, not this one. Four steps in that
 repo's README are easy to skip and each fails in its own way:
 
 - **`shared_storage_account_id` in the `.tfvars`** — see step 2. The one omission
@@ -243,6 +245,43 @@ The new entity's data lands in the **same** `dim_customer`, `fct_order`, etc.
 tables as every other entity, distinguished by its `entity` column value
 (e.g. `'bg'` for B&G) — not by a new set of entity-specific tables. See
 [Data layers — multi-entity tables](../building-a-data-model/data-layers.md#multi-entity-tables).
+
+### Where this entity's models come from
+
+The template ships **no models** — deliberately, since it holds the skeleton and
+not the data model. So this is the step where an entity's `stg_`, `dim_`, `fct_`
+and `mart_` models actually appear, and the two halves have different answers
+(see
+[Where a model's code comes from](../building-a-data-model/data-layers.md#where-a-models-code-comes-from)):
+
+- **`staging/` is written for this entity**, against its own SAP. Not copied and
+  adjusted — the point of the layer is to absorb what is specific here.
+- **`int_`, `dim_`, `fct_` and `mart_` come from the shared dbt package**, added
+  to `packages.yml` at a pinned revision. They are not written per entity, for
+  the same reason no entity writes its own Terraform.
+
+!!! warning "While the shared package does not exist yet"
+
+    `data-platform-dbt-core` is decided and not built
+    ([ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-conformed-models-as-a-shared-dbt-package.md)):
+    the conformed layer is extracted once a second entity has been modelled, not
+    designed before it. Until then the conformed models are copied from the
+    reference entity, and **two rules make that copy reversible** rather than a
+    permanent fork:
+
+    - **The naming convention binds** — same model names, same column names, same
+      units as the reference entity
+      ([Column naming](../naming-conventions.md#column-naming)). Checked in this
+      entity's pull requests, because it is the guard rail that fails silently:
+      breach it and the extraction becomes a rewrite, discovered only at merge
+      time.
+    - **`gold_group` carries no `mart_`** until the marts come from one file. Facts
+      and dimensions may be unioned — a divergence in raw measures shows up as two
+      comparable numbers. A mart carries a definition, and `union_by_name`
+      collapses two definitions into one column with no signal at all.
+
+    Onboarding a **third** entity is the trigger to extract the package first, as
+    is publishing the first group-level dashboard.
 
 ## 7. Budgets and tags — inherited, not recreated
 

@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Where each dbt layer's code comes from, and what one pipeline run delivers. The entity repository owns ingestion and the staging models, because that is where two SAP configurations differ. The shared dbt package owns intermediate, dimension, fact and mart models, so a metric is defined in one file. The chain runs once per entity, on that entity's own virtual machine, and delivers Parquet to the lake, one serving database per entity plus a group union, and one catalogue site per entity.">
+
+  <defs>
+    <marker id="mpd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="640" fill="#ffffff"/>
+
+  <text x="480" y="30" font-size="19" font-weight="bold" text-anchor="middle" fill="#003f5c">Where the Code Comes From, and What a Run Delivers</text>
+  <text x="480" y="52" font-size="11.5" text-anchor="middle" fill="#666">Two repositories feed one pipeline. The split is not arbitrary: it falls exactly where two SAP configurations stop being comparable.</text>
+
+  <text x="52" y="99" font-size="10" font-weight="bold" fill="#888" letter-spacing="1" transform="rotate(-90 52 99)" text-anchor="middle">CODE FROM</text>
+  <text x="52" y="219" font-size="10" font-weight="bold" fill="#888" letter-spacing="1" transform="rotate(-90 52 219)" text-anchor="middle">PIPELINE</text>
+  <text x="52" y="375" font-size="10" font-weight="bold" fill="#888" letter-spacing="1" transform="rotate(-90 52 375)" text-anchor="middle">DELIVERED</text>
+
+  <!-- ============================================= code provenance band -->
+  <g class="dp-node" data-href="repositories-and-delivery.md#entity-mono-repo-structure">
+    <title>data-platform-&lt;code&gt; — the entity mono-repo. Holds ingestion/ (which writes Bronze) and transformation/models/staging/. Not shared, because this is where two SAP configurations legitimately differ.</title>
+    <rect x="100" y="76" width="320" height="46" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+    <text x="260" y="96" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#0d47a1">data-platform-&lt;code&gt;  ·  the entity repo</text>
+    <text x="260" y="113" font-size="10" text-anchor="middle" fill="#1565c0">one per entity — the SAP-specific half</text>
+  </g>
+
+  <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-conformed-models-as-a-shared-dbt-package.md">
+    <title>data-platform-dbt-core — the shared dbt package, consumed through packages.yml with a pinned revision. Holds intermediate, dimension, fact and mart models: SQL, descriptions and tests together. ADR 0024.</title>
+    <rect x="440" y="76" width="490" height="46" rx="6" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5"/>
+    <text x="685" y="96" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#312e81">data-platform-dbt-core  ·  the shared dbt package</text>
+    <text x="685" y="113" font-size="10" text-anchor="middle" fill="#4338ca">one for the whole group, pinned revision — SQL + descriptions + tests</text>
+  </g>
+
+  <!-- ownership connectors -->
+  <line x1="175" y1="122" x2="175" y2="174" stroke="#1976d2" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.55"/>
+  <line x1="345" y1="122" x2="345" y2="174" stroke="#1976d2" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.55"/>
+  <line x1="515" y1="122" x2="515" y2="174" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.55"/>
+  <line x1="685" y1="122" x2="685" y2="174" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.55"/>
+  <line x1="855" y1="122" x2="855" y2="174" stroke="#4f46e5" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.55"/>
+
+  <!-- ======================================================== pipeline -->
+  <g class="dp-node" data-href="naming-conventions.md#cloud-storage-naming-adls">
+    <title>Bronze is not a dbt model. The ingestion pipeline writes the raw SAP extract, date-partitioned and immutable, and dbt only reads it.</title>
+    <rect x="100" y="176" width="150" height="86" rx="6" fill="#f2ddc4" stroke="#a5691f" stroke-width="1.5"/>
+    <text x="175" y="205" font-size="13" font-weight="bold" text-anchor="middle" fill="#5c3813">Bronze</text>
+    <text x="175" y="226" font-size="9" text-anchor="middle" fill="#8a5722">bronze/company_&lt;code&gt;/</text>
+    <text x="175" y="245" font-size="9.5" text-anchor="middle" fill="#8a5722">raw SAP extract, read-only</text>
+  </g>
+
+  <g class="dp-node" data-href="building-a-data-model/data-layers.md#the-dbt-layers-in-transformation-order">
+    <title>Staging stays in the entity repository. One model per source object: renaming, retyping, light cleansing — and absorbing everything specific to this entity's SAP so it never climbs into the shared models.</title>
+    <rect x="270" y="176" width="150" height="86" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+    <text x="345" y="205" font-size="13" font-weight="bold" text-anchor="middle" fill="#0d47a1">staging</text>
+    <text x="345" y="226" font-size="10" text-anchor="middle" fill="#1565c0">stg_sap__*</text>
+    <text x="345" y="245" font-size="9.5" font-weight="bold" text-anchor="middle" fill="#1976d2">entity-specific</text>
+  </g>
+
+  <g class="dp-node" data-href="building-a-data-model/data-layers.md#the-dbt-layers-in-transformation-order">
+    <title>Intermediate models come from the shared package. Joins and enrichments, materialized locally and never published to the lake.</title>
+    <rect x="440" y="176" width="150" height="86" rx="6" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+    <text x="515" y="205" font-size="13" font-weight="bold" text-anchor="middle" fill="#312e81">intermediate</text>
+    <text x="515" y="226" font-size="10" text-anchor="middle" fill="#4338ca">int_*</text>
+    <text x="515" y="245" font-size="9.5" font-weight="bold" text-anchor="middle" fill="#4f46e5">conformed</text>
+  </g>
+
+  <g class="dp-node" data-href="building-a-data-model/data-layers.md#why-a-star-schema-not-marts-built-directly-from-staging">
+    <title>Dimensions and facts come from the shared package, and are the source of truth. Their surrogate keys hash the entity code with the natural key, so two entities sharing an ERP id do not collide.</title>
+    <rect x="610" y="176" width="150" height="86" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+    <text x="685" y="205" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#14532d">dimensions + facts</text>
+    <text x="685" y="226" font-size="10" text-anchor="middle" fill="#166534">dim_ · fct_</text>
+    <text x="685" y="245" font-size="9.5" font-weight="bold" text-anchor="middle" fill="#4f46e5">conformed</text>
+  </g>
+
+  <g class="dp-node" data-href="building-a-data-model/metric-definitions.md">
+    <title>Marts come from the shared package, and this is the point of the whole arrangement: revenue is one SUM, in one file, with one description and one test suite — not one per entity.</title>
+    <rect x="780" y="176" width="150" height="86" rx="6" fill="#f0fdf4" stroke="#15803d" stroke-width="1.5"/>
+    <text x="855" y="205" font-size="13" font-weight="bold" text-anchor="middle" fill="#14532d">marts</text>
+    <text x="855" y="226" font-size="10" text-anchor="middle" fill="#166534">mart_*</text>
+    <text x="855" y="245" font-size="9.5" font-weight="bold" text-anchor="middle" fill="#15803d">the metric lives here</text>
+  </g>
+
+  <line x1="252" y1="219" x2="268" y2="219" stroke="#6b7280" stroke-width="1.5" marker-end="url(#mpd-arrow)"/>
+  <line x1="422" y1="219" x2="438" y2="219" stroke="#6b7280" stroke-width="1.5" marker-end="url(#mpd-arrow)"/>
+  <line x1="592" y1="219" x2="608" y2="219" stroke="#6b7280" stroke-width="1.5" marker-end="url(#mpd-arrow)"/>
+  <line x1="762" y1="219" x2="778" y2="219" stroke="#6b7280" stroke-width="1.5" marker-end="url(#mpd-arrow)"/>
+
+  <!-- multiplicity strip -->
+  <rect x="100" y="278" width="830" height="26" rx="4" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="515" y="295" font-size="10.5" text-anchor="middle" fill="#9a3412">This whole chain runs <tspan font-weight="bold">once per entity, on that entity's own VM</tspan> — the package shares the file, not the run. Two runs today: dti and bg.</text>
+
+  <line x1="215" y1="304" x2="215" y2="330" stroke="#6b7280" stroke-width="1.5" marker-end="url(#mpd-arrow)"/>
+
+  <!-- ======================================================== delivered -->
+  <g class="dp-node" data-href="naming-conventions.md#cloud-storage-naming-adls">
+    <title>The publication step writes stg_ models to silver/ and dim_, fct_ and mart_ models to gold/, one Parquet file per model, under this entity's own prefix. This is the durable copy.</title>
+    <rect x="100" y="334" width="230" height="82" rx="6" fill="#fdf6d8" stroke="#d4af00" stroke-width="1.5"/>
+    <text x="215" y="360" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#6b5300">the lake — one prefix per entity</text>
+    <text x="215" y="380" font-size="9.5" text-anchor="middle" fill="#8a6e00">silver/company_&lt;code&gt;/  ·  gold/company_&lt;code&gt;/</text>
+    <text x="215" y="399" font-size="9.5" text-anchor="middle" fill="#8a6e00">Parquet, one file per model — the durable copy</text>
+  </g>
+
+  <line x1="332" y1="375" x2="348" y2="375" stroke="#6b7280" stroke-width="1.5" marker-end="url(#mpd-arrow)"/>
+
+  <rect x="350" y="310" width="402" height="118" rx="6" fill="#fafafa" stroke="#e5e7eb"/>
+  <text x="551" y="327" font-size="10" font-weight="bold" text-anchor="middle" fill="#666">METABASE CONNECTIONS — the access boundary, not a filter</text>
+
+  <g class="dp-node" data-href="bi-and-access.md#data-permissions">
+    <title>One serving database per entity. This is what stops a Dirickx analyst reading B&amp;G: Metabase's open-source edition has no row-level security, so the finest thing it can grant or deny is a database.</title>
+    <rect x="362" y="336" width="182" height="80" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+    <text x="453" y="361" font-size="12" font-weight="bold" text-anchor="middle" fill="#14532d">gold_&lt;code&gt;</text>
+    <text x="453" y="380" font-size="9.5" text-anchor="middle" fill="#166534">one per entity</text>
+    <text x="453" y="398" font-size="9.5" text-anchor="middle" fill="#166534">that entity's analysts only</text>
+  </g>
+
+  <g class="dp-node" data-href="bi-and-access.md#data-permissions">
+    <title>The group database is the union of every gold/company_* prefix, built with union_by_name. It is what a group-level comparison reads, and the reason a mart must never be a per-entity copy: two definitions would stack into one column.</title>
+    <rect x="558" y="336" width="182" height="80" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+    <text x="649" y="361" font-size="12" font-weight="bold" text-anchor="middle" fill="#14532d">gold_group</text>
+    <text x="649" y="380" font-size="9.5" text-anchor="middle" fill="#166534">union of every company_*</text>
+    <text x="649" y="398" font-size="9.5" text-anchor="middle" fill="#166534">group_analysts only</text>
+  </g>
+
+  <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md">
+    <title>One dbt docs site per entity. It is built from the YAML, not from the data — so shared models arrive with byte-identical descriptions in every entity's catalogue, because they come from one file.</title>
+    <rect x="766" y="334" width="164" height="82" rx="6" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="848" y="359" font-size="12" font-weight="bold" text-anchor="middle" fill="#374151">catalogue</text>
+    <text x="848" y="378" font-size="9.5" text-anchor="middle" fill="#55606f">one site per entity</text>
+    <text x="848" y="396" font-size="9.5" text-anchor="middle" fill="#55606f">built from the YAML,</text>
+    <text x="848" y="410" font-size="9.5" text-anchor="middle" fill="#55606f">not from the data</text>
+  </g>
+
+  <!-- ==================================================== reading notes -->
+  <rect x="30" y="452" width="900" height="166" rx="6" fill="#fafafa" stroke="#e5e7eb"/>
+  <text x="48" y="476" font-size="12" font-weight="bold" fill="#333">Reading this diagram</text>
+  <text x="48" y="500" font-size="11.5" fill="#333">The dashed lines are ownership: blue means the code is in the entity repo, indigo means it comes from the shared package. The boundary sits between staging and intermediate.</text>
+  <text x="48" y="522" font-size="11.5" fill="#333">Staging is entity-specific on purpose. Two SAP configurations differ, and staging is the layer built to absorb that — which is what keeps the models above it comparable.</text>
+  <text x="48" y="544" font-size="11.5" fill="#333">Sharing the package changes where the code comes from, not where it runs: each entity still builds its own copy of every model and publishes it under its own prefix.</text>
+  <text x="48" y="566" font-size="11.5" fill="#333">So the serving topology is unchanged. gold_&lt;code&gt; and gold_group both carry mart_sales__daily_orders — what changes is that one file computed both.</text>
+  <text x="48" y="588" font-size="11.5" fill="#333">A genuine business difference between entities becomes a var() read by the shared model, declared in the entity's dbt_project.yml. Never a second copy of the SQL.</text>
+  <text x="48" y="610" font-size="11.5" fill="#666">Until the package exists, the conformed models are copied per entity — see ADR 0024 for the two guard rails that keep that reversible.</text>
+</svg>

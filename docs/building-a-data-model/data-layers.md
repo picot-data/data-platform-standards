@@ -118,12 +118,61 @@ a cross-source analysis combining Gold data with an external source). The
 rule that follows from this: **dimensions and facts are the source of truth;
 marts are commodities** built on top of them, never the other way around.
 
+## Where a model's code comes from
+
+The layers above answer *what* a model does. A separate question, easy to skip
+while the platform has one entity and unforgiving afterward, is *which
+repository the model's SQL lives in* — because that is what decides whether
+revenue has one definition across the group or one per entity.
+
+<div class="dp-diagram-wrap" markdown="0">
+--8<-- "docs/assets/diagrams/model-provenance-and-delivery.svg"
+</div>
+
+The boundary sits between staging and intermediate:
+
+| Layer | Lives in | Why there |
+|---|---|---|
+| `stg_` | The **entity repository** | Two SAP configurations legitimately differ. Staging is the layer built to absorb that, and keeping it local is what stops entity specificity from climbing into the models above |
+| `int_`, `dim_`, `fct_`, `mart_` | The **shared dbt package**, consumed through `packages.yml` at a pinned revision | A metric is defined once. Across N entity repositories, a copied `mart_` means once *per entity* — which is the failure [Metric definitions](metric-definitions.md) exists to prevent |
+
+Two consequences are worth stating because they are the ones most often assumed
+the other way round:
+
+- **Sharing the package changes where the code comes from, not where it runs.**
+  Each entity still builds every model into its own DuckDB file and publishes it
+  under its own `gold/company_<code>/` prefix. The serving databases, the VMs and
+  the lake prefixes are untouched.
+- **A genuine business difference becomes a declared parameter, not a fork.**
+  Where two entities really do differ — an order type that counts as a sale for
+  one and not the other — the difference is a `var()` read by the shared model and
+  set in the entity's `dbt_project.yml`. Copying a shared model into an entity
+  repository to edit it is the thing this arrangement exists to prevent.
+
+!!! note "Target, not current machinery"
+
+    `data-platform-dbt-core` does not exist yet, and the conformed models are
+    copied per entity today. That is deliberate: a conformed layer is observed,
+    not decreed, and only Dirickx's SAP has been modelled so far.
+    [ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-conformed-models-as-a-shared-dbt-package.md)
+    records the decision, the two guard rails that keep the copies reversible —
+    the naming convention binds across entities, and `gold_group` carries no
+    `mart_` while the marts are copies — and the trigger for extracting the
+    package.
+
 ## Multi-entity tables
 
 Every fact and dimension table carries an `entity` column (`'dti'` = Dirickx,
 `'bg'` = B&G, etc.) rather than one table per entity. When a new entity's
 data lands in `fct_order`, it arrives as additional rows with a new `entity`
-value in the same table. Same table, same structure, no duplication.
+value in the same table.
+
+**No duplicated table — which is not the same as no duplicated code.** One
+`fct_order` *structure* serves every entity, and the group database unions each
+entity's rows into it. The SQL producing it is a different question, answered in
+[Where a model's code comes from](#where-a-models-code-comes-from) above: until
+the shared package exists, that SQL is copied per entity, and the union is
+precisely what makes a divergence between the copies invisible.
 
 **The column is the data model, not the access control.** It is what lets one set
 of models serve every entity and one query compare them. What an entity is

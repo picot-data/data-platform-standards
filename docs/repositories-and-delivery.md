@@ -32,7 +32,7 @@ each entity has its own Azure subscription, its own access boundary, and
 potentially its own contributors — a shared repository would force shared
 write access across entities that don't need it.
 
-## Three shared repos, deduplicated once, not per entity
+## Shared repos, deduplicated once, not per entity
 
 "Same module, same skeleton, same CI" across entities only holds if that
 sameness is backed by something other than copy-paste. Three small repos
@@ -51,6 +51,26 @@ entity repo's own code. The template is **copied once** — a structural
 change made to it later has to be back-ported by hand to entities already
 onboarded, which is an accepted trade-off at two to three entities (see
 ADR 0011's consequences for when to revisit it).
+
+### A fourth, decided and not yet built
+
+Those three cover infrastructure, skeleton and CI. They do not cover the **dbt
+model layer**, and the template ships no models — so a second entity's `dim_`,
+`fct_` and `mart_` models can only arrive by copying the first, which is the fork
+ADR 0011 rejected, occurring in the one layer that carries business definitions.
+
+[ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-conformed-models-as-a-shared-dbt-package.md)
+closes it with a fourth shared repository, `data-platform-dbt-core`: a dbt package
+holding `intermediate/`, `dimensions/`, `facts/` and `marts/` — SQL, descriptions
+and tests — consumed through `packages.yml` at a pinned revision, exactly the live
+reference the Terraform module already is. `staging/` stays in the entity repo,
+because that is where two SAP configurations legitimately differ.
+
+It is **decided and not built**, on purpose: a conformed layer is observed rather
+than decreed, and only one entity's SAP has been modelled. Until it exists the
+conformed models are copied, guarded by the two rails and the trigger in that ADR.
+See [Where a model's code comes from](building-a-data-model/data-layers.md#where-a-models-code-comes-from)
+for the boundary and what a run delivers.
 
 ## Making a change — which repo, then what
 
