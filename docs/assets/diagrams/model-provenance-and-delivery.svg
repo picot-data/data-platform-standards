@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Where each dbt layer's code comes from, and what one pipeline run delivers. The entity repository owns ingestion and the staging models, because that is where two SAP configurations differ. The shared dbt package owns intermediate, dimension, fact and mart models, so a metric is defined in one file. The chain runs once per entity, on that entity's own virtual machine, and delivers Parquet to the lake, one serving database per entity plus a group union, and one catalogue site per entity.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" font-family="Segoe UI, Arial, sans-serif" class="dp-diagram" role="img" aria-label="Where each dbt layer's code comes from, and what one pipeline run delivers. The entity repository owns ingestion and the staging models, because that is where two SAP configurations differ. The shared dbt package owns intermediate, dimension, fact and mart models, so a metric is defined in one file. What is shared is code and never tables: the chain runs once per entity, on that entity's own virtual machine, and delivers Parquet to that entity's own lake prefix, its own serving database, and its own catalogue site. The group database shown dashed is POC scaffolding, not a production shape.">
 
   <defs>
     <marker id="mpd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -111,12 +111,13 @@
     <text x="453" y="398" font-size="9.5" text-anchor="middle" fill="#166534">that entity's analysts only</text>
   </g>
 
-  <g class="dp-node" data-href="bi-and-access.md#data-permissions">
-    <title>The group database is the union of every gold/company_* prefix, built with union_by_name. It is what a group-level comparison reads, and the reason a mart must never be a per-entity copy: two definitions would stack into one column.</title>
-    <rect x="558" y="336" width="182" height="80" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
-    <text x="649" y="361" font-size="12" font-weight="bold" text-anchor="middle" fill="#14532d">gold_group</text>
-    <text x="649" y="380" font-size="9.5" text-anchor="middle" fill="#166534">union of every company_*</text>
-    <text x="649" y="398" font-size="9.5" text-anchor="middle" fill="#166534">group_analysts only</text>
+  <g class="dp-node" data-href="building-a-data-model/data-layers.md#multi-entity-tables">
+    <title>POC scaffolding, not a production shape. The group database unions every gold/company_* prefix, and exists to demonstrate Metabase access partitioning with a fabricated second entity. Whether a group-level serving concept exists in production is an open question — ADR 0024 decides that mutualisation is of code, not of tables.</title>
+    <rect x="558" y="336" width="182" height="80" rx="6" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="649" y="359" font-size="12" font-weight="bold" text-anchor="middle" fill="#6b7280">gold_group</text>
+    <text x="649" y="377" font-size="9.5" font-weight="bold" text-anchor="middle" fill="#b45309">POC scaffolding</text>
+    <text x="649" y="393" font-size="9" text-anchor="middle" fill="#9ca3af">demonstrates group access —</text>
+    <text x="649" y="406" font-size="9" text-anchor="middle" fill="#9ca3af">not a production shape</text>
   </g>
 
   <g class="dp-node" data-href="https://github.com/picot-data/data-platform-standards/blob/main/adr/0021-dbt-docs-not-datahub-as-the-catalog.md">
@@ -134,7 +135,7 @@
   <text x="48" y="500" font-size="11.5" fill="#333">The dashed lines are ownership: blue means the code is in the entity repo, indigo means it comes from the shared package. The boundary sits between staging and intermediate.</text>
   <text x="48" y="522" font-size="11.5" fill="#333">Staging is entity-specific on purpose. Two SAP configurations differ, and staging is the layer built to absorb that — which is what keeps the models above it comparable.</text>
   <text x="48" y="544" font-size="11.5" fill="#333">Sharing the package changes where the code comes from, not where it runs: each entity still builds its own copy of every model and publishes it under its own prefix.</text>
-  <text x="48" y="566" font-size="11.5" fill="#333">So the serving topology is unchanged. gold_&lt;code&gt; and gold_group both carry mart_sales__daily_orders — what changes is that one file computed both.</text>
+  <text x="48" y="566" font-size="11.5" fill="#333">What is shared is code, never tables. Each entity's warehouse holds only its own rows — so a shared model needs no entity column and no entity-salted keys.</text>
   <text x="48" y="588" font-size="11.5" fill="#333">A genuine business difference between entities becomes a var() read by the shared model, declared in the entity's dbt_project.yml. Never a second copy of the SQL.</text>
-  <text x="48" y="610" font-size="11.5" fill="#666">Until the package exists, the conformed models are copied per entity — see ADR 0024 for the two guard rails that keep that reversible.</text>
+  <text x="48" y="610" font-size="11.5" fill="#666">Until the package exists, the mutualised models are copied per entity — see ADR 0024 for the two phases and the one guard rail that keeps it reversible.</text>
 </svg>

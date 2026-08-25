@@ -59,17 +59,25 @@ model layer**, and the template ships no models — so a second entity's `dim_`,
 `fct_` and `mart_` models can only arrive by copying the first, which is the fork
 ADR 0011 rejected, occurring in the one layer that carries business definitions.
 
-[ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-conformed-models-as-a-shared-dbt-package.md)
+[ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-mutualisation-is-of-code-not-of-tables.md)
 closes it with a fourth shared repository, `data-platform-dbt-core`: a dbt package
-holding `intermediate/`, `dimensions/`, `facts/` and `marts/` — SQL, descriptions
-and tests — consumed through `packages.yml` at a pinned revision, exactly the live
-reference the Terraform module already is. `staging/` stays in the entity repo,
-because that is where two SAP configurations legitimately differ.
+holding whatever proves mutualizable — macros, generic tests and `dim_date`
+immediately, then `int_`, `dim_`, `fct_` and `mart_` models judged one by one —
+with their descriptions and tests, consumed through `packages.yml` at a pinned
+revision, exactly the live reference the Terraform module already is. `staging/`
+stays in the entity repo, because that is where two SAP configurations
+legitimately differ.
 
-It is **decided and not built**, on purpose: a conformed layer is observed rather
-than decreed, and only one entity's SAP has been modelled. Until it exists the
-conformed models are copied, guarded by the two rails and the trigger in that ADR.
-See [Where a model's code comes from](building-a-data-model/data-layers.md#where-a-models-code-comes-from)
+**What is shared is code, never tables.** One definition compiled into each
+entity's own warehouse, producing that entity's own tables — not one table holding
+several entities' rows. The POC does the latter, as scaffolding for a
+demonstration; that ADR is explicit that it is not the group's data model.
+
+It is **decided and not built**, on purpose: what is mutualizable is observed
+rather than decreed, and only one entity's SAP has been modelled. Until it exists
+the models are copied per entity, guarded by the single rail and the trigger in
+that ADR. See
+[Where a model's code comes from](building-a-data-model/data-layers.md#where-a-models-code-comes-from)
 for the boundary and what a run delivers.
 
 ## Making a change — which repo, then what

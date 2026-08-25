@@ -136,13 +136,17 @@ The boundary sits between staging and intermediate:
 | `stg_` | The **entity repository** | Two SAP configurations legitimately differ. Staging is the layer built to absorb that, and keeping it local is what stops entity specificity from climbing into the models above |
 | `int_`, `dim_`, `fct_`, `mart_` | The **shared dbt package**, consumed through `packages.yml` at a pinned revision | A metric is defined once. Across N entity repositories, a copied `mart_` means once *per entity* — which is the failure [Metric definitions](metric-definitions.md) exists to prevent |
 
-Two consequences are worth stating because they are the ones most often assumed
+Three consequences are worth stating because they are the ones most often assumed
 the other way round:
 
-- **Sharing the package changes where the code comes from, not where it runs.**
-  Each entity still builds every model into its own DuckDB file and publishes it
-  under its own `gold/company_<code>/` prefix. The serving databases, the VMs and
-  the lake prefixes are untouched.
+- **What is shared is code, not tables.** One definition, compiled into each
+  entity's own warehouse, producing that entity's own tables. There is no shared
+  table holding several entities' rows, and no union — see
+  [Multi-entity tables](#multi-entity-tables) below for why the POC looks
+  otherwise.
+- **Sharing changes where the code comes from, not where it runs.** Each entity
+  still builds every model into its own warehouse and publishes it under its own
+  prefix. The serving databases, the VMs and the lake layout are untouched.
 - **A genuine business difference becomes a declared parameter, not a fork.**
   Where two entities really do differ — an order type that counts as a sale for
   one and not the other — the difference is a `var()` read by the shared model and
@@ -151,36 +155,47 @@ the other way round:
 
 !!! note "Target, not current machinery"
 
-    `data-platform-dbt-core` does not exist yet, and the conformed models are
-    copied per entity today. That is deliberate: a conformed layer is observed,
+    `data-platform-dbt-core` does not exist yet, and the mutualised models are
+    copied per entity today. That is deliberate: what is mutualizable is observed,
     not decreed, and only Dirickx's SAP has been modelled so far.
-    [ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-conformed-models-as-a-shared-dbt-package.md)
-    records the decision, the two guard rails that keep the copies reversible —
-    the naming convention binds across entities, and `gold_group` carries no
-    `mart_` while the marts are copies — and the trigger for extracting the
-    package.
+    [ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-mutualisation-is-of-code-not-of-tables.md)
+    records the two phases, the trigger for extracting the package, and the one
+    guard rail that keeps the copies reversible: **the naming convention binds
+    across entities.** With separate tables there is no union to collapse and no
+    schema to conflict, so nothing else detects two copies drifting apart — which
+    is why that rail is checked in pull requests rather than at extraction time.
 
 ## Multi-entity tables
 
-Every fact and dimension table carries an `entity` column (`'dti'` = Dirickx,
-`'bg'` = B&G, etc.) rather than one table per entity. When a new entity's
-data lands in `fct_order`, it arrives as additional rows with a new `entity`
-value in the same table.
+!!! warning "This section describes a POC device, not the group's data model"
 
-**No duplicated table — which is not the same as no duplicated code.** One
-`fct_order` *structure* serves every entity, and the group database unions each
-entity's rows into it. The SQL producing it is a different question, answered in
-[Where a model's code comes from](#where-a-models-code-comes-from) above: until
-the shared package exists, that SQL is copied per entity, and the union is
-precisely what makes a divergence between the copies invisible.
+    The `entity` column, the shared `fct_order` and the `gold_group` union were
+    built **for the POC**, to demonstrate Metabase's access partitioning using a
+    second, fabricated entity. Production is separate sources, separate models and
+    a clear separation per entity — so **do not merge two entities' data into one
+    table on the strength of what follows.** Whether a group-level serving concept
+    exists in production at all is an open question, not a decided one; see
+    [ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-mutualisation-is-of-code-not-of-tables.md),
+    which decides that mutualisation is of *code* and explicitly not of tables.
 
-**The column is the data model, not the access control.** It is what lets one set
-of models serve every entity and one query compare them. What an entity is
-*allowed* to see is enforced one level down, at the serving database Metabase
-connects to: `gold_dti` holds Dirickx's rows, `gold_group` holds everyone's, and a
-group tied to one of them cannot reach the other. Metabase's open-source edition
-has no row or column security — filtering on `entity` inside a query is a
-convention, and a convention is not a boundary. See
+In the POC, every fact and dimension table carries an `entity` column
+(`'dti'` = Dirickx, `'bg'` = B&G) rather than one table per entity, and a new
+entity's data arrives as additional rows with a new `entity` value. One set of
+models then serves both entities and one query compares them, which is precisely
+what a demonstration of group-level access needed.
+
+**No duplicated table is not the same as no duplicated code.** Even here, the SQL
+producing the table is copied per entity — a separate question, answered in
+[Where a model's code comes from](#where-a-models-code-comes-from) above.
+
+**The column is never the access control** — in the POC or in production. What an
+entity is *allowed* to see is enforced one level down, at the serving database
+Metabase connects to: `gold_dti` holds Dirickx's rows, `gold_group` holds
+everyone's, and a group tied to one of them cannot reach the other. Metabase's
+open-source edition has no row or column security, so filtering on `entity` inside
+a query is a convention, and a convention is not a boundary. This part *is*
+production-relevant: one database per entity is the natural shape whether or not
+the models are shared. See
 [BI and access — Data permissions](../bi-and-access.md#data-permissions) for what
 actually holds the line.
 

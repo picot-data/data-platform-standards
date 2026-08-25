@@ -239,12 +239,21 @@ structural change made to `data-platform-entity-template` later has to be
 back-ported by hand to entities already onboarded — accepted at today's
 scale (see ADR 0011).
 
-## 6. Data model — `entity` value, not a new table
+## 6. Data model — the new entity's own tables, from shared code
 
-The new entity's data lands in the **same** `dim_customer`, `fct_order`, etc.
-tables as every other entity, distinguished by its `entity` column value
-(e.g. `'bg'` for B&G) — not by a new set of entity-specific tables. See
-[Data layers — multi-entity tables](../building-a-data-model/data-layers.md#multi-entity-tables).
+The new entity gets **its own** `dim_customer`, `fct_order` and marts, in its own
+warehouse. It does not add rows to another entity's tables.
+
+!!! warning "The POC looks like the opposite, on purpose"
+
+    In the POC every fact and dimension carries an `entity` column and a
+    `gold_group` database unions them — scaffolding built to demonstrate Metabase's
+    access partitioning with a fabricated second entity, not the group's data
+    model. Do not reproduce it here. What is mutualised between entities is
+    **code**, never tables:
+    [ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-mutualisation-is-of-code-not-of-tables.md),
+    and
+    [Data layers — multi-entity tables](../building-a-data-model/data-layers.md#multi-entity-tables).
 
 ### Where this entity's models come from
 
@@ -263,25 +272,28 @@ and `mart_` models actually appear, and the two halves have different answers
 !!! warning "While the shared package does not exist yet"
 
     `data-platform-dbt-core` is decided and not built
-    ([ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-conformed-models-as-a-shared-dbt-package.md)):
-    the conformed layer is extracted once a second entity has been modelled, not
-    designed before it. Until then the conformed models are copied from the
-    reference entity, and **two rules make that copy reversible** rather than a
-    permanent fork:
+    ([ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-mutualisation-is-of-code-not-of-tables.md)):
+    what is mutualizable is extracted once a second entity has been modelled, not
+    designed before it. So phase 1 is **identical models with copied
+    definitions** — write this entity's models to be the same as the reference
+    entity's, and accept for now that the figures are assumed to mean the same
+    thing.
 
-    - **The naming convention binds** — same model names, same column names, same
-      units as the reference entity
-      ([Column naming](../naming-conventions.md#column-naming)). Checked in this
-      entity's pull requests, because it is the guard rail that fails silently:
-      breach it and the extraction becomes a rewrite, discovered only at merge
-      time.
-    - **`gold_group` carries no `mart_`** until the marts come from one file. Facts
-      and dimensions may be unioned — a divergence in raw measures shows up as two
-      comparable numbers. A mart carries a definition, and `union_by_name`
-      collapses two definitions into one column with no signal at all.
+    **One rule makes that copy reversible** rather than a permanent fork: the
+    naming convention binds — same model names, same column names, same units as
+    the reference entity
+    ([Column naming](../naming-conventions.md#column-naming)). Check it in this
+    entity's pull requests. Because each entity has its own tables, there is no
+    union to collapse and no schema to conflict, so **nothing else will ever tell
+    you two copies have drifted apart**; breach the rule and the extraction becomes
+    a rewrite, discovered only at merge time.
 
-    Onboarding a **third** entity is the trigger to extract the package first, as
-    is publishing the first group-level dashboard.
+    Two things make phase 1 auditable while it lasts, and both are cheap: write
+    each group-level definition down once, and have this entity's `mart_`
+    descriptions state that they implement it. That agreement is the precondition
+    for extracting a shared model at all.
+
+    Onboarding a **third** entity is the trigger to extract the package first.
 
 ## 7. Budgets and tags — inherited, not recreated
 
