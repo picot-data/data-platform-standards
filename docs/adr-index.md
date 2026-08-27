@@ -31,6 +31,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0022](https://github.com/picot-data/data-platform-standards/blob/main/adr/0022-business-logic-in-dbt-metabase-is-presentation.md) | Business logic lives in dbt; Metabase is a presentation layer only | Accepted |
 | [0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md) | The catalog is served from the shared BI VM, on the corporate network | Accepted |
 | [0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-mutualisation-is-of-code-not-of-tables.md) | Mutualised transformations are shared as code, not as tables | Accepted |
+| [0025](https://github.com/picot-data/data-platform-standards/blob/main/adr/0025-identity-only-access-and-private-networking.md) | Identity-only authentication and private networking, on two named triggers | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues
