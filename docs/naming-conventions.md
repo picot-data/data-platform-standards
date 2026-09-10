@@ -162,6 +162,42 @@ gold/group/fct_order_group/
 | Time partitioning in bronze only | Silver and Gold are managed by dbt/DuckDB, not by folder structure |
 | Gold folder names = dbt model names | Single naming repository |
 
+## Azure Data Factory naming
+
+ADF objects are the only place in the platform where a *type prefix* is
+required, which contradicts the [anti-pattern](#anti-patterns--what-we-never-do)
+that bans `tbl_`/`vw_`. The contradiction is deliberate and the reason is
+structural: ADF keeps a separate namespace per object type, so a linked service
+and a dataset pointing at the same system can legitimately both be called
+`sap_vbak` — and a reference inside pipeline JSON is a bare name with nothing to
+say which one it resolves to. In dbt the layer prefix carries that information;
+in ADF nothing does. Hence the prefix.
+
+| Object type | Prefix | Pattern | Example |
+|---|---|---|---|
+| Linked service (source system) | `ls_` | `ls_<system>_<env>` | `ls_sap_dev`, `ls_sap_prd` |
+| Linked service (Azure target) | `ls_` | `ls_<technology>_<target>` | `ls_adls_picot_data` |
+| Dataset (source) | `ds_` | `ds_<system>_<source_object>` | `ds_sap_vbak` |
+| Dataset (bronze sink) | `ds_` | `ds_bronze_<source>_<object>` | `ds_bronze_sap_order_header` |
+| Pipeline | `pl_` | `pl_<source>_to_<layer>_<object>` | `pl_sap_to_bronze_order_header` |
+| Activity inside a pipeline | none | `<verb>_<object>_to_<layer>` | `copy_vbak_to_bronze` |
+| Trigger | `tr_` | `tr_<pipeline_scope>_<cadence>` | `tr_sap_bronze_daily` |
+| Self-hosted integration runtime | `ir_` | `ir_<network_zone>_<nn>` | `ir_onprem_sap_01` |
+
+| Rule | Justification |
+|---|---|
+| `snake_case`, lowercase, like everywhere else | ADF allows spaces and mixed case in object names; we don't use them — an object name ends up in JSON, in a Terraform resource address and in a log line |
+| A **source** dataset carries the source object's real name (`vbak`), not its business meaning | You must be able to tell which SAP table a dataset reads without opening it. The business rename happens at the sink |
+| A **sink** dataset carries the bronze object name, matching the [ADLS path](#path-structure) and the dbt source table | One object name shared by the sink dataset, the ADLS folder and the dbt `source()` — nothing to map by hand |
+| The environment segment (`_dev`, `_prd`) appears on source-system linked services only | It's the SAP system that has environments. Azure targets are already separated by subscription and resource group |
+| No entity code in any ADF object name | There is one factory per entity, inside that entity's subscription. The factory name already carries the code — repeating it in every object adds four characters and no information |
+
+The one thing a name cannot express, and that is therefore not left to
+convention: an activity writing to ADLS must go through
+`AutoResolveIntegrationRuntime`, not the self-hosted runtime. The self-hosted
+runtime exists to reach systems on the internal network; routing public Azure
+traffic through it adds a hop and a dependency on a machine we don't own.
+
 ## BI naming
 
 Metabase collections, user groups, serving databases and the dashboard
