@@ -193,10 +193,21 @@ in ADF nothing does. Hence the prefix.
 | No entity code in any ADF object name | There is one factory per entity, inside that entity's subscription. The factory name already carries the code — repeating it in every object adds four characters and no information |
 
 The one thing a name cannot express, and that is therefore not left to
-convention: an activity writing to ADLS must go through
-`AutoResolveIntegrationRuntime`, not the self-hosted runtime. The self-hosted
-runtime exists to reach systems on the internal network; routing public Azure
-traffic through it adds a hop and a dependency on a machine we don't own.
+convention: which integration runtime actually executes a copy. It is **not a
+free choice per linked service** — as soon as the *source* uses a self-hosted
+integration runtime, the whole activity runs there, both ends, whatever the sink
+linked service declares. Two consequences worth knowing before designing a
+pipeline:
+
+- Writing Parquet or ORC needs a JVM, so a self-hosted runtime that lands
+  Parquet requires a JRE (OpenJDK 11 or Zulu 11, `JAVA_HOME` set) installed on
+  its host machine. Without it the copy reads the source successfully and then
+  fails with `ErrorCode=JreNotFound`.
+- If that host is operated by a third party and cannot be changed, the way out
+  is a second activity: land a text format on ADLS with the self-hosted runtime,
+  then convert ADLS → ADLS Parquet, which runs on
+  `AutoResolveIntegrationRuntime`. Name the transit dataset for what it is
+  (`ds_transit_sap_order_header`) so nobody mistakes it for a bronze object.
 
 ## BI naming
 
