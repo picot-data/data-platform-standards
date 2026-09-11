@@ -7,7 +7,7 @@ description: >
   descriptions in a dbt properties YAML, when CI fails on a missing description, or when a
   description restates the column name. The catalogue is dbt docs (ADR 0021), so these
   descriptions are the only documentation that exists.
-user-invocable: false
+user-invocable: true
 metadata:
   author: picot-data
   standards: https://picot-data.github.io/data-platform-standards/writing-descriptions/
@@ -41,6 +41,28 @@ the repository, published at
 <https://picot-data.github.io/data-platform-standards/writing-descriptions/>.
 If the user insists (see [Holding the line](#holding-the-line) below), you may
 write a **marked placeholder** — never a definition.
+
+## Before anything else: refuse an invocation with no target
+
+This skill was long marked `user-invocable: false`, on the argument that a bare
+"write my descriptions", fired with no model and no SQL in context, is exactly
+the situation in which an agent fabricates. The argument is right; withholding
+the command was the wrong remedy, because it also removed the only way a human
+could force the skill to engage when the agent failed to reach for it on its
+own — which is the failure that actually occurred.
+
+So the guard lives here instead, and it is the first step of the procedure:
+
+**If you cannot name the specific model or properties file you are documenting,
+stop and ask which one.** Do not offer a template, do not describe what you
+would write, do not start with the columns whose names "look clear enough".
+Having no target is not a thin brief you can work around; it is the absence of
+the only evidence — the SQL, the grain, the upstream YAML — from which anything
+in a description is legitimately derived. A description written without them is
+fabrication by construction, whatever care went into the wording.
+
+An invocation naming a file, a model, or the work in progress in the
+conversation satisfies this. An invocation naming nothing does not.
 
 ## Rules to load
 

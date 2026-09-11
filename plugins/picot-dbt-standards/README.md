@@ -15,13 +15,20 @@ only the delta: the rules that are ours.
 |---|---|---|
 | `reviewing-dbt-yaml-against-standards` | Reports findings on a dbt properties YAML — `unique` on a foreign key, a `dbt_utils` test missing its package prefix, arguments not nested under `arguments:`, a blacklist where a bound was meant, a description restating the column name, naming violations. Never edits. | yes |
 | `generating-dbt-test-battery` | Derives the tests a model needs to meet the minimum bar, in our required syntax, applying "test where the guarantee is created" so it does not pile tautologies on downstream layers. | yes |
-| `drafting-dbt-descriptions` | Writes the structure, the grain sentence and the mechanical facts — and refuses to invent a business definition, marking it `TODO(definition):` and asking instead. | no, by design |
+| `drafting-dbt-descriptions` | Writes the structure, the grain sentence and the mechanical facts — and refuses to invent a business definition, marking it `TODO(definition):` and asking instead. | yes, with a named target |
 
-`drafting-dbt-descriptions` sets `user-invocable: false` deliberately. A bare
-"write my descriptions" command, fired with no model and no SQL in context, is
-exactly the situation in which an agent fabricates. The skill is meant to
-engage while a model is being worked on, where the grain and the SQL are on
-the table.
+`drafting-dbt-descriptions` was `user-invocable: false` until 2026-09-11. The
+reason was sound — a bare "write my descriptions", fired with no model and no
+SQL in context, is exactly the situation in which an agent fabricates — but the
+remedy was not. Withholding the command also removed the only way a human could
+force the skill to engage when the agent failed to reach for it, and that is the
+failure that actually happened: descriptions written straight into a properties
+YAML, skill never invoked, with the SQL open in the same session.
+
+The guard now lives inside the skill instead of in its availability. Its first
+step is to refuse an invocation that names no model and no file, and to ask
+which one — having no target is not a thin brief to work around, it is the
+absence of the only evidence a description may be derived from.
 
 ## Install
 
@@ -34,9 +41,11 @@ Inside Claude Code:
 
 The first command registers this GitHub repository as a plugin marketplace;
 the second installs the plugin from it. The skills are then available in every
-session, and the two user-invocable ones as
-`/picot-dbt-standards:reviewing-dbt-yaml-against-standards` and
-`/picot-dbt-standards:generating-dbt-test-battery`.
+session, and all three as
+`/picot-dbt-standards:reviewing-dbt-yaml-against-standards`,
+`/picot-dbt-standards:generating-dbt-test-battery` and
+`/picot-dbt-standards:drafting-dbt-descriptions` — the last one expecting the
+model or properties file to document as its argument.
 
 To pull updates after a change is merged here, update the marketplace first,
 then the plugin:
