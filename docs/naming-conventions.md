@@ -79,6 +79,29 @@ identifiers with business meaning (SAP order number, customer code, etc.).
 |---|---|---|
 | code | `<object>_<domain>_code`|`production_order_status_code` |
 
+### Value domains across entities
+
+A column name binds across entities
+([ADR 0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-mutualisation-is-of-code-not-of-tables.md)).
+So does its **value domain**, whenever the column carries a normalised group
+vocabulary rather than a raw source code.
+
+| What | Owned by | Example |
+|---|---|---|
+| The target vocabulary — the allowed values, and what each one means | The group | `customer_segment` is one of `'B2C'`, `'B2B'` |
+| The mapping from source codes onto that vocabulary | The entity | Dirickx maps `KTOKD = 'Z001'` to `'B2C'`; B&G maps `'Z003'` to `'B2C'` |
+
+The mapping belongs in `stg_`, the layer ADR 0024 keeps entity-local precisely
+to absorb this kind of divergence. Keep both columns: the raw source code
+(`account_group_code`) for traceability, and the normalised one
+(`customer_segment`) for every model downstream.
+
+Naming the column identically is not enough. One entity writing `'B2C'` and
+another `'BtoC'` in a correctly named column gives a shared `int_` model that
+filters to zero rows on one entity and never errors. Declare the domain with an
+`accepted_values` test on the normalised column, so a divergence fails a build
+instead of waiting to be noticed.
+
 ### Measure columns
 
 | Type | Pattern | Example |
