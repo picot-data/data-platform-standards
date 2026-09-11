@@ -274,6 +274,8 @@ write the full word.
 | `dt` | Date | Only in partition prefixes (`dt=2027-01-15`) |
 | `min` | Minutes | Duration columns |
 | `kg` | Kilograms | Weight columns |
+| `m` | Metres | Length, width and height columns |
+| `m3` | Cubic metres | Volume columns |
 
 ## Anti-patterns — what we never do
 
