@@ -56,6 +56,32 @@ In order of usefulness:
 4. **Provisional status.** If a definition is a placeholder awaiting a business
    owner, write that, and name who has to confirm it.
 
+## Length, homes, and register
+
+**Budget: 4 lines for a column, 12 for a model.** Not a target — a ceiling.
+Past it, the text is a document and belongs in an ADR.
+
+**One fact, one home:**
+
+| Home | What belongs there |
+|---|---|
+| `description:` | grain, unit, meaning, trap. **All business scope, and nowhere else** |
+| `.sql` comment | only what someone editing the query cannot read off the code — why a cast is `try_`, why a lookup is hand-transcribed. ≤ 2 lines. `dbt docs` shows the compiled SQL, so a business explanation here is a duplicate |
+| ADR | a dated decision with an owner. The description carries the conclusion and the ADR number, not the reasoning |
+
+**The volatility test — apply to every sentence:** *will this be false after the
+next extract?* Row counts, distinct counts, totals and date ranges fail it and
+come out. Exception: a figure that **changed a decision** stays, because
+without it the decision reads as arbitrary.
+
+**Register:**
+
+- no capitals for emphasis — `dbt docs` renders them as shouting
+- no closing sentence drawing out the consequence of the previous one
+- no aphorism, no "and this is the trap of the model", no rhetorical
+  construction of any kind
+- the reader is a controller looking up a number, not an audience
+
 ## Where the definition comes from — the hard rule
 
 **A business definition is supplied by a human. It is never inferred from the
@@ -112,11 +138,11 @@ Restates the column name. Passes CI. Teaches nothing.
 - name: plant_id
   description: >
     Plant (SAP `Werk`) the work centre physically stands in. Repeats across
-    rows, since several work centres share a plant.
-
-    It can differ from the plant of an order routed through it: a shared press
-    or a centralised packing line serves orders launched elsewhere. So "output
-    per plant" has two answers — the plant owning the order, and the plant
-    where the work happened — both correct and different. Any model built on
-    one of them has to say which.
+    rows, since several work centres share a plant. It can differ from the
+    plant of an order routed through it, so "output per plant" has two
+    answers — owning plant and performing plant — and a model using one must
+    say which.
 ```
+
+Four lines, and every one of them carries a fact the name does not. The trap is
+stated once and its consequence is the same sentence, not a paragraph.

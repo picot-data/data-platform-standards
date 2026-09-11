@@ -74,6 +74,37 @@ already say. In order of usefulness:
    owner, write that, and name who has to confirm it. An honest "to be confirmed
    with X" is worth more than a confident guess.
 
+## How long, and what goes where
+
+A description nobody finishes reading documents nothing, so length is part of
+the standard and not a matter of taste.
+
+**The budget: four lines for a column, twelve for a model.** Past that, the
+text has stopped being a catalogue entry and become a document, and it belongs
+where documents live.
+
+**Three homes, no overlap.** The same fact written twice will be corrected
+once.
+
+| Home | What belongs there |
+|---|---|
+| the `description:` | what a reader of the catalogue needs — the grain, the unit, the meaning, the trap. Business scope lives here and only here |
+| a comment in the `.sql` | what someone editing the query needs and cannot read off the code — why a cast is `try_`, why a lookup was transcribed by hand. Two lines. `dbt docs` already shows the compiled SQL, so a business explanation here is a second copy |
+| an ADR | a decision with a date and an owner. The `description:` carries the conclusion and the ADR number, never the reasoning trail |
+
+**No figure that the next extract will falsify.** Row counts, distinct counts,
+totals and date ranges are profiling output: true on the day they were
+measured, wrong afterwards, and nothing will update them. A description
+carrying a stale number is the failure this page exists to prevent. The one
+exception is a figure that *changed a decision* — "the credit documents carry
+21.8 M of positive amounts, so they are excluded rather than netted off" earns
+its place, because without it the decision reads as arbitrary.
+
+**Register.** Plain statements. No capitals for emphasis — `dbt docs` renders
+them as shouting and they emphasise nothing. No closing line drawing out the
+consequence of what was just said. The reader is a controller looking up what a
+number means, not an audience.
+
 ## Where the definition comes from
 
 **A business definition is supplied by a human. It is never inferred from the

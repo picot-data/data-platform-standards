@@ -129,6 +129,20 @@ from names — an inferred grain is a weaker claim and the reader must know.
   quote.
 - A unit-bearing column with no unit, currency or timezone stated.
 - Not in English.
+- **Over the budget** — a column past 4 lines or a model past 12. Report it as
+  *should fix*, with the sentences to cut named. Over-long is the same failure
+  as restating the name, reached from the other side: the entry is not read, so
+  it documents nothing while looking complete.
+- **A figure the next extract will falsify** — a row count, a distinct count, a
+  total, a date range. Not a finding when the figure is what settled a decision
+  ("21.8 M of positive credit amounts, so they are excluded"); a finding when
+  it is only profiling output.
+- **Business scope explained twice**, once in the YAML and once in the `.sql`
+  header comment. `dbt docs` shows the compiled SQL, so the duplicate is
+  visible to the same reader and one of the two copies will go stale. The YAML
+  is the one that stays.
+- **Register** — capitals used for emphasis, or an entry ending on a sentence
+  that draws out the consequence of the previous one. *Consider* severity.
 
 **Placement** (only when you can see the tree)
 

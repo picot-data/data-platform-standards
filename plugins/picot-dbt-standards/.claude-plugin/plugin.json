@@ -1,7 +1,7 @@
 {
   "name": "picot-dbt-standards",
   "description": "Enforces the Picot group's dbt conventions: review a YAML file against the standards, generate the required test battery, and draft descriptions without ever inventing a business definition.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Picot Data",
     "url": "https://github.com/picot-data"

@@ -135,7 +135,37 @@ Rules for the marker:
 and wait. Do not continue drafting the remaining descriptions as if the
 question were rhetorical, and do not commit the file.
 
-### 4. Check what you wrote against the one test
+### 4. Cut it back before you hand it over
+
+Everything above tells you what a description must contain. This step is the
+upper bound, and it exists because the predictable failure of an assistant
+drafting documentation is not silence, it is volume. A 25-line entry is not a
+thorough one; it is one nobody reads, which documents nothing while looking
+complete — the same failure as a description that restates the column name,
+reached from the other direction.
+
+Apply, in order:
+
+1. **The budget.** 4 lines per column, 12 per model. A ceiling, not a target.
+   Over it, something in the text belongs in an ADR or in the SQL.
+2. **The volatility test, sentence by sentence.** *Will this be false after the
+   next extract?* Row counts, distinct counts, totals, date ranges — out. The
+   exception is a figure that **changed a decision**: keep it, because without
+   it the decision reads as arbitrary. "21.8 M of positive credit amounts, so
+   they are excluded rather than netted off" stays; "163 433 documents on the
+   2026-09-10 extract" goes.
+3. **The three homes.** Business scope → the `description:`, and nowhere else.
+   Mechanical why → a `.sql` comment of at most two lines. Dated decision with
+   an owner → an ADR, referenced by number from the description. If you are
+   about to write the same explanation in the SQL header and in the YAML, you
+   have found a duplicate: keep the YAML one.
+4. **Delete the rhetoric.** No capitals for emphasis, no closing sentence that
+   draws out the consequence of the previous one, no aphorism, no "and this is
+   the trap of the model". These are the assistant's register, not the
+   catalogue's, and they roughly double the length for no added fact. Strip
+   them even when the sentence is true and well turned — especially then.
+
+### 5. Check what you wrote against the one test
 
 > Would someone who has never opened the source system know, after reading
 > this, **what the table contains** and **what one row represents**?
@@ -159,6 +189,9 @@ Two failures to self-check for before you hand anything over:
   not.
 - **Grain not first.** "One row per …" belongs in the first sentence of every
   model description.
+- **Over budget.** Any column past 4 lines or model past 12. Go back to step 4
+  rather than deciding this one earns an exception; that is the decision that
+  produced every over-long entry already in the repositories.
 
 Then, if you know it, say the thing that cannot be guessed — in order of
 value: the trap (an ambiguity that could produce a wrong number in good
@@ -194,3 +227,8 @@ plainly ("as you described it") so a later reader can tell it was sourced.
   human stated.
 - Call a figure an observation or an assumption without being told which.
 - Emit a description in French.
+- Write a row count, a total or a date range that the next extract will
+  falsify, unless that figure is what settled a decision.
+- Repeat in a `.sql` header comment an explanation already in the YAML.
+- Use capitals for emphasis, or end an entry on a consequence-drawing
+  sentence.
