@@ -52,6 +52,7 @@ nav:
   - BI and access: bi-and-access.md
   - Azure landing zones: azure-landing-zones.md
   - Repositories and delivery: repositories-and-delivery.md
+  - Technical architecture dossier: technical-architecture-dossier.md
   - Onboardings:
       - Onboarding a new entity: onboardings/onboarding-a-new-entity.md
       - Onboarding a data engineer: onboardings/onboarding-a-data-engineer.md
@@ -118,6 +119,7 @@ plugins:
             Testing: Tests
             Azure landing zones: Landing zones Azure
             Repositories and delivery: Dépôts et livraison
+            Technical architecture dossier: Dossier d'architecture technique (DAT)
             Onboarding a new entity: Intégrer une nouvelle entité
             Onboarding a data engineer: Intégrer un ingénieur data
             Onboarding a data analyst: Intégrer un analyste de données
@@ -139,6 +141,7 @@ plugins:
             Testing: Testen
             Azure landing zones: Azure landing zones
             Repositories and delivery: Repository's en levering
+            Technical architecture dossier: Technisch architectuurdossier
             Onboarding a new entity: Een nieuwe entiteit onboarden
             Onboarding a data engineer: Een data-engineer onboarden
             Onboarding a data analyst: Een data-analist onboarden
