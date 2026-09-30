@@ -73,7 +73,7 @@ shared, one subscription per environment
 | SAP bridge | `adf-picot-dti-data-weu-01` + `shir-picot-dti-data-weu-01` | dti | — | **Coded**, off. A portal-created factory is live in its place |
 | SHIR agent host | Windows machine in the contractor's network — not an Azure resource | dti | — | **Deployed**, administered by the contractor |
 | BI VM | `vm-picot-shared-bi-weu-01` — Metabase, catalog web server, refresh job | shared | Not sized | **Target** |
-| Metabase application database | Postgres | shared | Not sized | **Target** — H2 today |
+| Metabase databases | Postgres — application database, plus one serving database per entity ([ADR 0027](https://github.com/picot-data/data-platform-standards/blob/main/adr/0027-metabase-serves-gold-from-postgres.md)) | shared | Not sized; hosting not chosen | **Target** — H2 and DuckDB files today |
 | Budgets and action groups | `modules/governance` | per resource group | — | **Coded**, not applied |
 | Audit logs | Log Analytics workspace + diagnostic settings | shared | — | **Target** ([ADR 0025](https://github.com/picot-data/data-platform-standards/blob/main/adr/0025-identity-only-access-and-private-networking.md) trigger A) |
 | Terraform state | Remote backend with locking and versioning | shared | — | **Target** — a local file today |
@@ -147,7 +147,7 @@ authorization key, held in the entity Key Vault
 | Lake, `silver`, `gold` | Published dbt models | Yes, by a dbt run | Rewritten on every run |
 | Lake, `metadata` | dbt docs artifacts | Yes | — |
 | Entity VM disk | Bronze mirror, DuckDB build file | Yes | Transient working copy |
-| BI VM disk | Serving copies of Gold | Yes, by the refresh | — |
+| Postgres serving databases | Copies of Gold, one database per entity | Yes, by the refresh | Read-only role per entity |
 | Metabase application database | Users, groups, permissions, dashboards | **No** | **Gap** — no backup defined |
 
 - **Classification.** Every resource holding SAP data is tagged
@@ -157,9 +157,13 @@ authorization key, held in the entity Key Vault
   out of scope at Level 1
   ([ADR 0025](https://github.com/picot-data/data-platform-standards/blob/main/adr/0025-identity-only-access-and-private-networking.md)).
 - **Encryption in transit.** HTTPS only; TLS 1.2 minimum on the lake is **Coded**.
-- **Entity isolation.** By folder prefix in the lake, and by separate serving
-  databases in Metabase
-  ([ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md)).
+- **Entity isolation.** By folder prefix in the lake, and by one serving
+  database per entity, each with its own read-only role
+  ([ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md),
+  [ADR 0027](https://github.com/picot-data/data-platform-standards/blob/main/adr/0027-metabase-serves-gold-from-postgres.md)).
+  In the lake the prefix is a convention: every entity VM holds Storage Blob Data
+  Contributor on the whole account, so it could write under another entity's
+  prefix.
 - **Retention.** Raw-data retention is a business and compliance decision not yet
   taken; until it is, Bronze keeps everything.
 
@@ -177,7 +181,7 @@ the lake protected against a single mistake.
 | Account keys disabled, anonymous container access forbidden | **Coded** |
 | Soft delete for blobs and containers, 30 days | **Coded** |
 | `CanNotDelete` lock on the lake | **Coded** |
-| Blob versioning | Not available on ADLS Gen2 accounts; soft delete stands in for it |
+| Blob versioning | Not available on ADLS Gen2 accounts; soft delete stands in for it ([ADR 0026](https://github.com/picot-data/data-platform-standards/blob/main/adr/0026-soft-delete-not-versioning-for-the-lake.md)) |
 | Diagnostic settings to Log Analytics | **Target** |
 | Remote Terraform state | **Target** |
 | Private endpoints, no public IP on entity VMs | **Target** (trigger B) |
@@ -221,6 +225,11 @@ What runs today differs from this dossier in ways that are known and dated:
 - Metabase and the catalog run on the entity VM, with H2 as the application
   database. There is no BI VM.
 - Images are pulled from GitHub Container Registry, not from the entity registry.
+- No budget covers the entity resource group: `modules/governance` is not
+  applied. Required before production.
+- Local development reaches the lake with a storage connection string, which
+  stops working once account keys are disabled. The entity template's ADLS
+  access and publication step move to an Entra identity before production.
 
 ## Open items
 
@@ -233,5 +242,6 @@ What runs today differs from this dossier in ways that are known and dated:
 | Corporate and VPN address ranges allowed to reach the BI VM | Group IT |
 | Metabase application database backup | Platform owner |
 | OS patching policy for the VMs | Platform owner |
-| Serving engine for Metabase: DuckDB files or Postgres | Platform owner |
+| Postgres hosting: a container on the BI VM or Azure Database for PostgreSQL, with a costed comparison | Platform owner |
+| Who may write to Silver and Gold in production | Platform owner |
 | Raw-data retention period for Bronze | Business sponsor, compliance |
