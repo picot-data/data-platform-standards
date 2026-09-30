@@ -22,7 +22,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0013](https://github.com/picot-data/data-platform-standards/blob/main/adr/0013-local-duckdb-with-publication-step.md) | dbt materializes locally; a publication step writes Silver and Gold | Accepted |
 | [0014](https://github.com/picot-data/data-platform-standards/blob/main/adr/0014-duckdb-scale-ceiling.md) | When a single DuckDB node stops being the right engine | Accepted |
 | [0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md) | Metric definitions live in dbt marts, not in MetricFlow | Accepted |
-| [0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md) | One central Metabase for the group, not one per entity | Accepted |
+| [0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md) | One central Metabase for the group, not one per entity | Partially superseded by 0027 |
 | [0017](https://github.com/picot-data/data-platform-standards/blob/main/adr/0017-dbt-metadata-to-metabase-via-api.md) | dbt documentation reaches Metabase through its API, not through the database | Accepted |
 | [0018](https://github.com/picot-data/data-platform-standards/blob/main/adr/0018-scheduled-start-stop-for-entity-vms.md) | Entity VMs are started and stopped on a schedule, with a hard cut-off | Accepted |
 | [0019](https://github.com/picot-data/data-platform-standards/blob/main/adr/0019-datahub-joins-the-shared-vm.md) | DataHub joins Metabase on the shared VM, on one machine rather than two | Superseded by 0021 |
@@ -31,7 +31,9 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0022](https://github.com/picot-data/data-platform-standards/blob/main/adr/0022-business-logic-in-dbt-metabase-is-presentation.md) | Business logic lives in dbt; Metabase is a presentation layer only | Accepted |
 | [0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md) | The catalog is served from the shared BI VM, on the corporate network | Accepted |
 | [0024](https://github.com/picot-data/data-platform-standards/blob/main/adr/0024-mutualisation-is-of-code-not-of-tables.md) | Mutualised transformations are shared as code, not as tables | Accepted |
-| [0025](https://github.com/picot-data/data-platform-standards/blob/main/adr/0025-identity-only-access-and-private-networking.md) | Identity-only authentication and private networking, on two named triggers | Accepted |
+| [0025](https://github.com/picot-data/data-platform-standards/blob/main/adr/0025-identity-only-access-and-private-networking.md) | Identity-only authentication and private networking, on two named triggers | Partially amended by 0026 |
+| [0026](https://github.com/picot-data/data-platform-standards/blob/main/adr/0026-soft-delete-not-versioning-for-the-lake.md) | Soft delete and a delete lock protect the lake, not blob versioning | Accepted |
+| [0027](https://github.com/picot-data/data-platform-standards/blob/main/adr/0027-metabase-serves-gold-from-postgres.md) | Metabase reads Gold from Postgres, not from DuckDB files | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues
