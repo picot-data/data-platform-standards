@@ -63,14 +63,14 @@
     <title>A specific workload misbehaving inside an otherwise healthy subscription. See "Hard limits".</title>
     <rect x="25" y="286" width="215" height="60" rx="6" fill="#ffffff" stroke="#7b1fa2" stroke-width="1.5"/>
     <text x="132" y="310" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#333">Budget / cost alert</text>
-    <text x="132" y="327" font-size="9.5" text-anchor="middle" fill="#777">rg-picot-dti-data-weu</text>
+    <text x="132" y="327" font-size="9.5" text-anchor="middle" fill="#777">rg-picot-dti-data-frc</text>
   </g>
 
   <g class="dp-node" data-href="azure-landing-zones.md#hard-limits">
     <title>A specific workload misbehaving inside an otherwise healthy subscription. See "Hard limits".</title>
     <rect x="745" y="286" width="215" height="60" rx="6" fill="#ffffff" stroke="#7b1fa2" stroke-width="1.5"/>
     <text x="852" y="310" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#333">Budget / cost alert</text>
-    <text x="852" y="327" font-size="9.5" text-anchor="middle" fill="#777">rg-picot-shared-data-weu</text>
+    <text x="852" y="327" font-size="9.5" text-anchor="middle" fill="#777">rg-picot-shared-data-frc</text>
   </g>
 
   <!-- Legend / reading notes -->

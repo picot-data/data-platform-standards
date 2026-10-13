@@ -309,7 +309,7 @@ hand afterward.
 
 !!! note "Target, not current machinery"
 
-    The shared BI machine does not exist yet: `vm-picot-shared-bi-weu-01` has no
+    The shared BI machine does not exist yet: `vm-picot-shared-bi-frc-01` has no
     Terraform behind it (it is the second thing the `shared/` root module will
     own), and the reference entity currently runs Metabase on its own VM as a
     documented deviation. The steps below are what an entity is measured against.
@@ -318,7 +318,7 @@ hand afterward.
     users and dashboards.
 
 The new entity does **not** get its own Metabase. On the shared VM
-(`vm-picot-shared-bi-weu-01`):
+(`vm-picot-shared-bi-frc-01`):
 
 - Add `<code>` to the refresh so it builds `serving_<code>.duckdb` from
   `gold/company_<code>/`. There is **no group database to extend**: entities have

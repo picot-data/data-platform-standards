@@ -34,6 +34,8 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0025](https://github.com/picot-data/data-platform-standards/blob/main/adr/0025-identity-only-access-and-private-networking.md) | Identity-only authentication and private networking, on two named triggers | Partially amended by 0026 |
 | [0026](https://github.com/picot-data/data-platform-standards/blob/main/adr/0026-soft-delete-not-versioning-for-the-lake.md) | Soft delete and a delete lock protect the lake, not blob versioning | Accepted |
 | [0027](https://github.com/picot-data/data-platform-standards/blob/main/adr/0027-metabase-serves-gold-from-postgres.md) | Metabase reads Gold from Postgres, not from DuckDB files | Accepted |
+| [0028](https://github.com/picot-data/data-platform-standards/blob/main/adr/0028-france-central-and-zone-redundant-lake.md) | France Central as the platform region, and a zone-redundant lake | Accepted |
+| [0029](https://github.com/picot-data/data-platform-standards/blob/main/adr/0029-state-backend-created-by-script.md) | The Terraform state backend is created by a script, not by Terraform | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues

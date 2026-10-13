@@ -26,7 +26,7 @@
     <rect x="800" y="110" width="175" height="190" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
     <text x="887" y="140" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#4c1d95">Azure Container</text>
     <text x="887" y="156" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#4c1d95">Registry</text>
-    <text x="887" y="180" font-size="9.5" text-anchor="middle" fill="#6d28d9">crpicot&lt;entity&gt;dataweu01</text>
+    <text x="887" y="180" font-size="9.5" text-anchor="middle" fill="#6d28d9">crpicot&lt;entity&gt;datafrc01</text>
     <line x1="820" y1="196" x2="955" y2="196" stroke="#c4b5fd"/>
     <text x="887" y="216" font-size="9" text-anchor="middle" fill="#6d28d9">one registry per entity,</text>
     <text x="887" y="232" font-size="9" text-anchor="middle" fill="#6d28d9">not one shared — AAD roles</text>

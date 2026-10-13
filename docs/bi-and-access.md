@@ -13,8 +13,8 @@ several of the rules below.
 
 ## One instance for the group
 
-Metabase runs once, on `vm-picot-shared-bi-weu-01` in
-`rg-picot-shared-data-weu`, not on the entity VMs. Entity VMs run the pipeline
+Metabase runs once, on `vm-picot-shared-bi-frc-01` in
+`rg-picot-shared-data-frc`, not on the entity VMs. Entity VMs run the pipeline
 up to Gold; the shared VM reads Gold. A group-level dashboard comparing entities
 is the reason the platform exists, and it can only exist in one instance that
 sees every entity.

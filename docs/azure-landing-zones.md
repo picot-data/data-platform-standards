@@ -35,7 +35,9 @@ holding only two subscriptions at first.
 
 - `scope` = entity code (`dti` for Dirickx, `bg` for B&G, other codes as new
   entities arrive) or `shared` for group-wide resources
-- `region` = `weu` (West Europe)
+- `region` = `frc` (France Central), for every resource of every scope — see
+  [ADR 0028](https://github.com/picot-data/data-platform-standards/blob/main/adr/0028-france-central-and-zone-redundant-lake.md).
+  The POC was built in West Europe (`weu`); those names disappear with it
 - `workload` = `data` for an entity's pipeline VM at Level 1 (everything on a
   single VM), or `bi` for the group's shared VM running Metabase — the one
   Level 1 split, because that machine serves people rather than being part of any
@@ -58,21 +60,23 @@ holding only two subscriptions at first.
 | Management Group (landing zone, future entity) | `mg-picot-lz-<code>` | Created when the entity is onboarded |
 | Subscription (shared, per env) | `sub-picot-shared-dev` / `-staging` / `-prod` | |
 | Subscription (Dirickx, per env) | `sub-picot-dti-dev` / `-staging` / `-prod` | |
-| Resource Group (shared, prod) | `rg-picot-shared-data-weu` | Created in `sub-picot-shared-prod`; dev/staging stay empty at Level 1 |
-| Resource Group (Dirickx, prod) | `rg-picot-dti-data-weu` | Created in `sub-picot-dti-prod`; dev/staging stay empty at Level 1 |
-| Storage Account (ADLS Gen2) | `stpicotdata` | 3-24 char, lowercase alphanumeric only, **global Azure uniqueness** — check availability before locking it in |
-| VM (shared, BI + catalog) | `vm-picot-shared-bi-weu-01` | Runs the group's single Metabase — see [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md) — and serves the dbt docs catalog as static files at `/catalog/<entity>/` ([ADR 0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md)). Sized for Metabase: the catalog adds a web server, not an application. Never on a start/stop schedule — it serves people during working hours, and it is the only always-on machine, which is why anything that must be reachable during the day lives here. Inbound is restricted to the corporate network and the VPN. Lives in `rg-picot-shared-data-weu` with the storage account: one shared resource group at Level 1, even though its `workload` segment differs |
-| VM (Dirickx) | `vm-picot-dti-data-weu-01` | |
-| Key Vault (Dirickx) | `kv-picot-dti-weu-01` | 3-24 char, global Azure uniqueness — also to be checked |
-| NSG (Dirickx) | `nsg-picot-dti-data-weu-01` | |
-| Virtual Network (Dirickx) | `vnet-picot-dti-data-weu-01` | One VNet per entity's VM, not shared across entities |
-| Subnet (Dirickx) | `snet-picot-dti-data-weu-01` | Single subnet at Level 1 (everything on one VM) |
-| Public IP (Dirickx) | `pip-picot-dti-data-weu-01` | Standard SKU |
-| Network Interface (Dirickx) | `nic-picot-dti-data-weu-01` | The NSG attaches here, not on the VM resource itself |
-| Managed Identity (Dirickx VM) | `id-picot-dti-data-weu-01` | The identity every process on the VM authenticates as. **User-assigned**, not system-assigned: the VM is deliberately disposable, and a system-assigned identity dies with it — every role granted to it would have to be recreated and re-propagated on each rebuild. `id-` is the CAF-standard prefix |
-| Container Registry (Dirickx) | `crpicotdtidataweu01` | **No hyphens**: registry names accept only alphanumerics, so the pattern is the same segments concatenated. One registry per entity, not one shared — ACR grants `AcrPull`/`AcrPush` over a whole registry, so a shared one would let any entity's CI overwrite another entity's images ([ADR 0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md)) |
-| Data Factory (Dirickx) | `adf-picot-dti-data-weu-01` | The SAP ingestion bridge ([ADR 0010](https://github.com/picot-data/data-platform-standards/blob/main/adr/0010-adf-not-python-scripts-for-sap.md)). 3-63 char, letters, digits and hyphens, starting and ending alphanumeric, **global Azure uniqueness** — so a name refused here may be taken in another tenant, not wrong. `adf-` is the CAF-standard prefix. One factory per entity, like the VM and the registry: a factory's contents are its own entity's SAP connection and pipelines |
-| Self-hosted Integration Runtime (Dirickx) | `shir-picot-dti-data-weu-01` | The relay letting the factory read SAP inside a private network. Scoped to its factory, so the name only has to be unique there. **`shir` is ours, not a CAF prefix** — CAF has no entry for integration runtimes, and `shir` is the term the product's own documentation and whoever administers the agent both use. Naming the resource is all Terraform can do: installing the agent is a manual step on a machine that is not an Azure resource, and at Level 1 that machine belongs to the SAP contractor |
+| Resource Group (shared, prod) | `rg-picot-shared-data-frc` | Created in `sub-picot-shared-prod`; dev/staging stay empty at Level 1 |
+| Resource Group (Dirickx, prod) | `rg-picot-dti-data-frc` | Created in `sub-picot-dti-prod`; dev/staging stay empty at Level 1 |
+| Storage Account (ADLS Gen2) | `stpicotdata` | 3-24 char, lowercase alphanumeric only, **global Azure uniqueness** — check availability before locking it in. **ZRS**: three copies across the region's three availability zones ([ADR 0028](https://github.com/picot-data/data-platform-standards/blob/main/adr/0028-france-central-and-zone-redundant-lake.md)) |
+| Resource Group (Terraform state) | `rg-picot-shared-tfstate-frc` | Created in `sub-picot-shared-prod` by a script, never by Terraform, so that no root module owns the group holding every state ([ADR 0029](https://github.com/picot-data/data-platform-standards/blob/main/adr/0029-state-backend-created-by-script.md)). The only resource group tagged `ManagedBy = manual` by design |
+| Storage Account (Terraform state) | `stpicottfstate` | Plain blob storage (no hierarchical namespace, so blob versioning is available), ZRS, account keys disabled, `CanNotDelete` lock. One container `tfstate`, one blob per root module |
+| VM (shared, BI + catalog) | `vm-picot-shared-bi-frc-01` | Runs the group's single Metabase — see [ADR 0016](https://github.com/picot-data/data-platform-standards/blob/main/adr/0016-central-metabase-not-per-entity.md) — and serves the dbt docs catalog as static files at `/catalog/<entity>/` ([ADR 0023](https://github.com/picot-data/data-platform-standards/blob/main/adr/0023-catalog-served-from-the-shared-bi-vm.md)). Sized for Metabase: the catalog adds a web server, not an application. Never on a start/stop schedule — it serves people during working hours, and it is the only always-on machine, which is why anything that must be reachable during the day lives here. Inbound is restricted to the corporate network and the VPN. Lives in `rg-picot-shared-data-frc` with the storage account: one shared resource group at Level 1, even though its `workload` segment differs |
+| VM (Dirickx) | `vm-picot-dti-data-frc-01` | |
+| Key Vault (Dirickx) | `kv-picot-dti-frc-01` | 3-24 char, global Azure uniqueness — also to be checked |
+| NSG (Dirickx) | `nsg-picot-dti-data-frc-01` | |
+| Virtual Network (Dirickx) | `vnet-picot-dti-data-frc-01` | One VNet per entity's VM, not shared across entities |
+| Subnet (Dirickx) | `snet-picot-dti-data-frc-01` | Single subnet at Level 1 (everything on one VM) |
+| Public IP (Dirickx) | `pip-picot-dti-data-frc-01` | Standard SKU |
+| Network Interface (Dirickx) | `nic-picot-dti-data-frc-01` | The NSG attaches here, not on the VM resource itself |
+| Managed Identity (Dirickx VM) | `id-picot-dti-data-frc-01` | The identity every process on the VM authenticates as. **User-assigned**, not system-assigned: the VM is deliberately disposable, and a system-assigned identity dies with it — every role granted to it would have to be recreated and re-propagated on each rebuild. `id-` is the CAF-standard prefix |
+| Container Registry (Dirickx) | `crpicotdtidatafrc01` | **No hyphens**: registry names accept only alphanumerics, so the pattern is the same segments concatenated. One registry per entity, not one shared — ACR grants `AcrPull`/`AcrPush` over a whole registry, so a shared one would let any entity's CI overwrite another entity's images ([ADR 0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md)) |
+| Data Factory (Dirickx) | `adf-picot-dti-data-frc-01` | The SAP ingestion bridge ([ADR 0010](https://github.com/picot-data/data-platform-standards/blob/main/adr/0010-adf-not-python-scripts-for-sap.md)). 3-63 char, letters, digits and hyphens, starting and ending alphanumeric, **global Azure uniqueness** — so a name refused here may be taken in another tenant, not wrong. `adf-` is the CAF-standard prefix. One factory per entity, like the VM and the registry: a factory's contents are its own entity's SAP connection and pipelines |
+| Self-hosted Integration Runtime (Dirickx) | `shir-picot-dti-data-frc-01` | The relay letting the factory read SAP inside a private network. Scoped to its factory, so the name only has to be unique there. **`shir` is ours, not a CAF prefix** — CAF has no entry for integration runtimes, and `shir` is the term the product's own documentation and whoever administers the agent both use. Naming the resource is all Terraform can do: installing the agent is a manual step on a machine that is not an Azure resource, and at Level 1 that machine belongs to the SAP contractor |
 | ADLS Containers | `bronze`, `silver`, `gold`, `metadata` | No leading underscore: Azure container names accept only lowercase letters, digits and hyphens, and must start with a letter or digit |
 
 The `entity` column in dbt tables (see

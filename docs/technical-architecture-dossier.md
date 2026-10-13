@@ -54,11 +54,11 @@ shared, one subscription per environment
 
 | Scope | Target | Status |
 |---|---|---|
-| Management groups | `mg-picot` hierarchy | **Gap** — not created |
-| Subscriptions | `sub-picot-shared-*`, `sub-picot-dti-*` | **Gap** — everything runs in one existing company subscription |
-| Shared resource group | `rg-picot-shared-data-weu` | **Coded** (`shared/` root module) |
-| Entity resource group | `rg-picot-dti-data-weu` | **Deployed** under a transitional name; see [Deviations](#8-deviations-of-the-current-deployment) |
-| Region | West Europe, every resource | **Deployed** |
+| Management groups | `mg-picot` hierarchy | **Deployed** (2026-10-13) |
+| Subscriptions | `sub-picot-shared-*`, `sub-picot-dti-*` | **Deployed** empty (2026-10-13); the POC still runs in one existing company subscription until the rebuild |
+| Shared resource group | `rg-picot-shared-data-frc` | **Coded** (`shared/` root module) |
+| Entity resource group | `rg-picot-dti-data-frc` | **Target**; the POC runs as `rg-picot-poc-dti-weu`, see [Deviations](#8-deviations-of-the-current-deployment) |
+| Region | France Central (`frc`), every resource ([ADR 0028](https://github.com/picot-data/data-platform-standards/blob/main/adr/0028-france-central-and-zone-redundant-lake.md)) | **Target** — the POC's resources below are in West Europe and are rebuilt, not moved |
 
 ## 3. Component inventory
 
@@ -183,7 +183,7 @@ the lake protected against a single mistake.
 | `CanNotDelete` lock on the lake | **Coded** |
 | Blob versioning | Not available on ADLS Gen2 accounts; soft delete stands in for it ([ADR 0026](https://github.com/picot-data/data-platform-standards/blob/main/adr/0026-soft-delete-not-versioning-for-the-lake.md)) |
 | Diagnostic settings to Log Analytics | **Target** |
-| Remote Terraform state | **Target** |
+| Remote Terraform state, backend created by script ([ADR 0029](https://github.com/picot-data/data-platform-standards/blob/main/adr/0029-state-backend-created-by-script.md)) | **Target** |
 | Private endpoints, no public IP on entity VMs | **Target** (trigger B) |
 | Policy detecting a regression of this posture | **Gap** |
 
@@ -192,7 +192,7 @@ the lake protected against a single mistake.
 | Component | Recovery | Status |
 |---|---|---|
 | Entity VM | Destroyed and recreated by Terraform, then redeployed from the registry image | **Deployed** |
-| Lake | Single region, LRS. Soft delete and a delete lock; no second copy | **Coded** |
+| Lake | ZRS: three copies across France Central's availability zones, no copy outside the region ([ADR 0028](https://github.com/picot-data/data-platform-standards/blob/main/adr/0028-france-central-and-zone-redundant-lake.md)). Soft delete and a delete lock | **Target** — the POC's account is LRS |
 | Metabase application database | Not defined | **Gap** |
 | Recovery objectives (RPO, RTO) | Not defined | **Gap** — a business decision |
 
