@@ -32,6 +32,34 @@ each entity has its own Azure subscription, its own access boundary, and
 potentially its own contributors — a shared repository would force shared
 write access across entities that don't need it.
 
+## Repository naming
+
+All repositories live in the `picot-data` GitHub organisation. Names are
+lowercase, words separated by hyphens.
+
+| Kind | Pattern | Examples |
+|---|---|---|
+| Entity mono-repo | `data-platform-<code>` | `data-platform-dti`, `data-platform-bg` |
+| Shared repo | `data-platform-<role>` | `data-platform-standards`, `data-platform-workflows`, `data-platform-entity-template`, `data-platform-dbt-core` |
+| Terraform modules | `terraform-azure-data-platform` | The only exception, see below |
+
+- **`<code>` is the entity's scope code**, the same one used in Azure resource
+  names and in the `entity` column of every dbt table (see
+  [Azure landing zones](azure-landing-zones.md#resource-naming-pattern)). One
+  code everywhere, no mapping to maintain.
+- **`<role>` names what the repository carries**, never an entity. A role name
+  and an entity code must never coincide; entity codes are short business codes,
+  so this only needs checking when a new entity code is chosen.
+- **No environment and no lifecycle in the name.** Environments are Azure
+  subscriptions, not repositories: one entity repo deploys to its `dev`,
+  `staging` and `prod` subscriptions. A `-prod` or `-v2` suffix would have to be
+  renamed the day it stops being true.
+- **The Terraform repository follows HashiCorp's `terraform-<provider>-<name>`
+  convention** instead, because that is the name the Terraform registry and its
+  tooling expect from a module repository.
+- `poc-data-platform-dti` predates this rule. It is the POC, is not promoted to
+  production, and is archived once `data-platform-dti` replaces it.
+
 ## Shared repos, deduplicated once, not per entity
 
 "Same module, same skeleton, same CI" across entities only holds if that
