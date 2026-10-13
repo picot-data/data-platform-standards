@@ -130,7 +130,7 @@ All Azure-bound flows are HTTPS on 443 unless stated.
 |---|---|---|---|---|
 | Entity VM | User-assigned managed identity | Storage Blob Data Contributor; Key Vault Secrets User; AcrPull | Lake; entity vault; entity registry | **Deployed** |
 | Data Factory | System-assigned managed identity | Storage Blob Data Contributor | Lake | **Coded** |
-| CI deployer | Entra app, OIDC federated credential bound to the `production` environment | AcrPush; custom role limited to `runCommand` | Entity registry; entity VM | **Target** |
+| CI deployer | Entra app, OIDC federated credential bound to the `main` branch ([ADR 0030](https://github.com/picot-data/data-platform-standards/blob/main/adr/0030-oidc-bound-to-main-not-to-an-environment.md)) | AcrPush; custom role limited to `runCommand` | Entity registry; entity VM | **Target** |
 | BI VM | Managed identity | Storage Blob Data Reader | Lake | **Target** |
 | Platform operator | Named Entra user | Subscription Owner; Storage Blob Data Contributor; Key Vault Secrets Officer | Subscription; lake; vault | **Deployed**; an Entra group in place of the named user is **Target** |
 | Metabase users | Local Metabase accounts | One Metabase database per entity | Metabase | **Target** ([BI and access](bi-and-access.md)). The open-source edition has no SSO group mapping |

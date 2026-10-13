@@ -262,12 +262,14 @@ Four rules define the pipeline:
    machine. The role granted to GitHub is a custom one limited to
    `Microsoft.Compute/virtualMachines/runCommand/action` — never
    `Virtual Machine Contributor`, which could delete the VM.
-4. **A deployment is approved, and the approval is enforced by Azure.** The
-   deploy job targets a GitHub Environment named `production` carrying required
-   reviewers, and the federated credential's subject is bound to that
-   environment (`repo:picot-data/<entity-repo>:environment:production`). A run
-   that skipped the gate cannot obtain an Azure token, so the approval is not
-   something a workflow edit can remove.
+4. **Only `main` can obtain an Azure token, and Azure enforces it.** The
+   federated credential's subject is bound to the branch
+   (`repo:picot-data/<entity-repo>:ref:refs/heads/main`), so a workflow on any
+   other branch is refused a token whatever it declares. There is no human
+   approval step: on the organisation's GitHub plan, required reviewers are not
+   available on private repositories, and pushing to `main` is the gate
+   ([ADR 0030](https://github.com/picot-data/data-platform-standards/blob/main/adr/0030-oidc-bound-to-main-not-to-an-environment.md),
+   amending ADR 0012).
 
 Only `main` deploys. A pull request builds the image and never publishes it; a
 push to the integration branch publishes an image without touching any VM. A

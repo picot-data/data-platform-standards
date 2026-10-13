@@ -127,7 +127,7 @@ Applied to every subscription, every resource group, and every resource.
 |---|---|---|
 | `Entity` | `dti` / `shared` / future entity code | Cost and ownership attribution per group entity |
 | `Environment` | `dev` / `staging` / `prod` | Filtering and cost split; guard rail against pointing a dev job at prod data |
-| `Workload` | `data` (Level 1) / later `compute`, `orch`, `network` | Which functional block of the platform |
+| `Workload` | `data` (Level 1) / later `compute`, `orch`, `network`; `tfstate` for the Terraform state backend only | Which functional block of the platform |
 | `Level` | `1` / `2` | Maturity level of the platform the resource belongs to |
 | `CostCenter` | Code from Dirickx finance | Chargeback / showback to the finance analytical structure |
 | `Owner` | Email of the technical owner | Who to contact before touching or deleting |

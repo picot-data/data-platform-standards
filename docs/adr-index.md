@@ -18,7 +18,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0009](https://github.com/picot-data/data-platform-standards/blob/main/adr/0009-plain-parquet-not-iceberg.md) | Plain Parquet at Level 1, not Iceberg or Delta | Accepted |
 | [0010](https://github.com/picot-data/data-platform-standards/blob/main/adr/0010-adf-not-python-scripts-for-sap.md) | Azure Data Factory for SAP ingestion, not Python scripts | Accepted |
 | [0011](https://github.com/picot-data/data-platform-standards/blob/main/adr/0011-shared-terraform-module-and-entity-template.md) | A shared Terraform module and a template repo, not a copied entity repo | Accepted |
-| [0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md) | Deploy via OIDC, a shared container registry and Azure Run Command, not a self-hosted runner | Accepted |
+| [0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md) | Deploy via OIDC, a shared container registry and Azure Run Command, not a self-hosted runner | Partially amended by 0030 |
 | [0013](https://github.com/picot-data/data-platform-standards/blob/main/adr/0013-local-duckdb-with-publication-step.md) | dbt materializes locally; a publication step writes Silver and Gold | Accepted |
 | [0014](https://github.com/picot-data/data-platform-standards/blob/main/adr/0014-duckdb-scale-ceiling.md) | When a single DuckDB node stops being the right engine | Accepted |
 | [0015](https://github.com/picot-data/data-platform-standards/blob/main/adr/0015-metrics-in-marts-not-metricflow.md) | Metric definitions live in dbt marts, not in MetricFlow | Accepted |
@@ -36,6 +36,7 @@ a new ADR that supersedes the old one, not an edit to it.
 | [0027](https://github.com/picot-data/data-platform-standards/blob/main/adr/0027-metabase-serves-gold-from-postgres.md) | Metabase reads Gold from Postgres, not from DuckDB files | Accepted |
 | [0028](https://github.com/picot-data/data-platform-standards/blob/main/adr/0028-france-central-and-zone-redundant-lake.md) | France Central as the platform region, and a zone-redundant lake | Accepted |
 | [0029](https://github.com/picot-data/data-platform-standards/blob/main/adr/0029-state-backend-created-by-script.md) | The Terraform state backend is created by a script, not by Terraform | Accepted |
+| [0030](https://github.com/picot-data/data-platform-standards/blob/main/adr/0030-oidc-bound-to-main-not-to-an-environment.md) | The deployment identity trusts the `main` branch, not a GitHub Environment | Accepted |
 | [0000](https://github.com/picot-data/data-platform-standards/blob/main/adr/0000-template.md) | Template | — |
 
 Open questions that have not yet been decided are tracked as GitHub issues
