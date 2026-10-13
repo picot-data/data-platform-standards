@@ -182,8 +182,10 @@ the lake protected against a single mistake.
 | Soft delete for blobs and containers, 30 days | **Coded** |
 | `CanNotDelete` lock on the lake | **Coded** |
 | Blob versioning | Not available on ADLS Gen2 accounts; soft delete stands in for it ([ADR 0026](https://github.com/picot-data/data-platform-standards/blob/main/adr/0026-soft-delete-not-versioning-for-the-lake.md)) |
-| Diagnostic settings to Log Analytics | **Target** |
-| Remote Terraform state, backend created by script ([ADR 0029](https://github.com/picot-data/data-platform-standards/blob/main/adr/0029-state-backend-created-by-script.md)) | **Target** |
+| Diagnostic settings to Log Analytics — lake reads/writes/deletes, Key Vault access | **Coded** (`log-picot-shared-data-frc-01`) |
+| Human data access through an Entra group, not a personal role | **Coded** (`grp-picot-shared-lake-contributors`) |
+| Remote Terraform state, backend created by script ([ADR 0029](https://github.com/picot-data/data-platform-standards/blob/main/adr/0029-state-backend-created-by-script.md)) | **Deployed** (`stpicottfstate`, 2026-10-13) |
+| Tag policies and budgets ([ADR 0004](https://github.com/picot-data/data-platform-standards/blob/main/adr/0004-tagging-enforced-via-policy.md), [ADR 0005](https://github.com/picot-data/data-platform-standards/blob/main/adr/0005-budget-alerts-vs-automated-shutdown.md)) | **Coded** — apply waits for the cost centre and budget amounts from finance |
 | Private endpoints, no public IP on entity VMs | **Target** (trigger B) |
 | Policy detecting a regression of this posture | **Gap** |
 
