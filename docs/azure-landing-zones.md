@@ -251,10 +251,19 @@ place.
 ### Everything in Terraform
 
 Budgets, action groups, and policy assignments are infrastructure, so they
-live in the same Terraform code as the rest of the platform, in a dedicated
-`governance/` module — applied per subscription from the same `.tfvars` as
-everything else. A budget created by hand in the portal will not exist on the
-next entity's subscription.
+live in the same Terraform code as the rest of the platform. A budget created by
+hand in the portal will not exist on the next entity's subscription.
+
+| What | Where in `terraform-azure-data-platform` |
+|---|---|
+| Tag policies, at `mg-picot-landingzones` | `shared/governance.tf` |
+| Budgets on `mg-picot-landingzones` and on every subscription | `shared/governance.tf` — onboarding an entity adds its three subscriptions to `shared.tfvars` |
+| Budgets on the shared resource groups | `shared/governance.tf` |
+| Budget on an entity's resource group | `modules/governance`, called by the entity's own root module |
+
+The tag `deny` starts in report-only mode and is switched on after the first
+entity apply, once **Policy → Compliance** shows what Azure itself creates
+untagged.
 
 ## Operating rules
 

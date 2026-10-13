@@ -14,7 +14,6 @@ worklist, not documentation.
 | Which `CostCenter` code carries the data project — does the IA/LLM workstream share it or need its own? | High — blocks the tag `deny` policy and budget amounts | Finance Dirickx |
 | Does IT already have an Azure tagging convention for its own subscriptions? | High — two tag conventions in one tenant breaks group-level cost reporting | IT D / IT Group |
 | Who owns `mg-picot-platform`, and does IT plan to put anything there that concerns the data platform (notably a VPN/ExpressRoute to SAP)? | High | IT Group |
-| Does the Owner have `Resource Policy Contributor` on `mg-picot-landingzones`? | Medium — without it, tag governance is undeployable | IT Group / tenant admin |
 | Budget amounts per subscription and the annual envelope — needs a costing exercise against actual SKUs (D4s_v3, ADLS volumes, Key Vault), not an estimate | High — needed for the CODIR budget ask | Owner + Finance |
 | Does the shared storage cost get re-invoiced to entities, or carried by a pivot entity? | Medium — political as much as technical | Finance / Direction |
 | Every entity VNet takes `modules/entity`'s default `10.0.0.0/16`, so all entities overlap. Which address plan — one non-overlapping range per entity, compatible with the corporate ranges — before any peering, VPN or private endpoint? | High — must be fixed before a second entity is applied, since a VNet's range cannot change under a running VM without rebuilding its network | Group IT / Owner |
