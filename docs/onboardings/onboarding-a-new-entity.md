@@ -165,6 +165,27 @@ separation inside it is by prefix. At Level 1 the entity VMs are operated by the
 same team, so a data-plane boundary between prefixes would be a boundary nobody
 is on the other side of. Revisit it when an entity has its own contributors.
 
+## 3 bis. SAP bridge — the two steps Terraform cannot do
+
+With `data_factory_enabled = true`, the entity's apply creates the factory
+(`adf-picot-<code>-data-frc-01`), its identity and its access to the lake, and
+the self-hosted integration runtime **as an Azure object**
+(`shir-picot-<code>-data-frc-01`): a name and an authentication key, which the
+apply writes to the entity's Key Vault. Two things remain, and both are manual by
+nature — skip either and the factory exists but cannot read SAP:
+
+1. **Register the runtime agent.** The agent is software installed on a machine
+   inside the network that can reach SAP — at Level 1, the SAP contractor's
+   server, not an Azure resource. Whoever administers that machine registers the
+   agent with the key read from the Key Vault. Until then the runtime shows
+   *Unavailable* in the factory.
+2. **Store the SAP password in the entity's Key Vault**, as a secret the SAP
+   linked service references. Never in Terraform — it would sit in clear in the
+   state — and never typed into the linked service itself, where it is bound to
+   one runtime node and lost with the factory. Creating it needs the
+   `Key Vault Secrets Officer` role on the vault, which the apply grants to whoever
+   runs it.
+
 ## 4. Bootstrap — a container host, and nothing else
 
 Run the `bootstrap_vm.sh` script from the entity template. It installs **Docker,
