@@ -93,7 +93,7 @@ archiving obligation:
 |---|---|
 | Rebuild a past state / prove where a figure came from | Bronze — immutable, date-partitioned raw extracts |
 | Keep the history of a business change (a customer renamed, a price revised) | dbt snapshots (`snapshots/`, `dbt snapshot`) |
-| Reduce the cost of old raw files | ADLS lifecycle rules (hot → cool → archive) on `bronze/` |
+| Reduce the cost of old raw files | ADLS lifecycle rules (hot → cool → cold) on `bronze/` |
 
 `stg_` and `int_` models are not archived: they are fully derivable from
 Bronze. Restoring them is a `dbt build`, not a restore from backup.

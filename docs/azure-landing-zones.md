@@ -229,8 +229,8 @@ mode:
 |---|---|---|
 | 50% | Actual | Owner |
 | 80% | Actual | Owner |
-| 100% | Actual | Owner + finance contact |
-| 110% | Actual | Owner + finance + manager |
+| 100% | Actual | Owner + finance contact + IT (infrastructure team) |
+| 110% | Actual | Owner + finance + IT + manager |
 | 100% | Forecast | Owner |
 
 The forecast-100% alert warns before the money is spent, based on the
@@ -246,7 +246,7 @@ place.
 | Entity VM deallocated when the run finishes | Last step of the Dagster pipeline, using the VM identity's rights on its own resource | Entity VMs only. A **failed** run deliberately leaves the VM up, to be inspected |
 | Entity VM cut off at a fixed hour regardless | Azure VM auto-shutdown schedule | Entity VMs only. The backstop for a failed run: without it, a failure on the first day of a holiday bills weeks of idle compute |
 | Deallocate the VM at 110% of budget | Budget alert → Action Group → Automation runbook | `dev`/`staging` only — see ADR 0005 |
-| Storage lifecycle policy on `bronze` | ADLS lifecycle management (hot → cool → archive) | Bronze — raw files never re-read after a few weeks |
+| Storage lifecycle policy on `bronze` | ADLS lifecycle management (hot → cool → cold; Archive does not exist on a ZRS account) | Bronze — raw files never re-read after a few days |
 | Resource-type restriction | Azure Policy `deny` on expensive SKUs | Dev subscriptions |
 | Azure Advisor cost recommendations | Reviewed monthly | All subscriptions |
 

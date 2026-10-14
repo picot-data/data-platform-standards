@@ -143,7 +143,7 @@ authorization key, held in the entity Key Vault
 
 | Location | Contents | Rebuildable | Protection |
 |---|---|---|---|
-| Lake, `bronze` | Raw SAP extracts, append-only, all entities under `company_<code>/` | **No** | Tiered to Cool after 30 days, Archive after 365; never deleted automatically |
+| Lake, `bronze` | Raw SAP extracts, append-only, all entities under `company_<code>/` | **No** | Tiered to Cool after 7 days, Cold after 90 (Archive does not exist on ZRS); never deleted automatically |
 | Lake, `silver`, `gold` | Published dbt models | Yes, by a dbt run | Rewritten on every run |
 | Lake, `metadata` | dbt docs artifacts | Yes | — |
 | Entity VM disk | Bronze mirror, DuckDB build file | Yes | Transient working copy |
