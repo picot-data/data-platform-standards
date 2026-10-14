@@ -61,24 +61,22 @@ locals {
 }
 
 module "platform" {
-  source               = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v2.2.0"
+  source               = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v4.0.0"
   entity               = var.entity
-  region               = var.region
   vm_size              = var.vm_size
   admin_source_cidr    = var.admin_source_cidr
   admin_ssh_public_key = var.admin_ssh_public_key
 
-  # Plain resource ids from this entity's .tfvars, not module references. The
-  # module grants its VM identity data-plane access to the first, and grants the
-  # CI deployer AcrPush plus the runCommand custom role using the second.
-  shared_storage_account_id    = var.shared_storage_account_id
-  github_deployer_principal_id = var.github_deployer_principal_id
+  # Plain resource ids from this entity's .tfvars, not module references: both
+  # live in the shared root module, in another subscription.
+  shared_storage_account_id  = var.shared_storage_account_id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
 
   tags = local.common_tags
 }
 
 module "governance" {
-  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v2.2.0"
+  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v4.0.0"
   resource_group_id   = module.platform.resource_group_id
   resource_group_name = module.platform.resource_group_name
   budget_amount       = var.budget_amount # from finance, never invented
@@ -86,7 +84,25 @@ module "governance" {
   notification_emails = [var.owner]
   tags                = local.common_tags
 }
+
+# The deployment identity (ADR 0030): app registration, federated credential
+# trusting this repository's main branch, its two grants, and the repository
+# variables the deploy workflow reads. Same apply, no second pass.
+module "deployer" {
+  source                         = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/deployer?ref=v4.0.0"
+  entity                         = var.entity
+  github_repository              = "data-platform-${var.entity}"
+  vm_id                          = module.platform.vm_id
+  acr_id                         = module.platform.acr_id
+  run_command_role_definition_id = module.platform.run_command_role_definition_id
+}
 ```
+
+This is an excerpt; the complete root module — backend, providers, the SAP
+bridge inputs — is `infra/terraform/main.tf` in the entity template. Because of
+`modules/deployer`, the entity repository must exist before the first apply, and
+the apply needs a GitHub token in the environment
+(`$env:GITHUB_TOKEN = gh auth token`) with write access to its Actions variables.
 
 `shared_storage_account_id` looks optional — the module defaults it to null so
 that an entity can be applied before the lake exists — and in practice it is
