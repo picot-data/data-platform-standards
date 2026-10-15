@@ -61,7 +61,7 @@ locals {
 }
 
 module "platform" {
-  source               = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v4.0.0"
+  source               = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v4.0.1"
   entity               = var.entity
   vm_size              = var.vm_size
   admin_source_cidr    = var.admin_source_cidr
@@ -76,7 +76,7 @@ module "platform" {
 }
 
 module "governance" {
-  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v4.0.0"
+  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v4.0.1"
   resource_group_id   = module.platform.resource_group_id
   resource_group_name = module.platform.resource_group_name
   budget_amount       = var.budget_amount # from finance, never invented
@@ -89,7 +89,7 @@ module "governance" {
 # trusting this repository's main branch, its two grants, and the repository
 # variables the deploy workflow reads. Same apply, no second pass.
 module "deployer" {
-  source                         = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/deployer?ref=v4.0.0"
+  source                         = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/deployer?ref=v4.0.1"
   entity                         = var.entity
   github_repository              = "data-platform-${var.entity}"
   vm_id                          = module.platform.vm_id
