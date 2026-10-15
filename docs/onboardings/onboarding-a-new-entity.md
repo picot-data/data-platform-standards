@@ -61,7 +61,7 @@ locals {
 }
 
 module "platform" {
-  source               = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v4.0.2"
+  source               = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/entity?ref=v5.1.0"
   entity               = var.entity
   vm_size              = var.vm_size
   admin_source_cidr    = var.admin_source_cidr
@@ -76,7 +76,7 @@ module "platform" {
 }
 
 module "governance" {
-  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v4.0.2"
+  source              = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/governance?ref=v5.1.0"
   resource_group_id   = module.platform.resource_group_id
   resource_group_name = module.platform.resource_group_name
   budget_amount       = var.budget_amount # from finance, never invented
@@ -89,12 +89,17 @@ module "governance" {
 # trusting this repository's main branch, its two grants, and the repository
 # variables the deploy workflow reads. Same apply, no second pass.
 module "deployer" {
-  source                         = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/deployer?ref=v4.0.2"
+  source                         = "git::https://github.com/picot-data/terraform-azure-data-platform.git//modules/deployer?ref=v5.1.0"
   entity                         = var.entity
   github_repository              = "data-platform-${var.entity}"
   vm_id                          = module.platform.vm_id
   acr_id                         = module.platform.acr_id
   run_command_role_definition_id = module.platform.run_command_role_definition_id
+
+  # Not grants: written to the repository as variables for the deploy workflow.
+  acr_login_server          = module.platform.acr_login_server
+  vm_identity_client_id     = module.platform.vm_identity_client_id
+  shared_storage_account_id = var.shared_storage_account_id
 }
 ```
 
@@ -264,6 +269,13 @@ The new repository's `ci.yml` calls the reusable workflow in
 organisation-level setting, not a per-entity one, but it is worth knowing because
 its absence fails with `workflow was not found`, which reads like a wrong path and
 is not.
+
+Its `deploy.yml` calls `entity-deploy.yml` from the same repository, and that is
+the first deployment: once the step 2 apply has written the repository
+variables and the step 4 bootstrap is done, **the first merge to `main`, with
+the VM running, builds the image and deploys it**. Nothing is wired by hand —
+see [Deployment](../repositories-and-delivery.md#deployment) and the entity's
+`docs/runbook.md` for rollback.
 
 Because the template is copied once and not kept in sync afterward, an entity
 generated a while ago can be behind it. That is the accepted trade-off of

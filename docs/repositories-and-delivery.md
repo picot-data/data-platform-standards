@@ -233,16 +233,12 @@ beyond a container runtime, and no credential — see
 [ADR 0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md)
 for why this shape was chosen over a self-hosted runner.
 
-**Implementation status.** This describes the standard, not what is running
-today. No entity meets it yet: the OIDC half needs an Entra ID app
-registration, and the tenant currently forbids a normal user from creating one
-(`allowedToCreateApps = false`), so an IT request is pending. Until it lands,
-`poc-data-platform-dti` deploys through a self-hosted runner pulling from GHCR
-with a stored token — the shape ADR 0012 explicitly rejects. That gap is
-recorded in that repository's *Known deviations from the standards*, which is
-where an entity's distance from this page belongs. Read the four rules below as
-what an entity is measured against, not as a description of the current
-machinery.
+**Implementation status.** Live since 2026-10-15, first on `data-platform-dti`.
+The pipeline is the reusable `entity-deploy.yml` in `data-platform-workflows`;
+an entity's `deploy.yml` only calls it, and every Azure value it needs is a
+repository variable written by the entity's Terraform apply
+(`modules/deployer`), so a new entity gets a working deployment from the
+template with nothing to wire by hand.
 
 Four rules define the pipeline:
 

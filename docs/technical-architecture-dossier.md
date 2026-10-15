@@ -70,7 +70,7 @@ shared, one subscription per environment
 | Network | `vnet-` / `snet-` / `nic-` / `pip-` / `nsg-picot-dti-data-frc-01` | dti | Standard static public IP | **Deployed** — public IP until ADR 0025 trigger B |
 | Secrets | `kv-picot-dti-frc-01` — RBAC authorization, access logged to the shared workspace | dti | Standard | **Deployed** |
 | Container registry | `crpicotdtidatafrc01` — admin user disabled | dti | Basic | **Deployed** |
-| CI deployer | `app-picot-dti-deployer` — federated credential on `main`, `AcrPush`, run-command role | dti | — | **Deployed**, not yet exercised by a workflow |
+| CI deployer | `app-picot-dti-deployer` — federated credential on `main`, `AcrPush`, run-command role | dti | — | **Deployed**, exercised by every merge to `main` since 2026-10-15 |
 | SAP bridge | `adf-picot-dti-data-frc-01` + `shir-picot-dti-data-frc-01` | dti | — | **Deployed**, empty: the agent is not registered and the pipelines are not imported yet |
 | SHIR agent host | Windows machine in the contractor's network — not an Azure resource | dti | — | **Deployed**, administered by the contractor; to be re-registered on the new factory |
 | BI VM | `vm-picot-shared-bi-weu-01` — Metabase, catalog web server, refresh job | shared | Not sized | **Target** |
@@ -118,8 +118,8 @@ All Azure-bound flows are HTTPS on 443 unless stated.
 | F4 | Entity VM | Lake | HTTPS | VM managed identity, Storage Blob Data Contributor | **Deployed** |
 | F5 | Entity VM | Key Vault | HTTPS | VM managed identity, Secrets User | **Deployed** |
 | F6 | Entity VM | Container registry | HTTPS | VM managed identity, AcrPull | **Deployed** |
-| F7 | GitHub Actions | Container registry | HTTPS | OIDC federated credential, AcrPush | **Target** — needs an Entra app registration |
-| F8 | GitHub Actions | Azure Resource Manager | HTTPS | OIDC, custom run-command role on the VM only | **Target**, same blocker ([ADR 0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md)) |
+| F7 | GitHub Actions | Container registry | HTTPS | OIDC federated credential, AcrPush | **Deployed** |
+| F8 | GitHub Actions | Azure Resource Manager | HTTPS | OIDC, custom run-command role on the VM only | **Deployed** ([ADR 0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md)) |
 | F9 | Administrator | Entity VM | SSH, 22 | SSH key | **Deployed** |
 | F10 | Developer workstation | Lake | HTTPS | Connection string today; Entra identity target | **Deployed**, to be replaced |
 | F11 | BI VM | Lake, `gold` and `metadata` | HTTPS | BI VM managed identity, Storage Blob Data **Reader** | **Target** |
@@ -131,7 +131,7 @@ All Azure-bound flows are HTTPS on 443 unless stated.
 |---|---|---|---|---|
 | Entity VM | User-assigned managed identity | Storage Blob Data Contributor; Key Vault Secrets User; AcrPull | Lake; entity vault; entity registry | **Deployed** |
 | Data Factory | System-assigned managed identity | Storage Blob Data Contributor | Lake | **Coded** |
-| CI deployer | Entra app, OIDC federated credential bound to the `main` branch ([ADR 0030](https://github.com/picot-data/data-platform-standards/blob/main/adr/0030-oidc-bound-to-main-not-to-an-environment.md)) | AcrPush; custom role limited to `runCommand` | Entity registry; entity VM | **Target** |
+| CI deployer | Entra app, OIDC federated credential bound to the `main` branch ([ADR 0030](https://github.com/picot-data/data-platform-standards/blob/main/adr/0030-oidc-bound-to-main-not-to-an-environment.md)) | AcrPush; custom role limited to `runCommand` | Entity registry; entity VM | **Deployed** |
 | BI VM | Managed identity | Storage Blob Data Reader | Lake | **Target** |
 | Platform operator | Named Entra user | Subscription Owner; Storage Blob Data Contributor; Key Vault Secrets Officer | Subscription; lake; vault | **Deployed**; an Entra group in place of the named user is **Target** |
 | Metabase users | Local Metabase accounts | One Metabase database per entity | Metabase | **Target** ([BI and access](bi-and-access.md)). The open-source edition has no SSO group mapping |
@@ -207,7 +207,7 @@ publishing Gold
 
 | Activity | Mechanism | Status |
 |---|---|---|
-| Deployment | CI builds one platform image, pushes it to the entity registry, runs the deployment on the VM with run-command | **Target** ([ADR 0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md)) |
+| Deployment | CI builds one platform image, pushes it to the entity registry, runs the deployment on the VM with run-command (`entity-deploy.yml` in `data-platform-workflows`) | **Deployed** — first green deployment of dti on 2026-10-15 ([ADR 0012](https://github.com/picot-data/data-platform-standards/blob/main/adr/0012-oidc-run-command-deployment.md)) |
 | Entity VM schedule | Started before the pipeline window, deallocated after, fixed daily cut-off | Cut-off **Deployed**; start and stop **Target** ([ADR 0018](https://github.com/picot-data/data-platform-standards/blob/main/adr/0018-scheduled-start-stop-for-entity-vms.md)) |
 | Pipeline monitoring | Dagster UI; Data Factory monitoring for extraction | **Deployed** |
 | Cost control | Budget alerts per resource group | **Coded**, not applied ([ADR 0005](https://github.com/picot-data/data-platform-standards/blob/main/adr/0005-budget-alerts-vs-automated-shutdown.md)) |
