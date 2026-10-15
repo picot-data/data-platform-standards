@@ -55,28 +55,29 @@ shared, one subscription per environment
 | Scope | Target | Status |
 |---|---|---|
 | Management groups | `mg-picot` hierarchy | **Deployed** (2026-10-13) |
-| Subscriptions | `sub-picot-shared-*`, `sub-picot-dti-*` | **Deployed** empty (2026-10-13); the POC still runs in one existing company subscription until the rebuild |
-| Shared resource group | `rg-picot-shared-data-frc` | **Coded** (`shared/` root module) |
-| Entity resource group | `rg-picot-dti-data-frc` | **Target**; the POC runs as `rg-picot-poc-dti-weu`, see [Deviations](#8-deviations-of-the-current-deployment) |
-| Region | France Central (`frc`), every resource ([ADR 0028](https://github.com/picot-data/data-platform-standards/blob/main/adr/0028-france-central-and-zone-redundant-lake.md)) | **Target** — the POC's resources below are in West Europe and are rebuilt, not moved |
+| Subscriptions | `sub-picot-shared-*`, `sub-picot-dti-*` | **Deployed** (2026-10-13); only the two `prod` ones hold resources. The POC was destroyed on 2026-10-14 |
+| Shared resource group | `rg-picot-shared-data-frc` | **Deployed** (2026-10-14, `shared/` root module) |
+| Entity resource group | `rg-picot-dti-data-frc` | **Deployed** (2026-10-15, `data-platform-dti`) |
+| Region | France Central (`frc`), every resource ([ADR 0028](https://github.com/picot-data/data-platform-standards/blob/main/adr/0028-france-central-and-zone-redundant-lake.md)) | **Deployed** |
 
 ## 3. Component inventory
 
 | Component | Azure resource | Scope | Size / SKU | Status |
 |---|---|---|---|---|
-| Data lake | `stpicotdata` — StorageV2, ADLS Gen2, containers `bronze`, `silver`, `gold`, `metadata` | shared | Standard, LRS | **Deployed** |
-| Entity VM | `vm-picot-dti-data-weu-01` — Ubuntu 22.04, runs Dagster, dbt, DuckDB as containers | dti | `Standard_D2s_v3`, 30 GB StandardSSD | **Deployed** |
-| VM identity | `id-picot-dti-data-weu-01` — user-assigned managed identity | dti | — | **Deployed** |
-| Network | `vnet-` / `snet-` / `nic-` / `pip-` / `nsg-picot-dti-data-weu-01` | dti | Standard static public IP | **Deployed** |
-| Secrets | `kv-picot-dti-weu-01` — RBAC authorization | dti | Standard | **Deployed** |
-| Container registry | `crpicotdtidataweu01` — admin user disabled | dti | Basic | **Deployed** |
-| SAP bridge | `adf-picot-dti-data-weu-01` + `shir-picot-dti-data-weu-01` | dti | — | **Coded**, off. A portal-created factory is live in its place |
-| SHIR agent host | Windows machine in the contractor's network — not an Azure resource | dti | — | **Deployed**, administered by the contractor |
+| Data lake | `stpicotdata` — StorageV2, ADLS Gen2, containers `bronze`, `silver`, `gold`, `metadata`, account keys off, delete lock | shared | Standard, ZRS | **Deployed** |
+| Entity VM | `vm-picot-dti-data-frc-01` — Ubuntu 22.04, runs Dagster, dbt, DuckDB as containers | dti | `Standard_D2as_v5`, 30 GB StandardSSD | **Deployed**, not yet bootstrapped. `D2s_v3` and every v1-v4 size are not available to the subscription in France Central |
+| VM identity | `id-picot-dti-data-frc-01` — user-assigned managed identity | dti | — | **Deployed** |
+| Network | `vnet-` / `snet-` / `nic-` / `pip-` / `nsg-picot-dti-data-frc-01` | dti | Standard static public IP | **Deployed** — public IP until ADR 0025 trigger B |
+| Secrets | `kv-picot-dti-frc-01` — RBAC authorization, access logged to the shared workspace | dti | Standard | **Deployed** |
+| Container registry | `crpicotdtidatafrc01` — admin user disabled | dti | Basic | **Deployed** |
+| CI deployer | `app-picot-dti-deployer` — federated credential on `main`, `AcrPush`, run-command role | dti | — | **Deployed**, not yet exercised by a workflow |
+| SAP bridge | `adf-picot-dti-data-frc-01` + `shir-picot-dti-data-frc-01` | dti | — | **Deployed**, empty: the agent is not registered and the pipelines are not imported yet |
+| SHIR agent host | Windows machine in the contractor's network — not an Azure resource | dti | — | **Deployed**, administered by the contractor; to be re-registered on the new factory |
 | BI VM | `vm-picot-shared-bi-weu-01` — Metabase, catalog web server, refresh job | shared | Not sized | **Target** |
 | Metabase databases | Postgres — application database, plus one serving database per entity ([ADR 0027](https://github.com/picot-data/data-platform-standards/blob/main/adr/0027-metabase-serves-gold-from-postgres.md)) | shared | Not sized; hosting not chosen | **Target** — H2 and DuckDB files today |
-| Budgets and action groups | `modules/governance` | per resource group | — | **Coded**, not applied |
-| Audit logs | Log Analytics workspace + diagnostic settings | shared | — | **Target** ([ADR 0025](https://github.com/picot-data/data-platform-standards/blob/main/adr/0025-identity-only-access-and-private-networking.md) trigger A) |
-| Terraform state | Remote backend with locking and versioning | shared | — | **Target** — a local file today |
+| Budgets and action groups | `shared/governance.tf` (management group, subscriptions, shared resource groups) and `modules/governance` (entity resource group) | all | — | **Deployed** |
+| Audit logs | `log-picot-shared-data-frc-01` + diagnostic settings on the lake and the entity Key Vault | shared | 30 days, 1 GB/day cap | **Deployed** ([ADR 0025](https://github.com/picot-data/data-platform-standards/blob/main/adr/0025-identity-only-access-and-private-networking.md) trigger A) |
+| Terraform state | `stpicottfstate` — remote backend with locking and versioning ([ADR 0029](https://github.com/picot-data/data-platform-standards/blob/main/adr/0029-state-backend-created-by-script.md)) | shared | ZRS | **Deployed** |
 
 Infrastructure code: [`terraform-azure-data-platform`](https://github.com/picot-data/terraform-azure-data-platform)
 (modules and the `shared/` root module) and each entity repository's
