@@ -43,7 +43,15 @@ also hit failures creating Environments on these repositories in practice.
 ## Decision
 
 Option 2. Each entity's federated credential trusts
-`repo:picot-data/<entity-repo>:ref:refs/heads/main` and nothing else. Deployment
+`repo:picot-data/<entity-repo>:ref:refs/heads/main` and nothing else.
+
+> **Amendment, 2026-10-15.** The picot-data repositories present GitHub's
+> immutable subject, with numeric ids next to the names:
+> `repo:picot-data@<org id>/<entity-repo>@<repo id>:ref:refs/heads/main`. The
+> name-only form above was refused (`AADSTS700213`) on the first deployment.
+> The binding is unchanged in substance — `main` of one repository — and
+> `modules/deployer` (v5.1.0) reads the ids from GitHub. A side benefit: a
+> repository deleted and recreated under the same name is not trusted. Deployment
 workflows run on `main` only and declare no Environment. Values the deployment
 needs (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` — identifiers,
 not secrets) are repository variables, which every plan supports.
